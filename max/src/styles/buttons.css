@@ -1,0 +1,15 @@
+.cta-button {
+  background: rgba(28, 83, 114, 0.48);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  backdrop-filter: blur(5px);
+}
+
+.cta-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
