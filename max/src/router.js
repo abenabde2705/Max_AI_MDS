@@ -1,8 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LandingPage from './components/LandingPage.vue';
+import ChatBot from './components/Chat.vue';
 
 const routes = [
   { path: '/landingpage', name: 'LandingPage', component: LandingPage }, 
+  { path: '/', name: 'ChatBot', component: ChatBot }, 
+
   // Route pour la page principale
   {
     path: '/:pathMatch(.*)*',

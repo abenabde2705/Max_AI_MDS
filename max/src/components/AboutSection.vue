@@ -1,5 +1,5 @@
 <script setup>
-import ChatExample from './ChatExample.vue'
+import ChatExample from './ChatBot.vue'
 </script>
 
 <template>

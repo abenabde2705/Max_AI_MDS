@@ -42,8 +42,9 @@ export default {
 </script>
 <template>
   <div class="newsletter-section">
-    <h3>Restez informé de nos actualités</h3>
+    <h1>Restez informé de nos actualités</h1>
     <form @submit.prevent="submitForm" class="newsletter-form">
+    <div class="form-row"> 
       <div class="form-group">
         <input 
           v-model="formData.prenom" 
@@ -78,11 +79,12 @@ export default {
           v-model="formData.telephone" 
           type="tel" 
           placeholder="Numéro de téléphone"
-          pattern="[0-9]{10}"
           required
         >
       </div>
       <button type="submit" class="submit-btn">S'inscrire à la newsletter</button>
+    </div>
+
     </form>
   </div>
 </template>
@@ -90,41 +92,97 @@ export default {
 
 <style scoped>
 .newsletter-section {
-  margin-top: 4rem;
-  padding: 2rem;
-  background-color: #f5f5f5;
-  border-radius: 10px;
+  background: #1C5372;
+  padding: 4rem 2rem;
+  color: white;
+  text-align: center;
 }
 
-h3 {
-  color: #1C5372;
-  margin-bottom: 2rem;
-  font-size: 1.5rem;
-}
-
-.newsletter-form {
-  max-width: 600px;
+.newsletter-content {
+  max-width: 800px;
   margin: 0 auto;
+  text-align: center;
 }
 
-.form-group {
-  display: flex;
-  gap: 1rem;
+h1 {
+  font-size: 2rem;
   margin-bottom: 1rem;
 }
 
+.tagline {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.newsletter-form {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+
 input {
-  flex: 1;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 25px;
+  margin-bottom: 1rem;
+
+  background: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
 }
 
-input:focus {
-  outline: none;
-  border-color: #1C5372;
+input::placeholder {
+  color: #666;
 }
+
+.submit-btn {
+  background: #90DBF5;
+  color: #1C5372;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #7BC8E2;
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.success-message {
+  background: rgba(75, 181, 67, 0.2);
+  color: #4BB543;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.error-message {
+  background: rgba(255, 0, 0, 0.2);
+  color: #FF0000;
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
 
 .submit-btn {
   background-color: #1C5372;

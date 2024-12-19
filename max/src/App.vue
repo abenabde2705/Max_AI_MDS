@@ -2,12 +2,12 @@
 
 import LandingPage from './components/LandingPage.vue'
 import Footer from './components/Footer.vue'
-
+import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <LandingPage />
-  <Footer />
+  <RouterView />
+ 
 
 </template>
 
