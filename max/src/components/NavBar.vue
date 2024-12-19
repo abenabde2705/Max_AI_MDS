@@ -33,13 +33,15 @@ const menuItems = [
 
 .navbar {
   display: flex;
+  gap: 2rem;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 2rem;
   background: rgba(28, 83, 114, 1);
   backdrop-filter: blur(10px);
   border-radius: 50px;
-  width: 80%;
+  width: 50%;
+  height: 55px;
   max-width: 1200px;
 }
 
