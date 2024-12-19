@@ -6,7 +6,7 @@
 /* Déclaration pour TT Modernoir Trial */
 @font-face {
   font-family: 'TT Modernoir Trial';
-  src: url('/max/src/assets/TT_Modernoir_Trial_Bold.ttf') format('truetype');
+  src: url('/max/src/assets/TT\ Modernoir\ Bold.otf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
@@ -14,18 +14,18 @@
 /* Déclaration pour Articulat CF */
 @font-face {
   font-family: 'Articulat CF';
-  src: url('./assets/articulat/Fontspring-DEMO-articulatcf-bold-BF64a38d89ce81e.otf') format('truetype');
+  src: url('./assets/articulat/Articulat\ CF\ Demi\ Bold.otf') format('truetype');
 
 }
 @font-face {
   font-family: 'Articulat CF regular';
-  src: url('./assets/articulat/Fontspring-DEMO-articulatcf-regular-BF64a38d8b1d671.otf') format('truetype');
+  src: url('./assets/articulat/Articulat\ CF\ Regulat.otf') format('truetype');
 
 }
 
 @font-face {
   font-family: 'Articulat CF demi';
-  src: url('./assets/articulat/Fontspring-DEMO-articulatcf-demibold-BF64a38d8aeae4a.otf') format('truetype');
+  src: url('./assets/articulat/Articulat\ CF\ Demi\ Bold.otf') format('truetype');
 
 }
 

@@ -5,7 +5,7 @@ import '../styles/buttons.css'
 <template>
   <div class="hero">
     <div class="hero-content">
-      <h1 class="title">MAX</h1>
+      <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="title">
       <p class="subtitle">Tu n'es jamais seul. Je suis là pour toi.</p>
       <button class="cta-button">Parlez-moi</button>
     </div>
@@ -27,16 +27,16 @@ import '../styles/buttons.css'
 }
 
 .title {
-  font-size: 8rem;
-  color: white;
+  width: 400px;
+  height: auto;
   margin-bottom: 1rem;
-  letter-spacing: 4px;
 }
 
 .subtitle {
   font-size: 1.5rem;
   color: white;
   margin-bottom: 2rem;
+  letter-spacing: 3px;
   opacity: 0.9;
 }
 </style>

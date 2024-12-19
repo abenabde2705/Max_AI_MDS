@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  vue-app:
+    build:
+      context: ./max
+      dockerfile: Dockerfile 
+    container_name: vue-app
+    volumes:
+    - ./max:/app 
+    - /app/node_modules
+    ports:
+      - "5173:5173" # Mappe le port du serveur de développement
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    depends_on:
+      - backend # Démarrer après le backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./max_back 
+      dockerfile: Dockerfile # Spécifie le chemin relatif au contexte vers le Dockerfile
+    container_name: node-backend
+    volumes:
+      - ./max_back:/app # Monte le dossier max_back dans /app du conteneur
+      - /app/node_modules # Empêche le montage local des node_modules
+    ports:
+      - "5000:5000"
+    command: npm start # Commande pour démarrer l'application backend
+

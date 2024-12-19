@@ -1,9 +1,13 @@
 <script setup>
 const menuItems = [
-  { text: 'Fonctionnalités', href: '#' },
-  { text: 'Abonnement', href: '#' },
   { text: 'À Propos', href: '#' },
-  { text: 'Contact', href: '#' }
+  { text: 'Valeurs', href: '#' },
+  { text: 'Témoignanges', href: '#' },
+
+  { text: 'Offres', href: '#' },
+
+  { text: 'Inscription', href: '#' }
+
 ]
 </script>
 
@@ -15,9 +19,18 @@ const menuItems = [
         <div class="nav-items cta">
           <a v-for="item in menuItems" :key="item.text" :href="item.href" class="nav-link">
             {{ item.text }}
-            <span class="dropdown-arrow">▼</span>
           </a>
         </div>
+      </div>
+      <div class="website-buttons">
+        <button class="connexion-btn">
+          Télécharger l'appli
+
+        </button>
+        <button class="inscription-btn">
+          Accèder au site
+          <span class="arrow">→</span>
+        </button>
       </div>
       
     </nav>
@@ -81,7 +94,7 @@ const menuItems = [
   margin-top: 2px;
 }
 
-.auth-buttons {
+.website-buttons {
   display: flex;
   gap: 1rem;
   align-items: center;
