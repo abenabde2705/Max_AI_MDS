@@ -6,7 +6,7 @@ import FeatureCards from './FeatureCards.vue'
 import TestimonialsSection from './TestimonialsSection.vue'
 import DiscoveryOffer from './DiscoveryOffer.vue'
 import Abonnement from './Abonnement.vue'
-
+import Mail from './Mail.vue'
 import '../styles/gradients.css'
 </script>
 
@@ -21,6 +21,8 @@ import '../styles/gradients.css'
     <TestimonialsSection />
     <DiscoveryOffer />
     <Abonnement />
+    <Mail />
+    
   </div>
 </template>
 

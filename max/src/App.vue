@@ -1,10 +1,14 @@
 <script setup>
+
 import LandingPage from './components/LandingPage.vue'
+import Footer from './components/Footer.vue'
 
 </script>
 
 <template>
   <LandingPage />
+  <Footer />
+
 </template>
 
 <style>

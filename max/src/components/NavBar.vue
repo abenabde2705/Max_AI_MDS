@@ -27,12 +27,11 @@ const menuItems = [
           Télécharger l'appli
 
         </button>
-        <button class="inscription-btn">
+        <button class="inscription-btn" @click="$router.push('/website')">
           Accèder au site
           <span class="arrow">→</span>
         </button>
       </div>
-      
     </nav>
   </div>
 </template>

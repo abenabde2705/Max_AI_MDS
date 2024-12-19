@@ -46,7 +46,7 @@ h2 {
   font-family: 'Articulat CF', sans-serif;
 }
 
-.cta, .cta-button, .button {
+.cta, .cta-button, .button .span {
   font-family: 'Articulat CF demi', sans-serif;
   font-weight: 600; /* Optionnel: Si vous voulez garantir que c'est bien demi-bold */
 }

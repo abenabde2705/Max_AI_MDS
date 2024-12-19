@@ -51,6 +51,7 @@
         
       </div>
     </div>
+ 
   </template>
   
   <script>
@@ -85,7 +86,6 @@
   .subtitle-note {
     font-size: 0.9rem;
     font-weight: normal;
-    color: #888;
   }
   
   .plans-container {

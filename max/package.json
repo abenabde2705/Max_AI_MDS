@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/firestore": "^4.7.5",
+    "firebase": "^10.8.0",
     "vue": "^3.4.38",
     "vue-router": "^4.2.0"
   },
