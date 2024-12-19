@@ -2,8 +2,7 @@
   <section class="discovery-section">
     <div class="content">
       <div class="illustration">
-        <!-- Placeholder for illustration -->
-        <div class="blob-shape"></div>
+        <img src="../assets/img/valeurs/testi1.png" alt="">
       </div>
       <div class="offer-content">
         <h2>OFFRE DÉCOUVERTE</h2>
@@ -19,15 +18,16 @@
 <style scoped>
 .discovery-section {
   padding: 4rem 2rem;
-  background: #F8E7E4;
+  background: #EDE4DC;
 }
 
 .content {
-  display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  gap: 4rem;
-  align-items: center;
+  display: flex
+;
+    max-width: 1290px;
+    margin: 0 auto;
+    gap: 4rem;
+    align-items: center;
 }
 
 .illustration {
@@ -36,7 +36,10 @@
   justify-content: center;
   align-items: center;
 }
-
+.illustration img {
+ height: auto;
+ width: 700px;
+}
 .blob-shape {
   width: 300px;
   height: 300px;
@@ -45,11 +48,12 @@
 }
 
 .offer-content {
+  margin-bottom: 114px;
   flex: 1;
 }
 
 h2 {
-  color: #1C5372;
+  color: #82575E;
   font-size: 2rem;
   margin-bottom: 1.5rem;
 }
@@ -57,21 +61,22 @@ h2 {
 p {
   color: #555;
   line-height: 1.6;
-  margin-bottom: 2rem;
+  font-size: 17px;
+    margin-bottom: 2rem;
 }
 
 .discover-btn {
   padding: 1rem 2rem;
-  background: #1C5372;
+  background: #82575E;
   color: white;
   border: none;
   border-radius: 25px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: font-size 0.3s;
 }
 
 .discover-btn:hover {
-  background: #164259;
-}
+  font-size: 1.1rem;
+  }
 </style>

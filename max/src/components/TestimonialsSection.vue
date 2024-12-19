@@ -25,39 +25,50 @@ const testimonials = [
     <div class="testimonials-container">
       <div class="testimonials-list">
         <div v-for="testimonial in testimonials" :key="testimonial.author" class="testimonial">
-          <p class="quote">"{{ testimonial.quote }}" - {{ testimonial.author }}</p>
+          <p class="quote">"{{ testimonial.quote }}" - <span class="author">{{ testimonial.author }}</span></p>
+          
         </div>
+        <button class="voir-plus-btn">Voir plus</button>
       </div>
       <div class="illustration">
+        <img src="../assets/img/valeurs/testi3.png" alt="">
         <!-- Placeholder for illustration -->
-        <div class="blob-shape"></div>
+       
       </div>
+      
     </div>
-    <button class="voir-plus-btn">Voir plus</button>
+    
   </section>
 </template>
 
 <style scoped>
 .testimonials-section {
   padding: 4rem 2rem;
-  background: #F8E7E4;
+  background: #EDE4DC;
 }
 
 h2 {
-  text-align: center;
-  color: #1C5372;
-  font-size: 2rem;
-  margin-bottom: 3rem;
+  margin-left: 70px;
+    text-align: left;
+    color: #82575E;
+    font-size: 2rem;
+    margin-bottom: 3rem;
 }
 
 .testimonials-container {
   display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 1290px;
+    margin: 0 auto;
+  margin-left: 75px;
   gap: 4rem;
+}
+.testimonial .author {
+  font-family: Articulat CF;
+  font-weight: 600;
 }
 
 .testimonials-list {
+  font-size: 1.2rem;
   flex: 1;
 }
 
@@ -68,7 +79,6 @@ h2 {
 .quote {
   color: #555;
   line-height: 1.6;
-  font-style: italic;
 }
 
 .illustration {
@@ -77,7 +87,10 @@ h2 {
   justify-content: center;
   align-items: center;
 }
-
+.illustration img {
+ height: auto;
+  width: 700px;
+}
 .blob-shape {
   width: 300px;
   height: 200px;
@@ -87,9 +100,8 @@ h2 {
 
 .voir-plus-btn {
   display: block;
-  margin: 2rem auto 0;
   padding: 0.75rem 2rem;
-  background: #8B4B5C;
+  background: #82575E;
   color: white;
   border: none;
   border-radius: 25px;

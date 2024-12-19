@@ -11,24 +11,15 @@ const menuItems = [
   <div class="navbar-container">
     <nav class="navbar">
       <div class="nav-left">
-        <div class="logo">MAX</div>
-        <div class="nav-items">
+        <div class="logo"><h1>MAX</h1></div>
+        <div class="nav-items cta">
           <a v-for="item in menuItems" :key="item.text" :href="item.href" class="nav-link">
             {{ item.text }}
             <span class="dropdown-arrow">▼</span>
           </a>
         </div>
       </div>
-      <div class="auth-buttons">
-        <button class="connexion-btn">
-          <span class="icon">👤</span>
-          Connexion
-        </button>
-        <button class="inscription-btn">
-          Inscription
-          <span class="arrow">→</span>
-        </button>
-      </div>
+      
     </nav>
   </div>
 </template>
@@ -42,13 +33,15 @@ const menuItems = [
 
 .navbar {
   display: flex;
+  gap: 2rem;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 2rem;
   background: rgba(28, 83, 114, 1);
   backdrop-filter: blur(10px);
   border-radius: 50px;
-  width: 80%;
+  width: 50%;
+  height: 55px;
   max-width: 1200px;
 }
 
@@ -67,7 +60,7 @@ const menuItems = [
 
 .nav-items {
   display: flex;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .nav-link {

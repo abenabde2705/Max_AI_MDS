@@ -2,8 +2,14 @@ version: '3.8'
 
 services:
   vue-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: vue-app
+    volumes:
+      - .:/app # Monte le dossier local dans le conteneur
+      - /app/node_modules # Empêche le montage du dossier node_modules local
     ports:
-      - "8080:80"
+      - "5173:5173" # Mappe le port 3000 du conteneur au port 3000 de l'hôte
+    command: npm run dev # Lance le serveur de développement Vue.js
     restart: unless-stopped

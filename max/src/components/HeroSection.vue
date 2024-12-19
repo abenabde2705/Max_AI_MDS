@@ -28,9 +28,8 @@ import '../styles/buttons.css'
 
 .title {
   font-size: 8rem;
-  color: white;
+  color: #FFF1EF;
   margin-bottom: 1rem;
-  font-weight: bold;
   letter-spacing: 4px;
 }
 
