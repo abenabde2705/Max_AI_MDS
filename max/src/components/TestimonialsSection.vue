@@ -25,7 +25,7 @@ const testimonials = [
     <div class="testimonials-container">
       <div class="testimonials-list">
         <div v-for="testimonial in testimonials" :key="testimonial.author" class="testimonial">
-          <p class="quote">"{{ testimonial.quote }}" - {{ testimonial.author }}</p>
+          <p class="quote">"{{ testimonial.quote }}" - <span class="author">{{ testimonial.author }}</span></p>
         </div>
       </div>
       <div class="illustration">
@@ -56,6 +56,10 @@ h2 {
   margin: 0 auto;
   gap: 4rem;
 }
+.testimonial .author {
+  font-family: Articulat CF;
+  font-weight: 600;
+}
 
 .testimonials-list {
   flex: 1;
@@ -68,7 +72,6 @@ h2 {
 .quote {
   color: #555;
   line-height: 1.6;
-  font-style: italic;
 }
 
 .illustration {

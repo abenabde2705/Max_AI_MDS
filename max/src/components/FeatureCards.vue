@@ -3,22 +3,22 @@ const features = [
   {
     title: 'Toujours à vos côtés',
     description: 'Une aide accessible 24/7 pour vous accompagner à chaque étape de votre vie.',
-    icon: '👥'
+    image: '../assets/img/valeurs/toujours_vos_cotes.png'
   },
   {
     title: 'Aide pour tous, sans jugement',
     description: 'Qui que vous soit, votre histoire, Max est là pour vous écouter avec bienveillance.',
-    icon: '🤝'
+    image: '../assets/img/valeurs/aide.png'
   },
   {
     title: 'Sécurité des données',
     description: 'Vos informations sont protégées selon des normes strictes en matière de sécurité.',
-    icon: '🛡️'
+    image: '../assets/img/valeurs/aide.png'
   },
   {
     title: 'Confidentialité',
     description: 'Vos échanges restent privés et confidentiels, toujours.',
-    icon: '💬'
+    image: '../assets/img/valeurs/aide.png'
   }
 ]
 </script>
@@ -27,7 +27,10 @@ const features = [
   <section class="features-section">
     <div class="features-grid">
       <div v-for="feature in features" :key="feature.title" class="feature-card">
-        <div class="icon">{{ feature.icon }}</div>
+        <div class="icon">
+          <!-- Remplacer l'icône par une image -->
+          <img :src="feature.image" :alt="feature.title" class="feature-image" />
+        </div>
         <h3>{{ feature.title }}</h3>
         <p>{{ feature.description }}</p>
       </div>

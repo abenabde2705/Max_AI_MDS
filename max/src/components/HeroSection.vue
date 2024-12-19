@@ -30,7 +30,6 @@ import '../styles/buttons.css'
   font-size: 8rem;
   color: white;
   margin-bottom: 1rem;
-  font-weight: bold;
   letter-spacing: 4px;
 }
 
