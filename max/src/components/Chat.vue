@@ -7,14 +7,15 @@ import {
   BookOpen as BookOpenIcon, 
   Settings as SettingsIcon, 
   Send as SendIcon,
-  Plus as PlusIcon
+  Plus as PlusIcon,
+  X as XIcon
 } from 'lucide-vue-next'
 
 // Scénario prédéfini
 const chatScenario = {
   questions: [
     "Salut",
-    "Bonjour",
+    "Bonjour", 
     "Je n'en peux plus, sérieux. Mon mec vient de me lâcher en plein milieu de la nuit.",
     "Franchement, non. Je ne sais plus quoi penser, tout est brouillé dans ma tête.",
     "J'sais pas trop, j'ai juste l'impression d'avoir tout raté là.",
@@ -26,14 +27,14 @@ const chatScenario = {
     "Bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
 
     "Je n'en peux plus, sérieux. Mon mec vient de me lâcher en plein milieu de la nuit.": "Putain... j'suis désolé. Tu tiens le coup ?",
-    "Franchement, non. Je ne sais plus quoi penser, tout est brouillé dans ma tête.": "Je comprends... C’est dur, vraiment. Tu veux en parler un peu ou juste souffler ?",
+    "Franchement, non. Je ne sais plus quoi penser, tout est brouillé dans ma tête.": "Je comprends... C'est dur, vraiment. Tu veux en parler un peu ou juste souffler ?",
     "J'sais pas trop, j'ai juste l'impression d'avoir tout raté là.": "Eh, stop. T'as rien raté, OK ? T'as juste pris une claque, ça arrive. Tu veux qu'on fasse un petit exercice pour te calmer un peu ?",
     "Ouais, pourquoi pas.": "Vas-y, respire avec moi : inspire 4 secondes, bloque 4 secondes, souffle doucement 6 secondes. On fait ça ensemble, OK ?",
-    "Bon... ça va un peu mieux.": "Cool. On y va étape par étape, OK ? Et si t’as encore besoin, je suis là pour toi. On gère ça ensemble."
+    "Bon... ça va un peu mieux.": "Cool. On y va étape par étape, OK ? Et si t'as encore besoin, je suis là pour toi. On gère ça ensemble."
   }
 };
 
-
+const showQuestions = ref(false)
 const userMessage = ref('')
 const chatHistory = ref([
   {
@@ -71,6 +72,12 @@ const createNewConversation = () => {
 const switchConversation = (id) => {
   activeConversation.value = id
   chatHistory.value = conversations.value.find(conv => conv.id === id).messages
+}
+
+const selectQuestion = (question) => {
+  userMessage.value = question
+  showQuestions.value = false
+  sendMessage()
 }
 
 const sendMessage = async () => {
@@ -217,20 +224,45 @@ const sendMessage = async () => {
       </div>
 
       <div class="input-container">
-  <div class="input-wrapper">
-    <input 
-      v-model="userMessage"
-      type="text" 
-      placeholder="Écrire Un Message"
-      class="message-input"
-      @keyup.enter="sendMessage"
-    >
-    <button class="send-button" @click="sendMessage">
+        <div class="input-wrapper">
+          <input 
+            v-model="userMessage"
+            type="text" 
+            placeholder="Écrire Un Message"
+            class="message-input"
+            @keyup.enter="sendMessage"
+          >
+          <button class="send-button" @click="sendMessage">
             <SendIcon class="send-icon" />
-    </button>
-  </div>
-</div>
+          </button>
+          <button class="questions-button" @click="showQuestions = true">
+            ?
+          </button>
+        </div>
+      </div>
     </main>
+
+    <!-- Questions Popup -->
+    <div v-if="showQuestions" class="questions-popup">
+      <div class="questions-content">
+        <div class="questions-header">
+          <h3>Questions Suggérées</h3>
+          <button class="close-button" @click="showQuestions = false">
+            <XIcon class="icon" />
+          </button>
+        </div>
+        <div class="questions-list">
+          <button 
+            v-for="(question, index) in chatScenario.questions" 
+            :key="index"
+            class="question-button"
+            @click="selectQuestion(question)"
+          >
+            {{ question }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -540,40 +572,131 @@ const sendMessage = async () => {
   max-width: 80%;
   margin: 0 auto;
   position: relative;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .message-input {
-  width: 100%;
+  flex: 1;
   padding: 0.75rem 1rem;
-  padding-right: 3rem;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
 }
 
 .message-input:focus {
   outline: none;
   border-color: #3b82f6;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.send-button {
-  position: absolute;
-  right: 0.1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: transparent;
+.send-button, .questions-button {
+  background-color: #1e40af;
   border: none;
-  color: #1e40af;
-  padding: 0.5rem;
+  color: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.send-button:hover {
-  color: #bfdbfe;
-  transition: color 0.2s ease-in-out
+
+.send-button:hover, .questions-button:hover {
+  background-color: #1e3a8a;
+  transform: scale(1.05);
+}
+
+.questions-button {
+  background-color: #5ac7e5;
+  font-weight: bold;
+}
+
+.questions-button:hover {
+  background-color: #4096b4;
 }
 
 .send-icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Questions Popup Styles */
+.questions-popup {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 20rem;
+  max-width: 90vw;
+  z-index: 1000;
+}
+
+.questions-content {
+  padding: 1rem;
+}
+
+.questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.questions-header h3 {
+  font-size: 1.1rem;
+  color: #1e40af;
+  margin: 0;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #1e40af;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.question-button {
+  background: #f3f4f6;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #1f2937;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.question-button:hover {
+  background: #e5e7eb;
+  transform: translateX(4px);
 }
 @media (max-width: 768px) {
   .app-container {
