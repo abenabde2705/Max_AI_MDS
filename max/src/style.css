@@ -33,6 +33,30 @@
   font-family: 'Articulat-CF-regular', sans-serif;
 
 }
+/* App.vue */
+.nav-items {
+  display: none;
+}
+
+.nav-items.open {
+  display: flex;
+  flex-direction: column;
+  background: rgba(28, 83, 114, 0.9);
+  position: absolute;
+  top: 120%;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  border-radius: 20px;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-items.open {
+  transform: translateY(0);
+  opacity: 1;
+}
 
 h1 {
   font-family: 'TT Modernoir Trial', sans-serif;
