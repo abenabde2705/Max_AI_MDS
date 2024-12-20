@@ -5,8 +5,8 @@ const menuItems = [
   { text: 'À Propos', href: '#about' },
   { text: 'Fonctionnalités', href: '#fonc' },
   { text: 'Abonnement', href: '#title' },
-  { text: 'temoinage', href: '#tem' },
-  { text: 'newsletter', href: '#news' }
+  { text: 'Témoignage', href: '#tem' },
+  { text: 'Newsletter', href: '#news' }
 
 ]
 // État pour ouvrir/fermer le menu mobile
@@ -29,7 +29,7 @@ const scrollToSection = (href) => {
   <div class="navbar-container">
     <nav class="navbar">
       <div class="nav-left">
-        <div class="logo"><h1>MAX</h1></div>
+        <div class="logo"><router-link style=" text-decoration: none;" to="/"><h1 style="color: white; text-decoration: none;">MAX</h1></router-link></div>
         <!-- Bouton hamburger pour mobile -->
         <button class="hamburger" @click="isMenuOpen = !isMenuOpen">
           <span class="bar"></span>
@@ -50,17 +50,22 @@ const scrollToSection = (href) => {
 >
   {{ item.text }}
 </a>
+<div class="website-buttons">
+        <button class="connexion-btn cta">
+          <router-link style="color: white; text-decoration: none;" to="/Login">Connexion</router-link>
+        </button>
+        <button class="inscription-btn cta">
+          
+          <router-link style="color: white; text-decoration: none;" to="/chatbot"> Accèder au site</router-link>
 
+          <span class="arrow">→</span>
+        </button>
+        
+      </div>
         </div>
       </div>
       <!-- Boutons -->
-      <div class="website-buttons">
-        <button class="connexion-btn cta">Télécharger l'appli</button>
-        <button class="inscription-btn cta">
-          Accèder au site
-          <span class="arrow">→</span>
-        </button>
-      </div>
+     
     </nav>
   </div>
 </template>
@@ -188,6 +193,13 @@ const scrollToSection = (href) => {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+  .website-buttons {
+    display: flex; /* Rendre les boutons visibles */
+    flex-direction: column; /* Empiler les boutons verticalement */
+    gap: 1rem; /* Ajouter un espace entre les boutons */
+    align-items: center;
+    margin-top: 1rem;
+  }
   .navbar {
     flex-wrap: wrap;
     height: auto;
@@ -198,8 +210,8 @@ const scrollToSection = (href) => {
   }
 
   .nav-items.mobile-menu {
-        display: flex
-;
+        display: flex;
+        align-items: center;
         flex-direction: column;
         gap: 1rem;
         background: rgba(28, 83, 114, 0.9);
@@ -224,9 +236,7 @@ const scrollToSection = (href) => {
     display: flex;
   }
 
-  .website-buttons {
-    display: none;
-  }
+  
 }
 
 @media (max-width: 480px) {

@@ -7,7 +7,7 @@ import '../styles/buttons.css'
     <div class="hero-content">
       <h1 class="title">MAX</h1>
       <p class="subtitle">Tu n'es jamais seul. Je suis là pour toi.</p>
-      <button class="cta-button">Parlez-moi</button>
+      <button class="cta-button"> <router-link to="chatbot" style="text-decoration: none; color: white;">Parlez-moi</router-link></button>
     </div>
   </div>
 </template>

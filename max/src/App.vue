@@ -1,15 +1,19 @@
 <script setup>
-import LandingPage from './components/LandingPage.vue'
+import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <LandingPage />
+  
+    <RouterView />
+ 
 </template>
+
 
 <style>
 body {
   margin: 0;
   padding: 0;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 #app {

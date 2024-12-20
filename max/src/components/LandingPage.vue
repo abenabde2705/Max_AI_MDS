@@ -11,11 +11,13 @@ import newsletter from './newsletter.vue'
 import Footer from './footer.vue'
 import Mail from './Mail.vue'
 
+
 </script>
 
 <template>  
   <div class="landing-page">
     <div class="gradient-bg">
+
       <NavBar  />
       <HeroSection id="hero" />
     </div>
@@ -25,7 +27,6 @@ import Mail from './Mail.vue'
     <DiscoveryOffer id="desc"/>
     <Abonnement />
     <Mail id="news"/>
-
     <Footer />
 
     
