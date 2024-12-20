@@ -6,7 +6,7 @@
 /* Déclaration pour TT Modernoir Trial */
 @font-face {
   font-family: 'TT Modernoir Trial';
-  src: url('/max/src/assets/TT-Modernoir-Bold.ttf') format('truetype');
+  src: url('./assets/TT-Modernoir-Bold.otf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
@@ -35,7 +35,7 @@
 }
 
 h1 {
-  font-family: 'TT-Modernoir-Trial', sans-serif;
+  font-family: 'TT Modernoir Trial', sans-serif;
 }
 
 h2 {
