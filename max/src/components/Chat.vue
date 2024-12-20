@@ -28,7 +28,8 @@ const userMessage = ref('')
 const chatHistory = ref([
   {
     sender: 'bot',
-    text: 'Je suis à ton écoute, est-ce que je peux t\'aider ?'
+    text: 'Je suis à ton écoute, est-ce que je peux t\'aider ?',
+    isTyping: false
   }
 ])
 
@@ -40,21 +41,30 @@ const sendMessage = async () => {
   // Ajoute le message de l'utilisateur
   chatHistory.value.push({
     sender: 'user',
-    text: messageText
+    text: messageText,
+    isTyping: false
   })
 
   // Recherche une réponse dans le scénario
   const botResponse = chatScenario.responses[messageText] || 
     "Je ne suis pas sûr de comprendre. Pouvez-vous reformuler ou choisir une des options proposées ? (suivez le script pour l'instant 😉)"
 
-  // Simule un délai de réponse
-  await new Promise(resolve => setTimeout(resolve, 1000))
-
-  // Ajoute la réponse du bot
+  // Ajoute un message temporaire "en train d'écrire"
   chatHistory.value.push({
     sender: 'bot',
-    text: botResponse
+    text: '',
+    isTyping: true
   })
+
+  // Simule un délai de réponse
+  await new Promise(resolve => setTimeout(resolve, 2000))
+
+  // Remplace le message temporaire par la vraie réponse
+  chatHistory.value[chatHistory.value.length - 1] = {
+    sender: 'bot',
+    text: botResponse,
+    isTyping: false
+  }
 
   // Réinitialise le champ de message
   userMessage.value = ''
@@ -103,7 +113,7 @@ const sendMessage = async () => {
     <!-- Main Content -->
     <main class="main-content">
       <header class="header">
-        <button class="premium-button">
+        <button class="premium-button" @click="$router.push('/landingpage#abonnement')">
           Souscrire À Premium +
         </button>
       </header>
@@ -114,33 +124,43 @@ const sendMessage = async () => {
                :key="index" 
                :class="['message-container', message.sender === 'user' ? 'user-message' : 'bot-message']">
             <div class="avatar">
-              {{ message.sender === 'bot' ? 'MAX' : 'Toi' }}
+              <template v-if="message.sender === 'bot'">
+                <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="avatar-img" style="width: 40px; height: 40px; object-fit: contain;" />
+              </template>
+              <template v-else>
+                Toi
+              </template>
             </div>
             <div class="message-content">
-              <div class="message">
-                {{ message.text }}
+              <div class="message" :class="{ 'typing': message.isTyping }">
+                <div v-if="message.isTyping" class="typing-animation">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <template v-else>
+                  {{ message.text }}
+                </template>
               </div>
             </div>
           </div>
-
-          
         </div>
       </div>
 
       <div class="input-container">
-        <div class="input-wrapper">
-          <input 
-            v-model="userMessage"
-            type="text" 
-            placeholder="Écrire Un Message"
-            class="message-input"
-            @keyup.enter="sendMessage"
-          >
-          <button class="send-button" @click="sendMessage">
+  <div class="input-wrapper">
+    <input 
+      v-model="userMessage"
+      type="text" 
+      placeholder="Écrire Un Message"
+      class="message-input"
+      @keyup.enter="sendMessage"
+    >
+    <button class="send-button" @click="sendMessage">
             <SendIcon class="send-icon" />
-          </button>
-        </div>
-      </div>
+    </button>
+  </div>
+</div>
     </main>
   </div>
 </template>
@@ -150,7 +170,7 @@ const sendMessage = async () => {
 .app-container {
   display: flex;
   height: 100vh;
-  background: linear-gradient(135deg, #60a5fa, #93c5fd, #fbcfe8);
+  background: linear-gradient(135deg, #1C5372, #90DBF5, #FFD2C7);
 }
 
 .sidebar {
@@ -167,7 +187,7 @@ const sendMessage = async () => {
 }
 
 .logo h1 {
-  font-size: 1.875rem;
+  font-size: 3rem;
   font-weight: bold;
   text-align: center;
 }
@@ -216,13 +236,15 @@ const sendMessage = async () => {
 .nav-buttons button {
   padding: 0.5rem;
   border-radius: 0.25rem;
+  color: white;
   background-color: transparent;
   border: none;
   cursor: pointer;
 }
 
 .nav-buttons button:hover {
-  background-color: #1e40af;
+    color: #bfdbfe;
+    transition: color 0.2s ease-in-out
 }
 
 .icon {
@@ -272,6 +294,18 @@ const sendMessage = async () => {
   align-items: flex-start;
   margin-bottom: 1.5rem;
   width: 100%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .user-message {
@@ -281,7 +315,29 @@ const sendMessage = async () => {
 .bot-message {
   flex-direction: row;
 }
+.user-message .message {
+  background-color: #ffac9c;
+  color: #333;
+  border-top-right-radius: 4px;
+  margin-right: 0.5rem;
+}
 
+/* Style pour les messages du bot */
+.bot-message .message {
+  background-color: #5ac7e5;
+  color: #333;
+  border-top-left-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+.message-content .message {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3), 
+              0 0 5px rgba(255, 255, 255, 0.1),
+              0 0 2px rgba(255, 255, 255, 0.1);
+  color: #333;
+  border-top-left-radius: 4px;
+  margin-left: 0.5rem;
+}
 .avatar {
   width: 5rem;
   height: 2rem;
@@ -302,13 +358,38 @@ const sendMessage = async () => {
   max-width: 70%;
 }
 
-.user-message .message {
-  background-color: #dbeafe;
+.typing-animation {
+  display: flex;
+  gap: 0.3rem;
+  padding: 0.5rem;
 }
 
-.bot-message .message {
-  background-color: #f3f4f6;
+.typing-animation span {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #1e40af;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out;
 }
+
+.typing-animation span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-animation span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  }
+  40% { 
+    transform: scale(1.0);
+  }
+}
+
+
 
 .reply-row {
   display: flex;
@@ -330,7 +411,6 @@ const sendMessage = async () => {
 
 .input-container {
   padding: 1rem;
-  border-top: 1px solid #e5e7eb;
 }
 
 .input-wrapper {
@@ -361,6 +441,11 @@ const sendMessage = async () => {
   border: none;
   color: #1e40af;
   padding: 0.5rem;
+  cursor: pointer;
+}
+.send-button:hover {
+  color: #bfdbfe;
+  transition: color 0.2s ease-in-out
 }
 
 .send-icon {
