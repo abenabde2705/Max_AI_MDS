@@ -12,7 +12,8 @@
     "@firebase/firestore": "^4.7.5",
     "firebase": "^10.14.1",
     "pinia": "^2.3.0",
-    "vue": "^3.4.38"
+    "vue": "^3.4.38",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.3",
