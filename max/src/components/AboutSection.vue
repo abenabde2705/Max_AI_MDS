@@ -1,5 +1,4 @@
 <script setup>
-import ChatExample from './ChatBot.vue'
 </script>
 
 <template>
@@ -17,7 +16,6 @@ import ChatExample from './ChatBot.vue'
         <p>Je m'adapte à vous, à votre personnalité et à vos besoins. Je retiens ce que vous partagez avec moi et j'évolue à vos côtés. Vous choisissez comment je communique : bienveillant, direct ou neutre, c'est vous qui décidez.</p>
         <p>Besoin d'un avis ? Envoyez-moi une photo ou décrivez une situation, je suis là pour vous guider et vous conseiller.</p>
       </div>
-      <ChatExample />
     </div>
   </section>
 </template>
