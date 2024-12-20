@@ -3,7 +3,7 @@
     <div class="chat-window">
       <img
         class="chat-image"
-        src="../assets/img/valeurs/JOUR_1.webp"
+        src="../assets/img/valeurs/JOUR_2.webp"
         alt="Exemple de chat"
       />
     </div>
