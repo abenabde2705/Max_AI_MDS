@@ -6,18 +6,29 @@ import FeatureCards from './FeatureCards.vue'
 import TestimonialsSection from './TestimonialsSection.vue'
 import DiscoveryOffer from './DiscoveryOffer.vue'
 import '../styles/gradients.css'
+import Abonnement from './Abonnement.vue' 
+import newsletter from './newsletter.vue'
+import Footer from './footer.vue'
+import Mail from './Mail.vue'
+
 </script>
 
-<template>
+<template>  
   <div class="landing-page">
     <div class="gradient-bg">
-      <NavBar />
-      <HeroSection />
+      <NavBar  />
+      <HeroSection id="hero" />
     </div>
-    <AboutSection />
-    <FeatureCards />
-    <TestimonialsSection />
-    <DiscoveryOffer />
+    <AboutSection id="about"/>
+    <FeatureCards id="fonc" />
+    <TestimonialsSection id="tem" />
+    <DiscoveryOffer id="desc"/>
+    <Abonnement />
+    <Mail id="news"/>
+
+    <Footer />
+
+    
   </div>
 </template>
 

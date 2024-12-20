@@ -2,7 +2,7 @@
   <section class="discovery-section">
     <div class="content">
       <div class="illustration">
-        <img src="../assets/img/valeurs/testi1.png" alt="">
+        <img src="../assets/img/valeurs/testi1.png" alt="Illustration découverte">
       </div>
       <div class="offer-content">
         <h2>OFFRE DÉCOUVERTE</h2>
@@ -22,12 +22,11 @@
 }
 
 .content {
-  display: flex
-;
-    max-width: 1290px;
-    margin: 0 auto;
-    gap: 4rem;
-    align-items: center;
+  display: flex;
+  max-width: 1290px;
+  margin: 0 auto;
+  gap: 4rem;
+  align-items: center;
 }
 
 .illustration {
@@ -36,15 +35,10 @@
   justify-content: center;
   align-items: center;
 }
+
 .illustration img {
- height: auto;
- width: 700px;
-}
-.blob-shape {
-  width: 300px;
-  height: 300px;
-  background: #90DBF5;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  height: auto;
+  width: 700px;
 }
 
 .offer-content {
@@ -62,7 +56,7 @@ p {
   color: #555;
   line-height: 1.6;
   font-size: 17px;
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .discover-btn {
@@ -78,5 +72,54 @@ p {
 
 .discover-btn:hover {
   font-size: 1.1rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    gap: 2rem;
   }
+
+  .illustration img {
+    width: 100%; /* L'image prend toute la largeur disponible */
+    max-width: 400px; /* Taille maximale pour les écrans moyens */
+  }
+
+  .offer-content {
+    text-align: center;
+    margin-bottom: 0; /* Supprime la marge excessive sur les petits écrans */
+  }
+
+  h2 {
+    font-size: 1.8rem; /* Réduction légère du titre */
+  }
+
+  p {
+    font-size: 16px; /* Légère réduction de la taille du texte */
+  }
+}
+
+@media (max-width: 480px) {
+  .discovery-section {
+    padding: 2rem 1rem;
+  }
+
+  .illustration img {
+    max-width: 300px; /* Réduction supplémentaire de l'image */
+  }
+
+  h2 {
+    font-size: 1.5rem; /* Réduction pour les très petits écrans */
+  }
+
+  p {
+    font-size: 15px; /* Réduction supplémentaire du texte */
+  }
+
+  .discover-btn {
+    font-size: 0.9rem; /* Réduction de la taille du bouton */
+    padding: 0.8rem 1.5rem;
+  }
+}
 </style>

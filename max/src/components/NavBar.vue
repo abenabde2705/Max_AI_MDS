@@ -1,10 +1,28 @@
 <script setup>
+import { ref } from 'vue'
+
 const menuItems = [
-  { text: 'Fonctionnalités', href: '#' },
-  { text: 'Abonnement', href: '#' },
-  { text: 'À Propos', href: '#' },
-  { text: 'Contact', href: '#' }
+  { text: 'À Propos', href: '#about' },
+  { text: 'Fonctionnalités', href: '#fonc' },
+  { text: 'Abonnement', href: '#title' },
+  { text: 'temoinage', href: '#tem' },
+  { text: 'newsletter', href: '#news' }
+
 ]
+// État pour ouvrir/fermer le menu mobile
+const isMenuOpen = ref(false);
+
+// Méthode pour scroller vers une section
+const scrollToSection = (href) => {
+  const targetElement = document.querySelector(href);
+  if (targetElement) {
+    targetElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+    isMenuOpen.value = false; // Ferme le menu mobile après le clic
+  }
+};
 </script>
 
 <template>
@@ -12,14 +30,37 @@ const menuItems = [
     <nav class="navbar">
       <div class="nav-left">
         <div class="logo"><h1>MAX</h1></div>
-        <div class="nav-items cta">
-          <a v-for="item in menuItems" :key="item.text" :href="item.href" class="nav-link">
-            {{ item.text }}
-            <span class="dropdown-arrow">▼</span>
-          </a>
+        <!-- Bouton hamburger pour mobile -->
+        <button class="hamburger" @click="isMenuOpen = !isMenuOpen">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <!-- Menu desktop -->
+        <div
+          class="nav-items cta"
+          :class="{ 'mobile-menu': true, 'open': isMenuOpen }"
+        >
+        <a
+  v-for="item in menuItems"
+  :key="item.text"
+  href="#"
+  @click.prevent="scrollToSection(item.href)"
+  class="nav-link"
+>
+  {{ item.text }}
+</a>
+
         </div>
       </div>
-      
+      <!-- Boutons -->
+      <div class="website-buttons">
+        <button class="connexion-btn cta">Télécharger l'appli</button>
+        <button class="inscription-btn cta">
+          Accèder au site
+          <span class="arrow">→</span>
+        </button>
+      </div>
     </nav>
   </div>
 </template>
@@ -40,15 +81,17 @@ const menuItems = [
   background: rgba(28, 83, 114, 1);
   backdrop-filter: blur(10px);
   border-radius: 50px;
-  width: 50%;
+  width: 90%;
   height: 55px;
   max-width: 1200px;
+  position: relative;
+  z-index: 10;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 3rem;
+  gap: 1rem;
 }
 
 .logo {
@@ -61,6 +104,7 @@ const menuItems = [
 .nav-items {
   display: flex;
   gap: 2.5rem;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 .nav-link {
@@ -78,12 +122,25 @@ const menuItems = [
   opacity: 1;
 }
 
-.dropdown-arrow {
-  font-size: 0.6em;
-  margin-top: 2px;
+/* Hamburger menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 0.3rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 11;
 }
 
-.auth-buttons {
+.hamburger .bar {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.website-buttons {
   display: flex;
   gap: 1rem;
   align-items: center;
@@ -110,7 +167,7 @@ const menuItems = [
   background: rgba(28, 83, 114, 0.5);
   color: white;
   padding: 0.5rem 1.5rem;
-  border: none;
+  border: 1px solid white;
   border-radius: 25px;
   cursor: pointer;
   font-size: 0.9rem;
@@ -127,5 +184,71 @@ const menuItems = [
 
 .arrow {
   font-size: 1.1em;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .nav-items {
+    display: none;
+  }
+
+  .nav-items.mobile-menu[data-v-c3ceb15a] {
+        display: flex
+;
+        flex-direction: column;
+        gap: 1rem;
+        background: rgba(28, 83, 114, 0.9);
+        position: absolute;
+        top: 120%;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        border-radius: 20px 20px 20px 20px;
+        z-index: 10;
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+  .nav-items.mobile-menu.open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .website-buttons {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-left {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .hamburger .bar {
+    width: 20px;
+  }
+
+  .nav-items.mobile-menu {
+    padding: 0.5rem 1rem;
+  }
+
+  .nav-link {
+    font-size: 0.8rem;
+  }
 }
 </style>

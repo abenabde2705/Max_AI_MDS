@@ -13,7 +13,7 @@ import ChatExample from './ChatExample.vue'
 
     <div class="features-container">
       <div class="feature-text">
-        <h3>UNE ÉCOUTE SIMPLE,<br/>DES RÉPONSES CLAIRES</h3>
+        <h3>UNE ÉCOUTE SIMPLE,<br />DES RÉPONSES CLAIRES</h3>
         <p>Je m'adapte à vous, à votre personnalité et à vos besoins. Je retiens ce que vous partagez avec moi et j'évolue à vos côtés. Vous choisissez comment je communique : bienveillant, direct ou neutre, c'est vous qui décidez.</p>
         <p>Besoin d'un avis ? Envoyez-moi une photo ou décrivez une situation, je suis là pour vous guider et vous conseiller.</p>
       </div>
@@ -34,6 +34,8 @@ import ChatExample from './ChatExample.vue'
   font-size: 2.5rem;
   margin-bottom: 2rem;
   font-weight: bold;
+  font-family: 'TT Modernoir Trial';
+  color: #FFF1EF;
 }
 
 .description {
@@ -41,10 +43,11 @@ import ChatExample from './ChatExample.vue'
   margin: 0 auto 4rem;
   text-align: center;
   line-height: 1.6;
+  color: #FFF1EF;
 }
 
 .description p {
-  margin-bottom: 1rem;
+  color: #FFF1EF;
 }
 
 .features-container {
@@ -60,13 +63,58 @@ import ChatExample from './ChatExample.vue'
 }
 
 .feature-text h3 {
-  font-size: 2rem;
+  font-family: 'TT Modernoir Trial';
+  font-size: 38px;
+  font-weight: bold;
+  color: #FFF1EF;
   margin-bottom: 2rem;
   line-height: 1.2;
+  margin-left: 12px;
+  text-align: -webkit-center;
 }
 
 .feature-text p {
   margin-bottom: 1rem;
   line-height: 1.6;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .features-container {
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .feature-text h3 {
+    font-size: 32px; /* Légère réduction pour petits écrans */
+    margin-left: 0;
+  }
+
+  .feature-text p {
+    margin-bottom: 1rem;
+  }
+
+  .description {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 2rem; /* Réduction pour les très petits écrans */
+  }
+
+  .feature-text h3 {
+    font-size: 28px; /* Réduction supplémentaire */
+  }
+
+  .features-container {
+    gap: 1.5rem;
+  }
+
+  .description {
+    padding: 0 0.5rem;
+  }
 }
 </style>

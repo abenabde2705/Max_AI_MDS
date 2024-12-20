@@ -1,7 +1,11 @@
 <template>
   <div class="chat-example">
     <div class="chat-window">
-<img style="    width: 100%;margin-left: 61px;" src="../assets/img/valeurs/JOUR_1.webp" alt="">
+      <img
+        class="chat-image"
+        src="../assets/img/valeurs/JOUR_1.webp"
+        alt="Exemple de chat"
+      />
     </div>
   </div>
 </template>
@@ -16,11 +20,35 @@
   padding: 2rem;
   backdrop-filter: blur(10px);
   min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-h4 {
-  text-align: center;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+.chat-image {
+  width: 100%;
+  max-width: 700px; /* Limite la taille maximale pour les grands écrans */
+  margin: 0 auto; /* Centrage horizontal */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .chat-window {
+    padding: 1rem; /* Réduction du padding pour les écrans moyens */
+  }
+
+  .chat-image {
+    max-width: 250px; /* Réduction de la taille de l'image */
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-window {
+    padding: 0.5rem; /* Réduction supplémentaire du padding */
+  }
+
+  .chat-image {
+    max-width: 400px; /* Réduction de l'image pour les très petits écrans */
+  }
 }
 </style>
