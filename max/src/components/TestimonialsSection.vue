@@ -16,7 +16,7 @@ const testimonials = [
     quote: "Max est toujours là, même quand personne d'autre ne peut l'être. C'est rassurant.",
     author: "Thomas, 23 ans"
   }
-]
+];
 </script>
 
 <template>
@@ -26,18 +26,13 @@ const testimonials = [
       <div class="testimonials-list">
         <div v-for="testimonial in testimonials" :key="testimonial.author" class="testimonial">
           <p class="quote">"{{ testimonial.quote }}" - <span class="author">{{ testimonial.author }}</span></p>
-          
         </div>
         <button class="voir-plus-btn">Voir plus</button>
       </div>
       <div class="illustration">
-        <img src="../assets/img/valeurs/testi3.png" alt="">
-        <!-- Placeholder for illustration -->
-       
+        <img src="../assets/img/valeurs/testi3.png" alt="Illustration témoignages">
       </div>
-      
     </div>
-    
   </section>
 </template>
 
@@ -49,19 +44,20 @@ const testimonials = [
 
 h2 {
   margin-left: 70px;
-    text-align: left;
-    color: #82575E;
-    font-size: 2rem;
-    margin-bottom: 3rem;
+  text-align: left;
+  color: #82575E;
+  font-size: 2rem;
+  margin-bottom: 3rem;
 }
 
 .testimonials-container {
   display: flex;
   max-width: 1290px;
-    margin: 0 auto;
+  margin: 0 auto;
   margin-left: 75px;
   gap: 4rem;
 }
+
 .testimonial .author {
   font-family: Articulat CF;
   font-weight: 600;
@@ -87,30 +83,72 @@ h2 {
   justify-content: center;
   align-items: center;
 }
+
 .illustration img {
- height: auto;
+  height: auto;
   width: 700px;
-}
-.blob-shape {
-  width: 300px;
-  height: 200px;
-  background: #FFB4A2;
-  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
 }
 
 .voir-plus-btn {
   display: block;
-  padding: 0.75rem 2rem;
+  padding: 1rem 2rem;
   background: #82575E;
   color: white;
   border: none;
   border-radius: 25px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.3s;
+  transition: font-size 0.3s;
 }
 
 .voir-plus-btn:hover {
+  font-size: 1.1rem;
   background: #723F4D;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .testimonials-container {
+    flex-direction: column;
+    gap: 2rem;
+    margin-left: 0;
+  }
+
+  .illustration img {
+    width: 100%; /* Image prend la largeur du conteneur */
+    max-width: 400px; /* Taille maximale pour éviter les débordements */
+  }
+
+  h2 {
+    text-align: center;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonials-section {
+    padding: 2rem 1rem;
+  }
+
+  h2 {
+    font-size: 1.8rem; /* Réduction légère pour les très petits écrans */
+  }
+
+  .quote {
+    font-size: 1rem; /* Réduction de la taille de la citation */
+  }
+
+  .illustration img {
+    max-width: 300px; /* Réduction supplémentaire pour les petits écrans */
+  }
+
+  .voir-plus-btn {
+    margin: 121px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+    font-size: 0.9rem; /* Réduction de la taille du bouton */
+    padding: 0.8rem 1.5rem;
+  }
 }
 </style>

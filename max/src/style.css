@@ -14,18 +14,14 @@
 /* Déclaration pour Articulat CF */
 @font-face {
   font-family: 'Articulat CF';
-  src: url('./assets/articulat/Fontspring-DEMO-articulatcf-bold-BF64a38d89ce81e.otf') format('truetype');
+  src: url('./assets/Articulat\ CF\ Regulat.otf') format('truetype');
 
 }
-@font-face {
-  font-family: 'Articulat CF regular';
-  src: url('./assets/articulat/Fontspring-DEMO-articulatcf-regular-BF64a38d8b1d671.otf') format('truetype');
 
-}
 
 @font-face {
   font-family: 'Articulat CF demi';
-  src: url('./assets/articulat/Fontspring-DEMO-articulatcf-demibold-BF64a38d8aeae4a.otf') format('truetype');
+  src: url('./assets/Articulat\ CF\ Demi\ Bold.otf') format('truetype');
 
 }
 
@@ -46,10 +42,13 @@ h2 {
   font-family: 'Articulat CF', sans-serif;
 }
 
-.cta, .cta-button, .button {
-  font-family: 'Articulat CF demi', sans-serif;
-  font-weight: 600; /* Optionnel: Si vous voulez garantir que c'est bien demi-bold */
+.cta, 
+.cta-button, 
+.button {
+  font-family: 'Articulat CF Demi', sans-serif !important; /* Corrige le nom de la police (majuscule pour 'Demi') */
+  font-weight: 600; /* Bonne pratique pour expliciter le poids */
 }
+
 body {
   margin: 0;
   min-width: 320px;
