@@ -83,7 +83,7 @@
 import { ref } from 'vue'
 import { ArrowLeft } from 'lucide-vue-next'
 import NavBar from './NavBar.vue';
-import Footer from './Footer.vue';
+import Footer from './footer.vue';
   
 const form = ref({
   firstName: '',
