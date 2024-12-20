@@ -1,11 +1,13 @@
 <script setup>
 import { ref, nextTick } from 'vue'
+
 import { 
   Home as HomeIcon,
   User as UserIcon, 
   BookOpen as BookOpenIcon, 
   Settings as SettingsIcon, 
-  Send as SendIcon 
+  Send as SendIcon,
+  Plus as PlusIcon
 } from 'lucide-vue-next'
 
 // Scénario prédéfini
@@ -33,6 +35,36 @@ const chatHistory = ref([
   }
 ])
 
+// Gestion des conversations
+const conversations = ref([
+  {
+    id: 1,
+    title: 'Conversation 1',
+    messages: [...chatHistory.value]
+  }
+])
+
+const activeConversation = ref(1)
+
+const createNewConversation = () => {
+  const newId = conversations.value.length + 1
+  conversations.value.push({
+    id: newId,
+    title: `Conversation ${newId}`,
+    messages: [{
+      sender: 'bot',
+      text: 'Je suis à ton écoute, est-ce que je peux t\'aider ?',
+      isTyping: false
+    }]
+  })
+  switchConversation(newId)
+}
+
+const switchConversation = (id) => {
+  activeConversation.value = id
+  chatHistory.value = conversations.value.find(conv => conv.id === id).messages
+}
+
 const sendMessage = async () => {
   if (!userMessage.value.trim()) return
 
@@ -44,6 +76,10 @@ const sendMessage = async () => {
     text: messageText,
     isTyping: false
   })
+
+  // Met à jour la conversation active
+  const currentConv = conversations.value.find(conv => conv.id === activeConversation.value)
+  currentConv.messages = chatHistory.value
 
   // Recherche une réponse dans le scénario
   const botResponse = chatScenario.responses[messageText] || 
@@ -66,6 +102,9 @@ const sendMessage = async () => {
     isTyping: false
   }
 
+  // Met à jour à nouveau la conversation active
+  currentConv.messages = chatHistory.value
+
   // Réinitialise le champ de message
   userMessage.value = ''
 
@@ -87,8 +126,23 @@ const sendMessage = async () => {
       </div>
 
       <nav class="nav-menu">
-        <div>
-            <h2>Historique Des Conversations</h2>
+        <div class="conversations-header">
+          <h2>Historique Des Conversations</h2>
+          <button @click="createNewConversation" class="new-chat-btn">
+            <PlusIcon class="icon" />
+            Nouvelle conversation
+          </button>
+        </div>
+        
+        <div class="conversations-list">
+          <button 
+            v-for="conv in conversations" 
+            :key="conv.id"
+            @click="switchConversation(conv.id)"
+            :class="['conversation-btn', { active: activeConversation === conv.id }]"
+          >
+            {{ conv.title }}
+          </button>
         </div>
       </nav>
 
@@ -114,7 +168,7 @@ const sendMessage = async () => {
     <main class="main-content">
       <header class="header">
         <button class="premium-button" @click="$router.push('/landingpage#abonnement')">
-          Souscrire À Premium +
+          Passe à MAX Premium ✨
         </button>
       </header>
 
@@ -175,7 +229,7 @@ const sendMessage = async () => {
 
 .sidebar {
   width: 16rem;
-  background-color: #5597B4;
+  background-color: #1C5372;
   color: white;
   text-align: center;
   padding: 1rem;
@@ -196,6 +250,56 @@ const sendMessage = async () => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.conversations-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.new-chat-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.new-chat-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.conversations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.conversation-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: background 0.2s;
+}
+
+.conversation-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.conversation-btn.active {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .nav-section h2 {
@@ -224,7 +328,7 @@ const sendMessage = async () => {
   bottom: 0;
   left: 0;
   width: 16rem;
-  background-color: #1C5372;
+  background-color: #0A222F;
   padding: 1rem;
 }
 
@@ -267,8 +371,14 @@ const sendMessage = async () => {
 .premium-button {
   background-color: #1e40af;
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent;
+  cursor: pointer;
 }
 
 .premium-button:hover {
@@ -388,8 +498,6 @@ const sendMessage = async () => {
     transform: scale(1.0);
   }
 }
-
-
 
 .reply-row {
   display: flex;

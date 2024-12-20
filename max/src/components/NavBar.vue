@@ -22,9 +22,9 @@ const menuItems = [
           </a>
         </div>
       </div>
-      <div class="website-buttons">
+      <div class="website-buttons" @click="$router.push('/SignUp')">
         <button class="connexion-btn">
-          Télécharger l'appli
+          s'inscrire
 
         </button>
         <button class="inscription-btn" @click="$router.push('/website')">
@@ -51,7 +51,6 @@ const menuItems = [
   background: rgba(28, 83, 114, 1);
   backdrop-filter: blur(10px);
   border-radius: 50px;
-  width: 80%;
   max-width: 1200px;
 }
 
