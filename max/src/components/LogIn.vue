@@ -62,7 +62,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from './NavBar.vue'
-import Footer from './Footer.vue'
+import Footer from './footer.vue'
 
 const router = useRouter()
 const error = ref('')
