@@ -238,7 +238,7 @@ const handleSubmit = () => {
 .signup-terms-button {
   background: none;
   border: none;
-  color: rgb(2, 2, 2);
+  color: rgb(255, 255, 255);
   transition: all 0.3s ease;
   text-decoration: underline;
   cursor: pointer;
