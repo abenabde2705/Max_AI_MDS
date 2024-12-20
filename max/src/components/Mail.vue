@@ -1,6 +1,8 @@
 
 <script>
 import { ref } from 'vue'
+import { collection, addDoc } from 'firebase/firestore'
+import { db } from '../firebaseConfig'
 
 
 export default {
@@ -16,21 +18,31 @@ export default {
       telephone: ''
     })
 
+    const resetForm = () => {
+      formData.value = {
+        prenom: '',
+        nom: '',
+        age: '',
+        email: '',
+        telephone: ''
+      }
+    }
+
     const submitForm = async () => {
-  try {
-    const newsletterRef = collection(db, 'newsletter')
-    const docRef = await addDoc(newsletterRef, {
-      ...formData.value,
-      dateInscription: new Date()
-    })
-    console.log("Document written with ID: ", docRef.id) // Pour debug
-    alert('Inscription réussie !')
-    // ... reste du code
-  } catch (error) {
-    console.error("Erreur détaillée:", error.message) // Pour avoir plus de détails sur l'erreur
-    alert("Une erreur est survenue lors de l'inscription")
-  }
-}
+      try {
+        const newsletterRef = collection(db, 'newsletter')
+        const docRef = await addDoc(newsletterRef, {
+          ...formData.value,
+          dateInscription: new Date()
+        })
+        console.log("Document written with ID: ", docRef.id) // Pour debug
+        alert('Inscription réussie !')
+        resetForm() // Réinitialise le formulaire après succès
+      } catch (error) {
+        console.error("Erreur détaillée:", error.message)
+        alert("Une erreur est survenue lors de l'inscription")
+      }
+    }
 
     return {
       formData,

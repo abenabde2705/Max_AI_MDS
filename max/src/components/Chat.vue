@@ -13,18 +13,26 @@ import {
 // Scénario prédéfini
 const chatScenario = {
   questions: [
-    "Je me sens dépassé en ce moment.",
-    "C'est surtout au travail, trop de responsabilités.",
-    "Non, je ne sais pas comment aborder le sujet avec eux.",
-    "Merci, je vais essayer la respiration."
+    "Salut",
+    "Bonjour",
+    "Je n'en peux plus, sérieux. Mon mec vient de me lâcher en plein milieu de la nuit.",
+    "Franchement, non. Je ne sais plus quoi penser, tout est brouillé dans ma tête.",
+    "J'sais pas trop, j'ai juste l'impression d'avoir tout raté là.",
+    "Ouais, pourquoi pas.",
+    "Bon... ça va un peu mieux."
   ],
   responses: {
-    "Je me sens dépassé en ce moment.": "Je suis désolé d'apprendre que vous ressentez cela. Pouvez-vous m'en dire un peu plus ? Est-ce lié à votre travail, à vos relations, ou à autre chose ?",
-    "C'est surtout au travail, trop de responsabilités.": "Je comprends, les responsabilités au travail peuvent être écrasantes parfois. Est-ce que vous avez eu l'occasion de parler de cela avec vos collègues ou votre supérieur ?",
-    "Non, je ne sais pas comment aborder le sujet avec eux.": "C'est normal de se sentir ainsi. Parfois, partager vos ressentis peut soulager la pression. Souhaitez-vous quelques conseils pour en parler ? Ou préférez-vous explorer des techniques pour gérer cette anxiété en attendant ?",
-    "Merci, je vais essayer la respiration.": "C'est un excellent choix ! N'oubliez pas que vous faites de votre mieux, et chaque petit pas compte. Si vous avez besoin de moi à nouveau, je suis toujours là pour vous. Prenez soin de vous ! 💚"
+    "Salut": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+    "Bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+
+    "Je n'en peux plus, sérieux. Mon mec vient de me lâcher en plein milieu de la nuit.": "Putain... j'suis désolé. Tu tiens le coup ?",
+    "Franchement, non. Je ne sais plus quoi penser, tout est brouillé dans ma tête.": "Je comprends... C’est dur, vraiment. Tu veux en parler un peu ou juste souffler ?",
+    "J'sais pas trop, j'ai juste l'impression d'avoir tout raté là.": "Eh, stop. T'as rien raté, OK ? T'as juste pris une claque, ça arrive. Tu veux qu'on fasse un petit exercice pour te calmer un peu ?",
+    "Ouais, pourquoi pas.": "Vas-y, respire avec moi : inspire 4 secondes, bloque 4 secondes, souffle doucement 6 secondes. On fait ça ensemble, OK ?",
+    "Bon... ça va un peu mieux.": "Cool. On y va étape par étape, OK ? Et si t’as encore besoin, je suis là pour toi. On gère ça ensemble."
   }
-}
+};
+
 
 const userMessage = ref('')
 const chatHistory = ref([
@@ -148,17 +156,25 @@ const sendMessage = async () => {
 
       <div class="bottom-nav">
         <div class="nav-buttons">
-          <router-link to="/"> <button >
+          <router-link to="/"> 
+            <button >
             <HomeIcon class="icon" />
-          </button></router-link>
-          <router-link to="/login"> <button >  <UserIcon class="icon" />
-          </button></router-link>
+          </button>
+        </router-link>
+          <router-link to="/login"> 
+            <button >  <UserIcon class="icon" />
+          </button>
+        </router-link>
+        <router-link to="/NotFound">
           <button>
             <BookOpenIcon class="icon" />
           </button>
+        </router-link>
+        <router-link to="/NotFound">
           <button>
             <SettingsIcon class="icon" />
           </button>
+        </router-link>
         </div>
       </div>
     </aside>
