@@ -197,7 +197,7 @@ const scrollToSection = (href) => {
     display: none;
   }
 
-  .nav-items.mobile-menu[data-v-c3ceb15a] {
+  .nav-items.mobile-menu {
         display: flex
 ;
         flex-direction: column;
