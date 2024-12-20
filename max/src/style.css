@@ -6,7 +6,7 @@
 /* Déclaration pour TT Modernoir Trial */
 @font-face {
   font-family: 'TT Modernoir Trial';
-  src: url('/max/src/assets/TT Modernoir Bold.ttf') format('truetype');
+  src: url('/max/src/assets/TT-Modernoir-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
@@ -14,14 +14,14 @@
 /* Déclaration pour Articulat CF */
 @font-face {
   font-family: 'Articulat CF';
-  src: url('./assets/Articulat\ CF\ Regulat.otf') format('truetype');
+  src: url('./assets/Articulat-CF-Regulat.otf') format('truetype');
 
 }
 
 
 @font-face {
   font-family: 'Articulat CF demi';
-  src: url('./assets/Articulat\ CF\ Demi\ Bold.otf') format('truetype');
+  src: url('./assets/Articulat-CF-Demi-Bold.otf') format('truetype');
 
 }
 
@@ -30,22 +30,22 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Articulat CF regular', sans-serif;
+  font-family: 'Articulat-CF-regular', sans-serif;
 
 }
 
 h1 {
-  font-family: 'TT Modernoir Trial', sans-serif;
+  font-family: 'TT-Modernoir-Trial', sans-serif;
 }
 
 h2 {
-  font-family: 'Articulat CF', sans-serif;
+  font-family: 'Articulat-CF', sans-serif;
 }
 
 .cta, 
 .cta-button, 
 .button {
-  font-family: 'Articulat CF Demi', sans-serif !important; /* Corrige le nom de la police (majuscule pour 'Demi') */
+  font-family: 'Articulat-CF-Demi', sans-serif !important; /* Corrige le nom de la police (majuscule pour 'Demi') */
   font-weight: 600; /* Bonne pratique pour expliciter le poids */
 }
 
