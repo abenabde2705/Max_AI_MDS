@@ -5,13 +5,15 @@
     <div class="login-form-container">
       
       
-      <div class="login-form-header">
+     
+
+      <form @submit.prevent="handleSubmit" class="login-form">
+       
+        <div class="login-form-header">
         <h1>MAX</h1>
         <p>Connectez-vous à votre compte</p>
       </div>
-
-      <form @submit.prevent="handleSubmit" class="login-form">
-        <!-- Message d'erreur -->
+       <!-- Message d'erreur -->
         <div v-if="error" class="error-message">
           {{ error }}
         </div>
