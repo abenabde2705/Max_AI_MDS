@@ -369,20 +369,30 @@ const sendMessage = async () => {
 }
 
 .premium-button {
-  background-color: #1e40af;
+  background: linear-gradient(135deg, #E14DBF, #2D8FCC, #E67472);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 9999px;
   font-weight: 600;
   font-size: 0.95rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  margin: 0 auto;
   border: 2px solid transparent;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .premium-button:hover {
-  background-color: #1e3a8a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #ff65d5, #3ba5e9, #ff8a88);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.premium-button:active {
+  transform: translateY(1px);
 }
 
 .chat-area {

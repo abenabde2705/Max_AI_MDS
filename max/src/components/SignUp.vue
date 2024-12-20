@@ -3,14 +3,14 @@
     <div class="signup-form-container">
         <NavBar />
      
-      <div class="signup-form-header">
+      
+  
+      <form @submit.prevent="handleSubmit" class="signup-form">
+        <div class="signup-form-header">
         <h1>MAX</h1>
         <p>Rejoignez La Communauté </p>
 
       </div>
-  
-      <form @submit.prevent="handleSubmit" class="signup-form">
-
         <div class="form-group">
 
           <input
@@ -48,6 +48,14 @@
             class="signup-input full-width"
           />
         </div>
+        <div class="form-group">
+          <input
+            type="password"
+            placeholder="Confirmer le mot de passe"
+            v-model="form.confirmPassword"
+            class="signup-input full-width"
+          />
+        </div>
 
         <div class="checkbox-group">
           <label class="checkbox-container">
@@ -57,12 +65,12 @@
           </label>
         </div>
   
-        <button type="submit" class="signup-submit-btn">
+        <button type="submit" class="signup-submit-btn" @click="$router.push('/SuccessPage')">
           Rejoindre MAX
         </button>
   
         <p class="signup-terms">
-            Déjà inscrit(e) ? <button class="signup-terms-button" @click="$router.push('/SignIn')">Connectez-vous ici.</button>
+            Déjà inscrit(e) ? <button class="signup-terms-button" @click="$router.push('/LogIn')">Connectez-vous ici.</button>
         </p>
       </form>
     </div>
@@ -117,12 +125,12 @@ const handleSubmit = () => {
 }
 
 .signup-form {
-    background: rgba(128, 128, 128, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 1rem;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
- 
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .form-group {
@@ -158,20 +166,26 @@ const handleSubmit = () => {
   width: 100%;
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.7);
   font-size: 1rem;
   transition: all 0.3s ease;
+  color: rgb(68, 63, 63);
 }
 
-.signup-input.full-width {
-  width: 100%;
+.signup-input::placeholder {
+  color: rgba(22, 20, 20, 0.7);
 }
 
 .signup-input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
+}
+
+.signup-input.full-width {
+  width: 100%;
 }
 
 .checkbox-group {
@@ -194,28 +208,28 @@ const handleSubmit = () => {
 .signup-submit-btn {
   width: 100%;
   padding: 1rem;
-  margin-top: 2rem;
-  background: #2563eb;
+  background: rgba(37, 99, 235, 0.8);
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   font-weight: 600;
   font-size: 1.1rem;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
 }
 
-.signup-submit-btn:hover {
-  background: #1d4ed8;
+.signup-submit-btn:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.9);
   transform: translateY(-2px);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
 .signup-terms {
   text-align: center;
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 0.9rem;
   margin-top: 1.5rem;
 }
@@ -223,14 +237,15 @@ const handleSubmit = () => {
 .signup-terms-button {
   background: none;
   border: none;
-  color: black;
+  color: rgb(2, 2, 2);
   transition: all 0.3s ease;
   text-decoration: underline;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .signup-terms-button:hover {
-  color: white;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 </style>
