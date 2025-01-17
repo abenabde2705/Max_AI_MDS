@@ -4,8 +4,9 @@ import { ref } from 'vue'
 const menuItems = [
   { text: 'À Propos', href: '#about' },
   { text: 'Fonctionnalités', href: '#fonc' },
-  { text: 'Abonnement', href: '#title' },
   { text: 'Témoignage', href: '#tem' },
+
+  { text: 'Abonnement', href: '#title' },
   { text: 'Newsletter', href: '#news' }
 
 ]
@@ -50,19 +51,21 @@ const scrollToSection = (href) => {
 >
   {{ item.text }}
 </a>
-<div class="website-buttons">
+
+        </div>
+     
+      </div>
+      <div class="website-buttons">
         <button class="connexion-btn cta">
           <router-link style="color: white; text-decoration: none;" to="/Login">Connexion</router-link>
         </button>
         <button class="inscription-btn cta">
           
-          <router-link style="color: white; text-decoration: none;" to="/chatbot"> Accèder au site</router-link>
+          <router-link style=" text-decoration: none;" to="/chatbot"><a> Parlez à Max</a></router-link>
 
           <span class="arrow">→</span>
         </button>
         
-      </div>
-        </div>
       </div>
       <!-- Boutons -->
      
@@ -104,6 +107,7 @@ const scrollToSection = (href) => {
   font-size: 1.5rem;
   font-weight: bold;
   letter-spacing: 2px;
+  margin-right: 1rem;
 }
 
 .nav-items {
@@ -113,19 +117,31 @@ const scrollToSection = (href) => {
 }
 
 .nav-link {
+  position: relative;
   color: white;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  opacity: 0.9;
-  transition: opacity 0.2s;
+  display: inline-block;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
 }
 
-.nav-link:hover {
-  opacity: 1;
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px; /* Ajuste la position en dessous du texte */
+  width: 0;
+  height: 2px; /* Hauteur de la bordure */
+  background-color: white;
+  transition: width 0.3s ease;
 }
+
+.nav-link:hover::after {
+  width: 100%; /* Le soulignement couvre tout le texte */
+}
+
+
+
 
 /* Hamburger menu */
 .hamburger {
@@ -148,7 +164,6 @@ const scrollToSection = (href) => {
 .website-buttons {
   display: flex;
   gap: 1rem;
-  align-items: center;
 }
 
 .connexion-btn {
@@ -170,7 +185,7 @@ const scrollToSection = (href) => {
 
 .inscription-btn {
   background: rgba(28, 83, 114, 0.5);
-  color: white;
+  color: white !important;
   padding: 0.5rem 1.5rem;
   border: 1px solid white;
   border-radius: 25px;
@@ -179,12 +194,28 @@ const scrollToSection = (href) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  backdrop-filter: blur(5px);
   transition: background-color 0.2s;
 }
 
+.inscription-btn a{
+  color: white;
+}
+.inscription-btn a:hover{
+  color: rgba(28, 83, 114, 0.5);
+}
+
+
+/*
+.parlez{
+  color: white;
+}
+.parlez:hover{
+  color: rgba(28, 83, 114, 0.5);
+}
+*/
 .inscription-btn:hover {
-  background: rgba(28, 83, 114, 0.7);
+  background: rgba(255, 255, 255, 0.7);
+  color: rgba(28, 83, 114, 0.5) !important;
 }
 
 .arrow {

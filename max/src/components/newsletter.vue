@@ -2,33 +2,35 @@
     <div class="newsletter-container">
       <div class="newsletter-box">
         <h1 class="newsletter-title">Abonnez-vous à notre Newsletter</h1>
-        <p class="newsletter-hook">
-          Ne manquez rien ! Recevez nos dernières actualités et offres exclusives directement dans votre boîte mail.
-        </p>
-        <p class="newsletter-description">
-          Entrez votre adresse e-mail pour rester connecté(e) avec nous.
-        </p>
+      
         <form @submit.prevent="subscribe" class="newsletter-form">
-          <input
-            type="email"
-            v-model="email"
-            placeholder="Entrez votre e-mail"
-            class="newsletter-input"
-            required
-          />
-          <button type="submit" class="newsletter-button">S'abonner</button>
+       
+          <button @click="showPopup = true"  class="newsletter-button">S'abonner</button>
         </form>
         <p v-if="message" class="newsletter-message">{{ message }}</p>
       </div>
+      <!-- Popup -->
+      <Mail v-if="showPopup" @close="showPopup = false">
+      <template #title>
+        <h2>Abonnement Réussi !</h2>
+      </template>
+      <template #content>
+        <p>Merci pour votre abonnement. Vous recevrez nos dernières nouvelles bientôt !</p>
+      </template>
+    </Mail>
     </div>
   </template>
   
   <script>
+  import Mail from "./Mail.vue";
+
   export default {
     data() {
       return {
         email: "",
         message: "",
+        showPopup: false, // Contrôle de la visibilité du popup
+
       };
     },
     methods: {
@@ -54,7 +56,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f9f9f9;
+    /*background-color: #1C5372;*/
     padding: 20px;
   }
   
@@ -120,5 +122,41 @@
     font-size: 14px;
     color: #007bff;
   }
+  .popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.close-button:hover {
+  background-color: #0056b3;
+}
   </style>
   

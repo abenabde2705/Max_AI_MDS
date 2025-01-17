@@ -21,6 +21,7 @@ const testimonials = [
 
 <template>
   <section class="testimonials-section">
+    <div  data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
     <h2>TÉMOIGNAGES UTILISATEURS</h2>
     <div class="testimonials-container">
       <div class="testimonials-list">
@@ -33,13 +34,14 @@ const testimonials = [
         <img src="../assets/img/valeurs/testi3.png" alt="Illustration témoignages">
       </div>
     </div>
+  </div>
   </section>
 </template>
 
 <style scoped>
 .testimonials-section {
   padding: 4rem 2rem;
-  background: #EDE4DC;
+  /*background: #EDE4DC;*/
 }
 
 h2 {

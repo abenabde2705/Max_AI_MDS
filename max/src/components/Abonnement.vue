@@ -1,5 +1,7 @@
 <template>
     <div id="app">
+      <div  data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
+
       <h1 id="title" class="title">ABONNEMENT</h1>
       <p class="subtitle">
         Choisissez l'abonnement qui vous convient et profitez pleinement de Max.<br />
@@ -7,7 +9,7 @@
       </p>
       <div class="plans-container">
         <PlanCard
-          :title="'Plan Free (Gratuit)'"
+          :title="'Plan Free'"
           :price="'0 €'"
           :description="'Commencer gratuitement'"
           :features="[
@@ -19,7 +21,8 @@
           :buttonStyle="'secondary'"
         />
         <PlanCard
-          :title="'Plan Premium'"
+        
+          :title="'Plan Premium'"   
           :price="'14,99€ / mois'"
           :description="'Essai gratuit (0€ - 14 jours)'"
           :features="[
@@ -51,6 +54,7 @@
         
       </div>
     </div>
+    </div>
   </template>
   
   <script>
@@ -65,12 +69,12 @@
   
   <style scoped>
   .plan-card {
-    background: #fff;
     border-radius: 10px;
     padding: 20px;
-    width: 300px; /* Largeur fixe pour toutes les cartes */
+    width: 350px; /* Largeur fixe pour toutes les cartes */
     min-height: 500px; /* Hauteur minimale pour uniformiser la taille */
     display: flex;
+    margin: 20px;
     flex-direction: column;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s;
@@ -81,7 +85,8 @@
   }
   .plan-card.highlight {
     background: #1C5372;
-color: #fff;  }
+    color: #fff; 
+   }
     .plan-card.highlight p  {
         color: #fff !important;  }
         .plan-card.highlight li  {
@@ -152,13 +157,14 @@ color: #fff;  }
   }
   
   .plan-button.secondary:hover {
+    transition: all ease-in-out  0.3s;
     background-color: #007bff;
     color: white;
   }
   #app {
     text-align: center;
     padding: 20px;
-    background-color: #EDE4DC;
+   /* background-color: #EDE4DC;*/
   }
   
   .title {

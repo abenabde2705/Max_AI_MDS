@@ -1,6 +1,7 @@
 <template>
   <section class="discovery-section">
-    <div class="content">
+    <div class="content"  data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
+      
       <div class="illustration">
         <img src="../assets/img/valeurs/testi1.png" alt="Illustration découverte">
       </div>
@@ -18,7 +19,7 @@
 <style scoped>
 .discovery-section {
   padding: 4rem 2rem;
-  background: #EDE4DC;
+ /* background: #EDE4DC;*/
 }
 
 .content {

@@ -21,12 +21,17 @@ import Mail from './Mail.vue'
       <NavBar  />
       <HeroSection id="hero" />
     </div>
-    <AboutSection id="about"/>
+    <div class="gradient-bg2">
+    <AboutSection id="about" />
     <FeatureCards id="fonc" />
-    <TestimonialsSection id="tem" />
-    <DiscoveryOffer id="desc"/>
-    <Abonnement />
-    <Mail id="news"/>
+  </div>
+  <div  class="gradient-bg3">
+    <TestimonialsSection id="tem"  />
+    <DiscoveryOffer id="desc" />
+    <Abonnement/>
+    <newsletter/>
+  </div>
+    
     <Footer />
 
     
@@ -40,6 +45,19 @@ import Mail from './Mail.vue'
 
 .gradient-bg {
   background: linear-gradient(104.32deg, #1C5372 0%, #90DBF5 57.67%, #FFD2C7 95.58%);
+
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.gradient-bg2 {
+  background: #EDE4DC;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+.gradient-bg3 {
+  background: linear-gradient(104.32deg, #a6dae7 0%, #E8F0F2 57.67%, #FFF0F0 95.58%);
   min-height: 100vh;
   position: relative;
   overflow: hidden;

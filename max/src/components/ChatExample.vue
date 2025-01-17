@@ -16,7 +16,6 @@
 }
 
 .chat-window {
-  border-radius: 20px;
   padding: 2rem;
   backdrop-filter: blur(10px);
   min-height: 400px;
@@ -26,6 +25,7 @@
 }
 
 .chat-image {
+  border-radius: 60px;
   width: 100%;
   max-width: 700px; /* Limite la taille maximale pour les grands écrans */
   margin: 0 auto; /* Centrage horizontal */

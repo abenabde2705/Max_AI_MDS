@@ -30,7 +30,7 @@ const features = [
 
 <template>
   <section class="features-section">
-    <div class="features-grid">
+    <div class="features-grid" data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
       <div v-for="feature in features" :key="feature.title" class="feature-card">
         <div class="icon">
           <img style="height: auto; width: 70%;" :src="feature.image" alt="Icon feature" />
@@ -45,24 +45,28 @@ const features = [
 <style scoped>
 .features-section {
   padding: 4rem 2rem;
-  background: #1C5372;
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* Deux colonnes sur les écrans larges */
   gap: 3rem;
-  max-width: 1400px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 0 2rem;
 }
 
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
 .feature-card {
   background: #E9E9E9;
   padding: 2rem;
   border-radius: 12px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 320px;
   display: flex;
   flex-direction: column;
