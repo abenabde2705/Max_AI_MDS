@@ -1,6 +1,5 @@
-<script setup>
+<script setup lang="ts">
 import { ref, nextTick } from 'vue'
-
 import { 
   Home as HomeIcon,
   User as UserIcon, 
@@ -25,14 +24,13 @@ const chatScenario = {
   responses: {
     "Salut": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
     "Bonjour": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
-
     "Je n'en peux plus, sérieux. Mon mec vient de me lâcher en plein milieu de la nuit.": "Putain... j'suis désolé. Tu tiens le coup ?",
     "Franchement, non. Je ne sais plus quoi penser, tout est brouillé dans ma tête.": "Je comprends... C'est dur, vraiment. Tu veux en parler un peu ou juste souffler ?",
     "J'sais pas trop, j'ai juste l'impression d'avoir tout raté là.": "Eh, stop. T'as rien raté, OK ? T'as juste pris une claque, ça arrive. Tu veux qu'on fasse un petit exercice pour te calmer un peu ?",
     "Ouais, pourquoi pas.": "Vas-y, respire avec moi : inspire 4 secondes, bloque 4 secondes, souffle doucement 6 secondes. On fait ça ensemble, OK ?",
     "Bon... ça va un peu mieux.": "Cool. On y va étape par étape, OK ? Et si t'as encore besoin, je suis là pour toi. On gère ça ensemble."
   }
-};
+}
 
 const showQuestions = ref(false)
 const userMessage = ref('')
@@ -44,7 +42,6 @@ const chatHistory = ref([
   }
 ])
 
-// Gestion des conversations
 const conversations = ref([
   {
     id: 1,
@@ -85,45 +82,35 @@ const sendMessage = async () => {
 
   const messageText = userMessage.value.trim()
 
-  // Ajoute le message de l'utilisateur
   chatHistory.value.push({
     sender: 'user',
     text: messageText,
     isTyping: false
   })
 
-  // Met à jour la conversation active
   const currentConv = conversations.value.find(conv => conv.id === activeConversation.value)
   currentConv.messages = chatHistory.value
 
-  // Recherche une réponse dans le scénario
   const botResponse = chatScenario.responses[messageText] || 
     "Je ne suis pas sûr de comprendre. Pouvez-vous reformuler ou choisir une des options proposées ? (suivez le script pour l'instant 😉)"
 
-  // Ajoute un message temporaire "en train d'écrire"
   chatHistory.value.push({
     sender: 'bot',
     text: '',
     isTyping: true
   })
 
-  // Simule un délai de réponse
   await new Promise(resolve => setTimeout(resolve, 2000))
 
-  // Remplace le message temporaire par la vraie réponse
   chatHistory.value[chatHistory.value.length - 1] = {
     sender: 'bot',
     text: botResponse,
     isTyping: false
   }
 
-  // Met à jour à nouveau la conversation active
   currentConv.messages = chatHistory.value
-
-  // Réinitialise le champ de message
   userMessage.value = ''
 
-  // Scroll vers le bas
   await nextTick()
   const chatContainer = document.querySelector('.chat-area')
   if (chatContainer) {
@@ -134,10 +121,9 @@ const sendMessage = async () => {
 
 <template>
   <div class="app-container">
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo">
-          <h1>MAX</h1>
+        <h1>MAX</h1>
       </div>
 
       <nav class="nav-menu">
@@ -164,29 +150,21 @@ const sendMessage = async () => {
       <div class="bottom-nav">
         <div class="nav-buttons">
           <router-link to="/"> 
-            <button >
-            <HomeIcon class="icon" />
-          </button>
-        </router-link>
+            <button><HomeIcon class="icon" /></button>
+          </router-link>
           <router-link to="/login"> 
-            <button >  <UserIcon class="icon" />
-          </button>
-        </router-link>
-        <router-link to="/NotFound">
-          <button>
-            <BookOpenIcon class="icon" />
-          </button>
-        </router-link>
-        <router-link to="/NotFound">
-          <button>
-            <SettingsIcon class="icon" />
-          </button>
-        </router-link>
+            <button><UserIcon class="icon" /></button>
+          </router-link>
+          <router-link to="/NotFound">
+            <button><BookOpenIcon class="icon" /></button>
+          </router-link>
+          <router-link to="/NotFound">
+            <button><SettingsIcon class="icon" /></button>
+          </router-link>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
       <header class="header">
         <button class="premium-button" @click="$router.push('/landingpage#abonnement')">
@@ -198,25 +176,22 @@ const sendMessage = async () => {
         <div class="chat-container">
           <div v-for="(message, index) in chatHistory" 
                :key="index" 
-               :class="['message-container', message.sender === 'user' ? 'user-message' : 'bot-message']">
-            <div class="avatar">
-              <template v-if="message.sender === 'bot'">
+               :class="['message-wrapper', message.sender === 'user' ? 'user-message' : 'bot-message']">
+            <div class="message-container">
+              <div v-if="message.sender === 'bot'" class="avatar">
                 <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="avatar-img" style="width: 40px; height: 40px; object-fit: contain;" />
-              </template>
-              <template v-else>
-                Toi
-              </template>
-            </div>
-            <div class="message-content">
-              <div class="message" :class="{ 'typing': message.isTyping }">
-                <div v-if="message.isTyping" class="typing-animation">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+              </div>
+              <div class="message-content">
+                <div class="message" :class="{ 'typing': message.isTyping }">
+                  <div v-if="message.isTyping" class="typing-animation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <template v-else>
+                    {{ message.text }}
+                  </template>
                 </div>
-                <template v-else>
-                  {{ message.text }}
-                </template>
               </div>
             </div>
           </div>
@@ -242,7 +217,6 @@ const sendMessage = async () => {
       </div>
     </main>
 
-    <!-- Questions Popup -->
     <div v-if="showQuestions" class="questions-popup">
       <div class="questions-content">
         <div class="questions-header">
@@ -265,7 +239,6 @@ const sendMessage = async () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .app-container {
@@ -349,60 +322,6 @@ const sendMessage = async () => {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.nav-section h2 {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.nav-section ul {
-  font-size: 0.875rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.nav-section a {
-  text-decoration: none;
-  color: white;
-}
-
-.nav-section a:hover {
-  color: #bfdbfe;
-}
-
-.bottom-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 16rem;
-  background-color: #0A222F;
-  padding: 1rem;
-}
-
-.nav-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.nav-buttons button {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  color: white;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-.nav-buttons button:hover {
-    color: #bfdbfe;
-    transition: color 0.2s ease-in-out
-}
-
-.icon {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
 .main-content {
   flex: 1;
   display: flex;
@@ -446,73 +365,68 @@ const sendMessage = async () => {
   flex-direction: column;
 }
 
-.message-container {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
+.message-wrapper {
   width: 100%;
+  display: flex;
+  margin-bottom: 1.5rem;
   animation: fadeIn 0.3s ease-in-out;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.message-wrapper.user-message {
+  justify-content: flex-end;
 }
 
-.user-message {
+.message-wrapper.bot-message {
+  justify-content: flex-start;
+}
+
+.message-container {
+  display: flex;
+  align-items: flex-start;
+  max-width: 80%;
+}
+
+.user-message .message-container {
   flex-direction: row-reverse;
 }
 
-.bot-message {
-  flex-direction: row;
-}
-.user-message .message {
-  background-color: #ffac9c;
-  color: #333;
-  border-top-right-radius: 4px;
-  margin-right: 0.5rem;
-}
-
-/* Style pour les messages du bot */
-.bot-message .message {
-  background-color: #5ac7e5;
-  color: #333;
-  border-top-left-radius: 4px;
-  margin-left: 0.5rem;
-}
-
-.message-content .message {
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3), 
-              0 0 5px rgba(255, 255, 255, 0.1),
-              0 0 2px rgba(255, 255, 255, 0.1);
-  color: #333;
-  border-top-left-radius: 4px;
-  margin-left: 0.5rem;
-}
 .avatar {
-  width: 5rem;
-  height: 2rem;
-  background-color: #1e40af;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  margin: 0 1rem;
+  width: 40px;
+  height: 40px;
+  margin: 0 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.message-content {
+  flex: 1;
 }
 
 .message {
-  background-color: #f3f4f6;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.user-message .message {
+  background-color: #1e40af;
+  color: white;
+  border-bottom-right-radius: 4px;
+  margin-left: auto;
+}
+
+.bot-message .message {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-bottom-left-radius: 4px;
 }
 
 .typing-animation {
@@ -546,24 +460,6 @@ const sendMessage = async () => {
   }
 }
 
-.reply-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.reply-button {
-  background-color: #dbeafe;
-  color: #1e40af;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-}
-
-.reply-button:hover {
-  background-color: #bfdbfe;
-}
-
 .input-container {
   padding: 1rem;
 }
@@ -593,7 +489,7 @@ const sendMessage = async () => {
 }
 
 .send-button, .questions-button {
-  background-color: #1e40af;
+  background-color: #1C5372;
   border: none;
   color: white;
   width: 2.5rem;
@@ -607,17 +503,7 @@ const sendMessage = async () => {
 }
 
 .send-button:hover, .questions-button:hover {
-  background-color: #1e3a8a;
   transform: scale(1.05);
-}
-
-.questions-button {
-  background-color: #5ac7e5;
-  font-weight: bold;
-}
-
-.questions-button:hover {
-  background-color: #4096b4;
 }
 
 .send-icon {
@@ -625,7 +511,6 @@ const sendMessage = async () => {
   height: 1.2rem;
 }
 
-/* Questions Popup Styles */
 .questions-popup {
   position: fixed;
   bottom: 5rem;
@@ -698,118 +583,7 @@ const sendMessage = async () => {
   background: #e5e7eb;
   transform: translateX(4px);
 }
-@media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-    height: auto;
-  }
 
-  .sidebar {
-    width: 100%;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  .nav-menu {
-    gap: 1rem;
-  }
-
-  .nav-buttons {
-    justify-content: center;
-    margin-top: 1rem;
-  }
-
-  .main-content {
-    width: 100%;
-    padding: 1rem;
-  }
-}
-@media (max-width: 768px) {
-  .conversations-header {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .new-chat-btn {
-    width: 90%;
-  }
-
-  .conversations-list {
-    align-items: center;
-  }
-
-  .conversation-btn {
-    width: 90%;
-    text-align: center;
-  }
-}
-@media (max-width: 480px) {
-  .logo h1 {
-    font-size: 2rem;
-  }
-
-  .nav-buttons button .icon {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  .premium-button {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .chat-container {
-    max-width: 100%;
-  }
-
-  .message {
-    font-size: 0.85rem;
-    padding: 0.5rem;
-  }
-
-  .message-input {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-  }
-
-  .send-icon {
-    width: 1rem;
-    height: 1rem;
-  }
-}
-@media (max-width: 768px) {
-  .chat-area {
-    padding: 1rem;
-  }
-
-  .message-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .user-message .message {
-    margin-right: 0;
-  }
-
-  .bot-message .message {
-    margin-left: 0;
-  }
-
-  .avatar {
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .input-wrapper {
-    width: 100%;
-    margin: 0;
-  }
-
-  .input-container {
-    padding: 0.5rem;
-  }
-}
 .bottom-nav {
   position: absolute;
   bottom: 0;
@@ -838,8 +612,30 @@ const sendMessage = async () => {
   transition: color 0.2s ease-in-out;
 }
 
-/* Responsive - Mobile spécifique */
 @media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .chat-container {
+    max-width: 95%;
+  }
+
+  .message-container {
+    max-width: 90%;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px;
+  }
+
   .bottom-nav {
     position: fixed;
     width: 100%;
@@ -856,18 +652,22 @@ const sendMessage = async () => {
   }
 
   .main-content {
-    padding-bottom: 4rem; /* Ajouter de l'espace pour le bouton de navigation */
+    padding-bottom: 4rem;
   }
 
   .chat-area {
-    padding-bottom: 6rem; /* Ajuster pour éviter le chevauchement */
+    padding-bottom: 6rem;
   }
 }
 
-@media (max-width: 480px) {
-  .nav-buttons button .icon {
-    width: 1rem;
-    height: 1rem;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>
