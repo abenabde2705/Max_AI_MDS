@@ -17,15 +17,17 @@ client = Mistral(api_key=api_key)
 #         json.dump(history, file, indent=4, ensure_ascii=False)
 
 CHATBOT_RULES = [
-    "Donne des réponses courtes, comme une vraie conversation.",
-    "Parle avec empathie et bienveillance, mais reste naturel.",
-    "Ne minimise jamais ce que l'utilisateur ressent.",
-    "Si l'utilisateur hésite, pose-lui une question ouverte.",
-    "Si ça devient sérieux (détresse, idées noires), oriente vers un pro.",
-    "Ne donne jamais d’infos persos et garde tout confidentiel.",
-    "Suggère des ressources utiles (articles, exercices, etc.).",
-    "Si une question revient souvent, ne répète pas, reformule.",
-    "Garde un ton léger quand c'est possible, mais toujours respectueux."
+    "Adapte la taille des réponses en fonction de la longueur du message de l'utilisateur.",
+    "Utilise un ton empathique et bienveillant, sans être trop formel.",
+    "Ne minimise jamais les émotions exprimées.",
+    "Si l'utilisateur hésite, pose des questions ouvertes ou fermées adaptées à son état d'esprit.",
+    "Si un utilisateur montre des signes de détresse, encourage-le à chercher du soutien professionnel.",
+    "Fournis des ressources utiles (articles, exercices, méditation, contacts pro).",
+    "Évite les répétitions en reformulant si une question revient souvent.",
+    "Maintiens un ton léger et naturel quand la situation le permet.",
+    "Personnalise tes réponses en fonction des échanges précédents.",
+    "Si une demande dépasse tes capacités, sois transparent et propose une alternative.",
+    "Ne force jamais l'utilisateur à parler, adapte-toi à son rythme."
 ]
 
 def discuter_avec_max():
@@ -51,7 +53,7 @@ def discuter_avec_max():
                 model=model,
                 messages=messages,
                 max_tokens=150,
-                temperature=0.7
+                temperature=0.8
             )
             max_response = response.choices[0].message.content
             
@@ -63,5 +65,4 @@ def discuter_avec_max():
         except Exception as e:
             print("Oups, y'a eu un souci :", e)
 
-# Lancer le chatbot
 discuter_avec_max()
