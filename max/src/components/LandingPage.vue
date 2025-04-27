@@ -1,5 +1,5 @@
 <script setup>
-import NavBar from './NavBar.vue'
+import NavBar from '../layout/NavBar.vue'
 import HeroSection from './HeroSection.vue'
 import AboutSection from './AboutSection.vue'
 import FeatureCards from './FeatureCards.vue'
@@ -8,7 +8,7 @@ import DiscoveryOffer from './DiscoveryOffer.vue'
 import '../styles/gradients.css'
 import Abonnement from './Abonnement.vue' 
 import newsletter from './newsletter.vue'
-import Footer from './footer.vue'
+import Footer from '../layout/footer.vue'
 import Mail from './Mail.vue'
 
 

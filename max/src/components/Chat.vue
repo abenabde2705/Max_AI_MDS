@@ -1,6 +1,6 @@
 <script setup>
 import { ref, nextTick } from 'vue'
-
+import axios from 'axios' 
 import { 
   Home as HomeIcon,
   User as UserIcon, 
@@ -10,21 +10,7 @@ import {
   Plus as PlusIcon
 } from 'lucide-vue-next'
 
-// Scénario prédéfini
-const chatScenario = {
-  questions: [
-    "Je me sens dépassé en ce moment.",
-    "C'est surtout au travail, trop de responsabilités.",
-    "Non, je ne sais pas comment aborder le sujet avec eux.",
-    "Merci, je vais essayer la respiration."
-  ],
-  responses: {
-    "Je me sens dépassé en ce moment.": "Je suis désolé d'apprendre que vous ressentez cela. Pouvez-vous m'en dire un peu plus ? Est-ce lié à votre travail, à vos relations, ou à autre chose ?",
-    "C'est surtout au travail, trop de responsabilités.": "Je comprends, les responsabilités au travail peuvent être écrasantes parfois. Est-ce que vous avez eu l'occasion de parler de cela avec vos collègues ou votre supérieur ?",
-    "Non, je ne sais pas comment aborder le sujet avec eux.": "C'est normal de se sentir ainsi. Parfois, partager vos ressentis peut soulager la pression. Souhaitez-vous quelques conseils pour en parler ? Ou préférez-vous explorer des techniques pour gérer cette anxiété en attendant ?",
-    "Merci, je vais essayer la respiration.": "C'est un excellent choix ! N'oubliez pas que vous faites de votre mieux, et chaque petit pas compte. Si vous avez besoin de moi à nouveau, je suis toujours là pour vous. Prenez soin de vous ! 💚"
-  }
-}
+
 
 const userMessage = ref('')
 const chatHistory = ref([
@@ -66,63 +52,60 @@ const switchConversation = (id) => {
 }
 
 const sendMessage = async () => {
-  if (!userMessage.value.trim()) return
+  if (!userMessage.value.trim()) return;
 
-  const messageText = userMessage.value.trim()
+  const messageText = userMessage.value.trim();
 
-  // Ajoute le message de l'utilisateur
   chatHistory.value.push({
     sender: 'user',
     text: messageText,
-    isTyping: false
-  })
+    isTyping: false,
+  });
 
-  // Met à jour la conversation active
-  const currentConv = conversations.value.find(conv => conv.id === activeConversation.value)
-  currentConv.messages = chatHistory.value
-
-  // Recherche une réponse dans le scénario
-  const botResponse = chatScenario.responses[messageText] || 
-    "Je ne suis pas sûr de comprendre. Pouvez-vous reformuler ou choisir une des options proposées ? (suivez le script pour l'instant 😉)"
-
-  // Ajoute un message temporaire "en train d'écrire"
   chatHistory.value.push({
     sender: 'bot',
     text: '',
-    isTyping: true
-  })
+    isTyping: true,
+  });
 
-  // Simule un délai de réponse
-  await new Promise(resolve => setTimeout(resolve, 2000))
+  try {
+    await axios.get('http://localhost:8000/docs');
 
-  // Remplace le message temporaire par la vraie réponse
-  chatHistory.value[chatHistory.value.length - 1] = {
-    sender: 'bot',
-    text: botResponse,
-    isTyping: false
+    // Appeler l'API Mistral avec une requête POST
+    const response = await axios.post('http://localhost:8000/chat', {
+      message: messageText,
+    });
+
+    chatHistory.value[chatHistory.value.length - 1] = {
+      sender: 'bot',
+      text: response.data.response, // Réponse de l'API
+      isTyping: false,
+    };
+  } catch (error) {
+    console.error("Erreur lors de l'appel à l'API :", error);
+    chatHistory.value[chatHistory.value.length - 1] = {
+      sender: 'bot',
+      text: 'Désolé, une erreur est survenue. Veuillez réessayer plus tard.',
+      isTyping: false,
+    };
   }
 
-  // Met à jour à nouveau la conversation active
-  currentConv.messages = chatHistory.value
+  userMessage.value = '';
 
-  // Réinitialise le champ de message
-  userMessage.value = ''
-
-  // Scroll vers le bas
-  await nextTick()
-  const chatContainer = document.querySelector('.chat-area')
+  // Faire défiler la zone de chat vers le bas
+  await nextTick();
+  const chatContainer = document.querySelector('.chat-area');
   if (chatContainer) {
-    chatContainer.scrollTop = chatContainer.scrollHeight
+    chatContainer.scrollTop = chatContainer.scrollHeight;
   }
-}
+};
 </script>
 
 <template>
   <div class="app-container">
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo">
-          <h1>MAX</h1>
+        <h1>MAX</h1>
       </div>
 
       <nav class="nav-menu">
@@ -133,10 +116,10 @@ const sendMessage = async () => {
             Nouvelle conversation
           </button>
         </div>
-        
+
         <div class="conversations-list">
-          <button 
-            v-for="conv in conversations" 
+          <button
+            v-for="conv in conversations"
             :key="conv.id"
             @click="switchConversation(conv.id)"
             :class="['conversation-btn', { active: activeConversation === conv.id }]"
@@ -148,11 +131,16 @@ const sendMessage = async () => {
 
       <div class="bottom-nav">
         <div class="nav-buttons">
-          <router-link to="/"> <button >
-            <HomeIcon class="icon" />
-          </button></router-link>
-          <router-link to="/login"> <button >  <UserIcon class="icon" />
-          </button></router-link>
+          <router-link to="/">
+            <button>
+              <HomeIcon class="icon" />
+            </button>
+          </router-link>
+          <router-link to="/login">
+            <button>
+              <UserIcon class="icon" />
+            </button>
+          </router-link>
           <button>
             <BookOpenIcon class="icon" />
           </button>
@@ -163,7 +151,6 @@ const sendMessage = async () => {
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
       <header class="header">
         <button class="premium-button" @click="$router.push('/landingpage#abonnement')">
@@ -173,19 +160,26 @@ const sendMessage = async () => {
 
       <div class="chat-area">
         <div class="chat-container">
-          <div v-for="(message, index) in chatHistory" 
-               :key="index" 
-               :class="['message-container', message.sender === 'user' ? 'user-message' : 'bot-message']">
+          <div
+            v-for="(message, index) in chatHistory"
+            :key="index"
+            :class="['message-container', message.sender === 'user' ? 'user-message' : 'bot-message']"
+          >
             <div class="avatar">
               <template v-if="message.sender === 'bot'">
-                <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="avatar-img" style="width: 40px; height: 40px; object-fit: contain;" />
+                <img
+                  src="../assets/LOGO_rose_pale300x.png"
+                  alt="MAX"
+                  class="avatar-img"
+                  style="width: 40px; height: 40px; object-fit: contain;"
+                />
               </template>
               <template v-else>
                 Toi
               </template>
             </div>
             <div class="message-content">
-              <div class="message" :class="{ 'typing': message.isTyping }">
+              <div class="message" :class="{ typing: message.isTyping }">
                 <div v-if="message.isTyping" class="typing-animation">
                   <span></span>
                   <span></span>
@@ -201,19 +195,19 @@ const sendMessage = async () => {
       </div>
 
       <div class="input-container">
-  <div class="input-wrapper">
-    <input 
-      v-model="userMessage"
-      type="text" 
-      placeholder="Écrire Un Message"
-      class="message-input"
-      @keyup.enter="sendMessage"
-    >
-    <button class="send-button" @click="sendMessage">
+        <div class="input-wrapper">
+          <input
+            v-model="userMessage"
+            type="text"
+            placeholder="Écrire Un Message"
+            class="message-input"
+            @keyup.enter="sendMessage"
+          />
+          <button class="send-button" @click="sendMessage">
             <SendIcon class="send-icon" />
-    </button>
-  </div>
-</div>
+          </button>
+        </div>
+      </div>
     </main>
   </div>
 </template>

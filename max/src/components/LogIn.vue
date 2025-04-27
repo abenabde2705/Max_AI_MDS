@@ -1,3 +1,40 @@
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import NavBar from '../layout/NavBar.vue'
+import Footer from '../layout/footer.vue'
+
+const router = useRouter()
+const error = ref('')
+const loading = ref(false)
+
+const form = ref({
+  email: '',
+  password: ''
+})
+
+const handleSubmit = async () => {
+  loading.value = true
+  error.value = ''
+
+  try {
+    // Simulation d'une connexion
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    if (form.value.email && form.value.password) {
+      console.log('Tentative de connexion avec:', form.value)
+      router.push('/SuccessPage')
+    } else {
+      error.value = 'Veuillez remplir tous les champs'
+    }
+  } catch (e) {
+    error.value = 'Une erreur est survenue'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
 <template>
   
   <div class="login-container">
@@ -58,42 +95,6 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import NavBar from './NavBar.vue'
-import Footer from './footer.vue'
-
-const router = useRouter()
-const error = ref('')
-const loading = ref(false)
-
-const form = ref({
-  email: '',
-  password: ''
-})
-
-const handleSubmit = async () => {
-  loading.value = true
-  error.value = ''
-
-  try {
-    // Simulation d'une connexion
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    if (form.value.email && form.value.password) {
-      console.log('Tentative de connexion avec:', form.value)
-      router.push('/SuccessPage')
-    } else {
-      error.value = 'Veuillez remplir tous les champs'
-    }
-  } catch (e) {
-    error.value = 'Une erreur est survenue'
-  } finally {
-    loading.value = false
-  }
-}
-</script>
 
 <style scoped>
 .login-container {

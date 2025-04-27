@@ -11,6 +11,7 @@
   "dependencies": {
     "@firebase/firestore": "^4.7.5",
     "aos": "^2.3.4",
+    "axios": "^1.9.0",
     "firebase": "^10.14.1",
     "lucide-vue-next": "^0.468.0",
     "pinia": "^2.3.0",

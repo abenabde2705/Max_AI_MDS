@@ -1,8 +1,7 @@
-"""
-# Dans le .env
-MISTRAL_KEY=xxxxxxxx
-"""
+
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 import json
 from mistralai import Mistral
 from pydantic import BaseModel
@@ -30,10 +29,18 @@ CHATBOT_RULES = [
     "Maintiens un ton léger et naturel quand la situation le permet.",
     "Personnalise tes réponses en fonction des échanges précédents.",
     "Si une demande dépasse tes capacités, sois transparent et propose une alternative.",
-    "Ne force jamais l'utilisateur à parler, adapte-toi à son rythme."
+    "Ne force jamais l'utilisateur à parler, adapte-toi à son rythme.",
+    "reponds pas au question de chimie"
 ]
 app = FastAPI()
-# Pydantic model pour les requêtes
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"], 
+)
 class Message(BaseModel):
     message: str
 @app.post("/chat")
