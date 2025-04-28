@@ -1,16 +1,17 @@
-<script setup>
+<script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import axios from 'axios' 
+
 import { 
   Home as HomeIcon,
   User as UserIcon, 
   BookOpen as BookOpenIcon, 
   Settings as SettingsIcon, 
   Send as SendIcon,
-  Plus as PlusIcon
+  StopCircle  as StopIcon,
+  Plus as PlusIcon,
+  X as XIcon
 } from 'lucide-vue-next'
-
-
 
 const userMessage = ref('')
 const chatHistory = ref([
@@ -21,7 +22,6 @@ const chatHistory = ref([
   }
 ])
 
-// Gestion des conversations
 const conversations = ref([
   {
     id: 1,
@@ -31,6 +31,8 @@ const conversations = ref([
 ])
 
 const activeConversation = ref(1)
+const isWaitingForResponse = ref(false)
+const abortController = ref(new AbortController())
 
 const createNewConversation = () => {
   const newId = conversations.value.length + 1
@@ -48,13 +50,31 @@ const createNewConversation = () => {
 
 const switchConversation = (id) => {
   activeConversation.value = id
-  chatHistory.value = conversations.value.find(conv => conv.id === id).messages
+  chatHistory.value = conversations.value.find(conv => conv.id === id)?.messages || []
+}
+const cancelResponse = () => {
+  abortController.value.abort()
+  abortController.value = new AbortController()
+  
+  // Remplacer le message "typing" par un message d'annulation
+  if (chatHistory.value[chatHistory.value.length - 1].isTyping) {
+    chatHistory.value[chatHistory.value.length - 1] = {
+      sender: 'bot',
+      text: 'Réponse annulée.',
+      isTyping: false,
+    }
+  }
+  
+  isWaitingForResponse.value = false
 }
 
 const sendMessage = async () => {
   if (!userMessage.value.trim()) return;
 
   const messageText = userMessage.value.trim();
+  // Réinitialisation immédiate du champ de saisie
+  userMessage.value = '';
+  isWaitingForResponse.value = true;
 
   chatHistory.value.push({
     sender: 'user',
@@ -69,16 +89,19 @@ const sendMessage = async () => {
   });
 
   try {
-    await axios.get('http://localhost:8000/docs');
+    abortController.value = new AbortController();
 
+    await axios.get('http://localhost:8000/docs');
+ 
     // Appeler l'API Mistral avec une requête POST
     const response = await axios.post('http://localhost:8000/chat', {
       message: messageText,
-    });
+    }, { signal: abortController.value.signal });
+
 
     chatHistory.value[chatHistory.value.length - 1] = {
       sender: 'bot',
-      text: response.data.response, // Réponse de l'API
+      text: response.data.response, 
       isTyping: false,
     };
   } catch (error) {
@@ -88,11 +111,13 @@ const sendMessage = async () => {
       text: 'Désolé, une erreur est survenue. Veuillez réessayer plus tard.',
       isTyping: false,
     };
+  }finally {
+    // Remettre l'état d'attente à false
+    isWaitingForResponse.value = false;
   }
 
   userMessage.value = '';
 
-  // Faire défiler la zone de chat vers le bas
   await nextTick();
   const chatContainer = document.querySelector('.chat-area');
   if (chatContainer) {
@@ -116,10 +141,10 @@ const sendMessage = async () => {
             Nouvelle conversation
           </button>
         </div>
-
+        
         <div class="conversations-list">
-          <button
-            v-for="conv in conversations"
+          <button 
+            v-for="conv in conversations" 
             :key="conv.id"
             @click="switchConversation(conv.id)"
             :class="['conversation-btn', { active: activeConversation === conv.id }]"
@@ -131,16 +156,11 @@ const sendMessage = async () => {
 
       <div class="bottom-nav">
         <div class="nav-buttons">
-          <router-link to="/">
-            <button>
-              <HomeIcon class="icon" />
-            </button>
-          </router-link>
-          <router-link to="/login">
-            <button>
-              <UserIcon class="icon" />
-            </button>
-          </router-link>
+          <router-link to="/"> <button >
+            <HomeIcon class="icon" />
+          </button></router-link>
+          <router-link to="/login"> <button >  <UserIcon class="icon" />
+          </button></router-link>
           <button>
             <BookOpenIcon class="icon" />
           </button>
@@ -160,34 +180,24 @@ const sendMessage = async () => {
 
       <div class="chat-area">
         <div class="chat-container">
-          <div
-            v-for="(message, index) in chatHistory"
-            :key="index"
-            :class="['message-container', message.sender === 'user' ? 'user-message' : 'bot-message']"
-          >
-            <div class="avatar">
-              <template v-if="message.sender === 'bot'">
-                <img
-                  src="../assets/LOGO_rose_pale300x.png"
-                  alt="MAX"
-                  class="avatar-img"
-                  style="width: 40px; height: 40px; object-fit: contain;"
-                />
-              </template>
-              <template v-else>
-                Toi
-              </template>
-            </div>
-            <div class="message-content">
-              <div class="message" :class="{ typing: message.isTyping }">
-                <div v-if="message.isTyping" class="typing-animation">
-                  <span></span>
-                  <span></span>
-                  <span></span>
+          <div v-for="(message, index) in chatHistory" 
+               :key="index" 
+               :class="['message-wrapper', message.sender === 'user' ? 'user-message' : 'bot-message']">
+            <div class="message-container">
+              <div v-if="message.sender === 'bot'" class="avatar">
+                <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="avatar-img" style="width: 40px; height: 40px; object-fit: contain;" />
+              </div>
+              <div class="message-content">
+                <div class="message" :class="{ 'typing': message.isTyping }">
+                  <div v-if="message.isTyping" class="typing-animation">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <template v-else>
+                    {{ message.text }}
+                  </template>
                 </div>
-                <template v-else>
-                  {{ message.text }}
-                </template>
               </div>
             </div>
           </div>
@@ -196,22 +206,38 @@ const sendMessage = async () => {
 
       <div class="input-container">
         <div class="input-wrapper">
-          <input
+          <input 
             v-model="userMessage"
-            type="text"
+            type="text" 
             placeholder="Écrire Un Message"
             class="message-input"
             @keyup.enter="sendMessage"
-          />
-          <button class="send-button" @click="sendMessage">
-            <SendIcon class="send-icon" />
-          </button>
+            :disabled="isWaitingForResponse"
+
+          >
+          <button 
+        v-if="!isWaitingForResponse" 
+        class="send-button" 
+        @click="sendMessage"
+        :disabled="!userMessage.trim()"
+      >
+        <SendIcon class="send-icon" />
+      </button>
+      <button 
+        v-else 
+        class="stop-button" 
+        @click="cancelResponse"
+      >
+        <StopIcon class="stop-icon" />
+      </button>
+        
         </div>
       </div>
     </main>
+
+
   </div>
 </template>
-
 
 <style scoped>
 .app-container {
@@ -295,60 +321,6 @@ const sendMessage = async () => {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.nav-section h2 {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.nav-section ul {
-  font-size: 0.875rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.nav-section a {
-  text-decoration: none;
-  color: white;
-}
-
-.nav-section a:hover {
-  color: #bfdbfe;
-}
-
-.bottom-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 16rem;
-  background-color: #0A222F;
-  padding: 1rem;
-}
-
-.nav-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-.nav-buttons button {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  color: white;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-}
-
-.nav-buttons button:hover {
-    color: #bfdbfe;
-    transition: color 0.2s ease-in-out
-}
-
-.icon {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
 .main-content {
   flex: 1;
   display: flex;
@@ -392,73 +364,68 @@ const sendMessage = async () => {
   flex-direction: column;
 }
 
-.message-container {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
+.message-wrapper {
   width: 100%;
+  display: flex;
+  margin-bottom: 1.5rem;
   animation: fadeIn 0.3s ease-in-out;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.message-wrapper.user-message {
+  justify-content: flex-end;
 }
 
-.user-message {
+.message-wrapper.bot-message {
+  justify-content: flex-start;
+}
+
+.message-container {
+  display: flex;
+  align-items: flex-start;
+  max-width: 80%;
+}
+
+.user-message .message-container {
   flex-direction: row-reverse;
 }
 
-.bot-message {
-  flex-direction: row;
-}
-.user-message .message {
-  background-color: #ffac9c;
-  color: #333;
-  border-top-right-radius: 4px;
-  margin-right: 0.5rem;
-}
-
-/* Style pour les messages du bot */
-.bot-message .message {
-  background-color: #5ac7e5;
-  color: #333;
-  border-top-left-radius: 4px;
-  margin-left: 0.5rem;
-}
-
-.message-content .message {
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3), 
-              0 0 5px rgba(255, 255, 255, 0.1),
-              0 0 2px rgba(255, 255, 255, 0.1);
-  color: #333;
-  border-top-left-radius: 4px;
-  margin-left: 0.5rem;
-}
 .avatar {
-  width: 5rem;
-  height: 2rem;
-  background-color: #1e40af;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  margin: 0 1rem;
+  width: 40px;
+  height: 40px;
+  margin: 0 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.message-content {
+  flex: 1;
 }
 
 .message {
-  background-color: #f3f4f6;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.user-message .message {
+  background-color: #1e40af;
+  color: white;
+  border-bottom-right-radius: 4px;
+  margin-left: auto;
+}
+
+.bot-message .message {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-bottom-left-radius: 4px;
 }
 
 .typing-animation {
@@ -492,24 +459,6 @@ const sendMessage = async () => {
   }
 }
 
-.reply-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.reply-button {
-  background-color: #dbeafe;
-  color: #1e40af;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-}
-
-.reply-button:hover {
-  background-color: #bfdbfe;
-}
-
 .input-container {
   padding: 1rem;
 }
@@ -518,153 +467,143 @@ const sendMessage = async () => {
   max-width: 80%;
   margin: 0 auto;
   position: relative;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .message-input {
-  width: 100%;
+  flex: 1;
   padding: 0.75rem 1rem;
-  padding-right: 3rem;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
 }
 
 .message-input:focus {
   outline: none;
   border-color: #3b82f6;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.send-button {
-  position: absolute;
-  right: 0.1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: transparent;
+.send-button, .questions-button {
+  background-color: #1C5372;
   border: none;
-  color: #1e40af;
-  padding: 0.5rem;
+  color: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.send-button:hover {
-  color: #bfdbfe;
-  transition: color 0.2s ease-in-out
+
+.send-button:hover, .questions-button:hover {
+  transform: scale(1.05);
 }
 
 .send-icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
-@media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .sidebar {
-    width: 100%;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  .nav-menu {
-    gap: 1rem;
-  }
-
-  .nav-buttons {
-    justify-content: center;
-    margin-top: 1rem;
-  }
-
-  .main-content {
-    width: 100%;
-    padding: 1rem;
-  }
+.stop-button {
+  background-color: #dc2626;
+  border: none;
+  color: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-@media (max-width: 768px) {
-  .conversations-header {
-    flex-direction: column;
-    align-items: center;
-  }
 
-  .new-chat-btn {
-    width: 90%;
-  }
-
-  .conversations-list {
-    align-items: center;
-  }
-
-  .conversation-btn {
-    width: 90%;
-    text-align: center;
-  }
+.stop-button:hover {
+  background-color: #b91c1c;
 }
-@media (max-width: 480px) {
-  .logo h1 {
-    font-size: 2rem;
-  }
 
-  .nav-buttons button .icon {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  .premium-button {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .chat-container {
-    max-width: 100%;
-  }
-
-  .message {
-    font-size: 0.85rem;
-    padding: 0.5rem;
-  }
-
-  .message-input {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-  }
-
-  .send-icon {
-    width: 1rem;
-    height: 1rem;
-  }
+.message-input:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
 }
-@media (max-width: 768px) {
-  .chat-area {
-    padding: 1rem;
-  }
-
-  .message-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .user-message .message {
-    margin-right: 0;
-  }
-
-  .bot-message .message {
-    margin-left: 0;
-  }
-
-  .avatar {
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .input-wrapper {
-    width: 100%;
-    margin: 0;
-  }
-
-  .input-container {
-    padding: 0.5rem;
-  }
+.questions-popup {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 20rem;
+  max-width: 90vw;
+  z-index: 1000;
 }
+
+.questions-content {
+  padding: 1rem;
+}
+
+.questions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.questions-header h3 {
+  font-size: 1.1rem;
+  color: #1e40af;
+  margin: 0;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.close-button:hover {
+  color: #1e40af;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.question-button {
+  background: #f3f4f6;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #1f2937;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.question-button:hover {
+  background: #e5e7eb;
+  transform: translateX(4px);
+}
+
 .bottom-nav {
   position: absolute;
   bottom: 0;
@@ -693,8 +632,30 @@ const sendMessage = async () => {
   transition: color 0.2s ease-in-out;
 }
 
-/* Responsive - Mobile spécifique */
 @media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .chat-container {
+    max-width: 95%;
+  }
+
+  .message-container {
+    max-width: 90%;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px;
+  }
+
   .bottom-nav {
     position: fixed;
     width: 100%;
@@ -711,18 +672,22 @@ const sendMessage = async () => {
   }
 
   .main-content {
-    padding-bottom: 4rem; /* Ajouter de l'espace pour le bouton de navigation */
+    padding-bottom: 4rem;
   }
 
   .chat-area {
-    padding-bottom: 6rem; /* Ajuster pour éviter le chevauchement */
+    padding-bottom: 6rem;
   }
 }
 
-@media (max-width: 480px) {
-  .nav-buttons button .icon {
-    width: 1rem;
-    height: 1rem;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

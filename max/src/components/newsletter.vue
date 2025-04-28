@@ -5,25 +5,33 @@ import { db } from '../firebaseConfig'
 
 const email = ref('')
 const isSubscribed = ref(false)
+const errorMessage = ref('')
+const isSubmitting = ref(false)
 
 const handleSubmit = async () => {
   if (email.value) {
     try {
+      isSubmitting.value = true
+      errorMessage.value = ''
+      
       const newsletterRef = collection(db, 'newsletter')
       const docRef = await addDoc(newsletterRef, {
         email: email.value,
         dateInscription: new Date()
       })
-      console.log("Document written with ID: ", docRef.id) // Pour debug
-      alert('Inscription réussie !')
+      
+      console.log("Document written with ID: ", docRef.id)
       isSubscribed.value = true
       email.value = ''
+      
       setTimeout(() => {
         isSubscribed.value = false
       }, 3000)
     } catch (error) {
-      console.error("Erreur détaillée:", error.message) // Pour avoir plus de détails sur l'erreur
-      alert("Une erreur est survenue lors de l'inscription")
+      console.error("Erreur lors de l'inscription:", error)
+      errorMessage.value = `Erreur: ${error.message}`
+    } finally {
+      isSubmitting.value = false
     }
   }
 }
@@ -44,11 +52,17 @@ const handleSubmit = async () => {
         placeholder="Email"
         required
         class="newsletter-input"
+        :disabled="isSubmitting"
       />
-      <button type="submit" class="newsletter-button">S'ABONNER</button>
+      <button type="submit" class="newsletter-button" :disabled="isSubmitting">
+        {{ isSubmitting ? 'ENVOI...' : 'S\'ABONNER' }}
+      </button>
     </form>
     <div v-if="isSubscribed" class="success-message">
       Merci pour votre inscription!
+    </div>
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
     </div>
   </div>
 </template>
