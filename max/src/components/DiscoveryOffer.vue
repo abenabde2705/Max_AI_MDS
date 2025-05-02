@@ -10,7 +10,7 @@
         <p>
           Découvrez Max, votre compagnon d'écoute intelligent. Profitez d'un essai gratuit pour explorer ses fonctionnalités : écoute bienveillante, conseils personnalisés et interaction adaptée à votre style. Testez-le dès maintenant pour voir comment il peut vous aider au quotidien.
         </p>
-        <button class="discover-btn">Découvrir Max</button>
+        <router-link style=" text-decoration: none;" to="/chatbot"><button class="discover-btn" >Découvrir Max</button> </router-link>
       </div>
     </div>
   </section>

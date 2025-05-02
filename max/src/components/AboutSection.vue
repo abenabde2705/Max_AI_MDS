@@ -37,7 +37,6 @@ import ChatExample from './ChatExample.vue'
   margin-bottom: 2rem;
   font-weight: bold;
   font-family: 'TT Modernoir Trial';
-  color: #000000;
 }
 
 .description {

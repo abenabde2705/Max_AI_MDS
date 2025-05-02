@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import axios from 'axios' 
-
+import chatheader from "./OnlineBarChat.vue"
 import { 
   Home as HomeIcon,
   User as UserIcon, 
@@ -135,7 +135,7 @@ const sendMessage = async () => {
 
       <nav class="nav-menu">
         <div class="conversations-header">
-          <h2>Historique Des Conversations</h2>
+          <!--<h2>Historique Des Conversations</h2>-->
           <button @click="createNewConversation" class="new-chat-btn">
             <PlusIcon class="icon" />
             Nouvelle conversation
@@ -172,11 +172,9 @@ const sendMessage = async () => {
     </aside>
 
     <main class="main-content">
-      <header class="header">
-        <button class="premium-button" @click="$router.push('/landingpage#abonnement')">
-          Passe à MAX Premium ✨
-        </button>
-      </header>
+      <chatheader/>
+
+      
 
       <div class="chat-area">
         <div class="chat-container">
@@ -185,7 +183,7 @@ const sendMessage = async () => {
                :class="['message-wrapper', message.sender === 'user' ? 'user-message' : 'bot-message']">
             <div class="message-container">
               <div v-if="message.sender === 'bot'" class="avatar">
-                <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="avatar-img" style="width: 40px; height: 40px; object-fit: contain;" />
+                <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="avatar-img" style="width: 40px; height: 40px; object-fit:fill;" />
               </div>
               <div class="message-content">
                 <div class="message" :class="{ 'typing': message.isTyping }">

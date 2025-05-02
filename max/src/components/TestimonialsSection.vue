@@ -17,6 +17,23 @@ const testimonials = [
     author: "Thomas, 23 ans"
   }
 ];
+import { ref } from 'vue';
+import TestimonialsPopup from '../components/Modals/TestimonialsPopup.vue';
+
+const isPopupOpen = ref(false);
+
+const openPopup = () => {
+  isPopupOpen.value = true;
+};
+
+const closePopup = () => {
+  isPopupOpen.value = false;
+};
+
+const handleSubmitted = () => {
+  // Faites quelque chose après la soumission réussie si nécessaire
+  console.log('Témoignage soumis avec succès');
+};
 </script>
 
 <template>
@@ -28,8 +45,14 @@ const testimonials = [
         <div v-for="testimonial in testimonials" :key="testimonial.author" class="testimonial">
           <p class="quote">"{{ testimonial.quote }}" - <span class="author">{{ testimonial.author }}</span></p>
         </div>
-        <button class="voir-plus-btn">Voir plus</button>
-      </div>
+        <button @click="openPopup" class="voir-plus-btn">Partagez votre témoignage</button>
+    
+    <!-- Composant Popup -->
+    <TestimonialsPopup 
+      :isOpen="isPopupOpen"
+      @close="closePopup"
+      @submitted="handleSubmitted"
+    />      </div>
       <div class="illustration">
         <img src="../assets/img/valeurs/testi3.png" alt="Illustration témoignages">
       </div>

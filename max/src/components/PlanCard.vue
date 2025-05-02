@@ -115,12 +115,16 @@ color: #fff;  }
   }
   
   .plan-button.primary {
-    background-color: #007bff;
-    color: white;
+    background-color: white;
+    transition: all ease-in-out  0.3s;
+
+    color: #007bff;
+    border: 1px solid #007bff;
   }
   
   .plan-button.primary:hover {
-    background-color: #0056b3;
+    background-color: #007bff;
+    color: white;
   }
   
   .plan-button.secondary {

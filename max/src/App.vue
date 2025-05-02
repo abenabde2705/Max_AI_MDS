@@ -1,11 +1,14 @@
 <script setup>
+import BackToTop from './components/ScrollToTop.vue';
+
 import { RouterView } from 'vue-router';
 </script>
 
 <template>
   
     <RouterView />
- 
+    <BackToTop />
+
 </template>
 
 
