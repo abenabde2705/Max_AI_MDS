@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import axios from 'axios' 
 import chatheader from "./OnlineBarChat.vue"
 import { 
@@ -13,12 +13,20 @@ import {
   X as XIcon
 } from 'lucide-vue-next'
 
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
 const userMessage = ref('')
 const chatHistory = ref([
   {
     sender: 'bot',
     text: 'Je suis à ton écoute, est-ce que je peux t\'aider ?',
-    isTyping: false
+    isTyping: false,
+    timestamp: new Date().getTime() 
   }
 ])
 
@@ -33,16 +41,44 @@ const conversations = ref([
 const activeConversation = ref(1)
 const isWaitingForResponse = ref(false)
 const abortController = ref(new AbortController())
-
+const cancelResponse = () => {
+  abortController.value.abort()
+  abortController.value = new AbortController()
+  
+  // Remplacer le message "typing" par un message d'annulation
+  if (chatHistory.value[chatHistory.value.length - 1].isTyping) {
+    const cancelTime = new Date().getTime();
+    
+    chatHistory.value[chatHistory.value.length - 1] = {
+      sender: 'bot',
+      text: 'Réponse annulée.',
+      isTyping: false,
+      timestamp: cancelTime
+    }
+    
+    const currentConvIndex = conversations.value.findIndex(
+      conv => conv.id === activeConversation.value
+    );
+    
+    if (currentConvIndex !== -1) {
+      conversations.value[currentConvIndex].messages = [...chatHistory.value];
+    }
+  }
+  
+  isWaitingForResponse.value = false
+}
 const createNewConversation = () => {
   const newId = conversations.value.length + 1
+  const currentTime = new Date().getTime();
+  
   conversations.value.push({
     id: newId,
     title: `Conversation ${newId}`,
     messages: [{
       sender: 'bot',
       text: 'Je suis à ton écoute, est-ce que je peux t\'aider ?',
-      isTyping: false
+      isTyping: false,
+      timestamp: currentTime
     }]
   })
   switchConversation(newId)
@@ -52,21 +88,7 @@ const switchConversation = (id) => {
   activeConversation.value = id
   chatHistory.value = conversations.value.find(conv => conv.id === id)?.messages || []
 }
-const cancelResponse = () => {
-  abortController.value.abort()
-  abortController.value = new AbortController()
-  
-  // Remplacer le message "typing" par un message d'annulation
-  if (chatHistory.value[chatHistory.value.length - 1].isTyping) {
-    chatHistory.value[chatHistory.value.length - 1] = {
-      sender: 'bot',
-      text: 'Réponse annulée.',
-      isTyping: false,
-    }
-  }
-  
-  isWaitingForResponse.value = false
-}
+
 
 const sendMessage = async () => {
   if (!userMessage.value.trim()) return;
@@ -75,17 +97,21 @@ const sendMessage = async () => {
   // Réinitialisation immédiate du champ de saisie
   userMessage.value = '';
   isWaitingForResponse.value = true;
+  
+  const currentTime = new Date().getTime();
 
   chatHistory.value.push({
     sender: 'user',
     text: messageText,
     isTyping: false,
+    timestamp: currentTime
   });
 
   chatHistory.value.push({
     sender: 'bot',
     text: '',
     isTyping: true,
+    timestamp: currentTime
   });
 
   try {
@@ -98,18 +124,22 @@ const sendMessage = async () => {
       message: messageText,
     }, { signal: abortController.value.signal });
 
+    const responseTime = new Date().getTime();
 
     chatHistory.value[chatHistory.value.length - 1] = {
       sender: 'bot',
       text: response.data.response, 
       isTyping: false,
+      timestamp: responseTime
     };
   } catch (error) {
     console.error("Erreur lors de l'appel à l'API :", error);
+    const errorTime = new Date().getTime();
     chatHistory.value[chatHistory.value.length - 1] = {
       sender: 'bot',
       text: 'Désolé, une erreur est survenue. Veuillez réessayer plus tard.',
       isTyping: false,
+      timestamp: errorTime
     };
   }finally {
     // Remettre l'état d'attente à false
@@ -159,7 +189,7 @@ const sendMessage = async () => {
           <router-link to="/"> <button >
             <HomeIcon class="icon" />
           </button></router-link>
-          <router-link to="/login"> <button >  <UserIcon class="icon" />
+          <router-link to="/auth"> <button >  <UserIcon class="icon" />
           </button></router-link>
           <button>
             <BookOpenIcon class="icon" />
@@ -182,9 +212,7 @@ const sendMessage = async () => {
                :key="index" 
                :class="['message-wrapper', message.sender === 'user' ? 'user-message' : 'bot-message']">
             <div class="message-container">
-              <div v-if="message.sender === 'bot'" class="avatar">
-                <img src="../assets/LOGO_rose_pale300x.png" alt="MAX" class="avatar-img" style="width: 40px; height: 40px; object-fit:fill;" />
-              </div>
+             
               <div class="message-content">
                 <div class="message" :class="{ 'typing': message.isTyping }">
                   <div v-if="message.isTyping" class="typing-animation">
@@ -195,6 +223,9 @@ const sendMessage = async () => {
                   <template v-else>
                     {{ message.text }}
                   </template>
+                </div>
+                <div v-if="!message.isTyping" class="message-timestamp">
+                  {{ formatTimestamp(message.timestamp) }}
                 </div>
               </div>
             </div>
@@ -355,9 +386,8 @@ const sendMessage = async () => {
 }
 
 .chat-container {
-  max-width: 80%;
-  margin: 0 auto;
-  height: 100%;
+  width: 100%;
+    height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -459,14 +489,17 @@ const sendMessage = async () => {
 
 .input-container {
   padding: 1rem;
+  width: 100%; 
 }
 
+
 .input-wrapper {
-  max-width: 80%;
+  max-width: 100%; 
   margin: 0 auto;
   position: relative;
   display: flex;
   gap: 0.5rem;
+  width: 100%; 
 }
 
 .message-input {
@@ -476,6 +509,7 @@ const sendMessage = async () => {
   border: 1px solid #e5e7eb;
   background: rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .message-input:focus {
@@ -628,6 +662,25 @@ const sendMessage = async () => {
 .nav-buttons button:hover {
   color: #bfdbfe;
   transition: color 0.2s ease-in-out;
+}
+
+.message-timestamp {
+  font-weight: 700;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  opacity: 0.7;
+  text-align: right;
+}
+
+.bot-message .message-timestamp {
+  text-align: left;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.user-message .message-timestamp {
+  text-align: right;
+  color: rgba(0, 0, 0, 0.8);
 }
 
 @media (max-width: 768px) {

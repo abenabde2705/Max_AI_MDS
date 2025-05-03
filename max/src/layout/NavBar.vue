@@ -57,7 +57,7 @@ const scrollToSection = (href) => {
       </div>
       <div class="website-buttons">
         <button class="connexion-btn cta">
-          <router-link style="color: white; text-decoration: none;" to="/Login">Connexion</router-link>
+          <router-link style="color: white; text-decoration: none;" to="/auth">Connexion</router-link>
         </button>
         <button class="inscription-btn cta">
           

@@ -19,8 +19,9 @@
      <!-- Colonne : Liens utiles -->
      <div class="footer-column">
        <h4>Liens utiles</h4>
-       <p><a href="#">Conditions d'utilisation</a></p>
-       <p><a href="#">Politique de confidentialité</a></p>
+       <p><RouterLink to="/Politics/ConditionsUtilisation"><a >Conditions d'utilisation</a></RouterLink></p>
+       <p><RouterLink to="/Politics/PolitiqueConfidentialites"><a >Politique de confidentialité</a></RouterLink></p>
+
        <p><a href="#">FAQ</a></p>
        <p><a href="#">Blog</a></p>
      </div>
