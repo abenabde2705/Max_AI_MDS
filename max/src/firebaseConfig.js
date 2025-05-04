@@ -12,15 +12,8 @@ const firebaseConfig = {
 };
 console.log(firebaseConfig);
 
-<<<<<<< HEAD
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
 export { app, db};
-=======
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-// Initialiser analytics seulement côté client
->>>>>>> main
