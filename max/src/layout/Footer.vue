@@ -8,10 +8,13 @@
        <h4>À propos de Max</h4>
        <p>Votre assistant IA personnel pour une meilleure santé mentale</p>
        <div class="social-links">
-         <a href="#"><img src="../assets/instagram.png" alt="Instagram" class="social-icon"></a>
-            <a href="#"><img src="../assets/twitter.png" alt="Twitter" class="social-icon"></a>
-       
-            <a href="#"><img src="../assets/tik-tok.png" alt="Tiktok" class="social-icon"></a>
+        <a href="https://www.linkedin.com/company/maxsant%C3%A9mentale/" target="_blank">
+  <img src="../assets/LinkedIn_icon.svg.png" alt="Instagram" class="social-icon">
+</a>
+            <!--<a href="#"><img src="../assets/twitter.png" alt="Twitter" class="social-icon"></a>
+                <a href="#"><img src="../assets/instagram.png" alt="Instagram" class="social-icon"></a>
+
+            <a href="#"><img src="../assets/tik-tok.png" alt="Tiktok" class="social-icon"></a>-->
 
        </div>
      </div>
@@ -19,10 +22,9 @@
      <!-- Colonne : Liens utiles -->
      <div class="footer-column">
        <h4>Liens utiles</h4>
-       <p><a href="#">Conditions d'utilisation</a></p>
-       <p><a href="#">Politique de confidentialité</a></p>
-       <p><a href="#">FAQ</a></p>
-       <p><a href="#">Blog</a></p>
+       <p><RouterLink to="/Politics/ConditionsUtilisation"><a >Conditions d'utilisation</a></RouterLink></p>
+       <p><RouterLink to="/Politics/PolitiqueConfidentialites"><a >Politique de confidentialité</a></RouterLink></p>
+
      </div>
 
      <!-- Colonne : Contact -->
@@ -34,7 +36,7 @@
 
      <!-- Colonne : Téléchargement -->
      <div class="footer-column">
-       <h4>Disponible sur :</h4>
+       <h4>Bientôt Disponible sur :</h4>
        <button>
          <img src="../assets/applestore-removebg-preview.png" alt="Logo Apple Store" class="store-logo">
          Apple Store
@@ -87,62 +89,7 @@
     text-decoration: none;
   }
   
-  /* Newsletter overlay styles */
-  .newsletter-overlay {
-    position: absolute;
-    left: 50%;
-    top: 40px;
-    transform: translateX(-50%);
-    padding: 30px;
-    width: 80%;
-    border-radius: 10px;
-    background-color: #1a1a1a;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    text-align: center;
-  }
   
-  .newsletter-overlay h4 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-  
-  .newsletter-overlay p {
-    margin-bottom: 20px;
-    color: #ccc;
-  }
-  
-  .newsletter-form {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  
-  .newsletter-form input {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    font-size: 14px;
-    background-color: #222;
-    color: #fff;
-  }
-  
-  .newsletter-form button {
-    padding: 12px 25px;
-    border: none;
-    background-color: #90DBF5;
-    color: #000;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .newsletter-form button:hover {
-    background-color: #7bc8e2;
-  }
   
   /* Footer content styles */
   .footer-content {
@@ -150,7 +97,6 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 40px;
-    margin-top: 60px; /* Réduit de 120px à 60px */
   }
   
   .footer-column {

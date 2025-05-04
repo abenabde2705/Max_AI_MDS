@@ -4,6 +4,7 @@ import ChatExample from './ChatExample.vue'
 
 <template>
   <section class="about-section">
+    <div data-aos="fade-up" data-aos-duration="200" data-aos-delay="100">
     <h2 class="title">QUI EST MAX ?</h2>
     
     <div class="description">
@@ -19,13 +20,14 @@ import ChatExample from './ChatExample.vue'
       </div>
       <ChatExample />
     </div>
+  </div>
   </section>
 </template>
 
 <style scoped>
 .about-section {
-  background-color: #1C5372;
-  color: white;
+  /**background-color: #1C5372;*/
+  color: rgb(0, 0, 0);
   padding: 4rem 2rem;
 }
 
@@ -35,7 +37,6 @@ import ChatExample from './ChatExample.vue'
   margin-bottom: 2rem;
   font-weight: bold;
   font-family: 'TT Modernoir Trial';
-  color: #FFF1EF;
 }
 
 .description {
@@ -43,16 +44,13 @@ import ChatExample from './ChatExample.vue'
   margin: 0 auto 4rem;
   text-align: center;
   line-height: 1.6;
-  color: #FFF1EF;
 }
 
 .description p {
-  color: #FFF1EF;
 }
 
 .features-container {
   display: flex;
-  max-width: 1200px;
   margin: 0 auto;
   gap: 4rem;
   align-items: center;
@@ -60,13 +58,15 @@ import ChatExample from './ChatExample.vue'
 
 .feature-text {
   flex: 1;
+  max-width: 800px;
+
 }
 
 .feature-text h3 {
   font-family: 'TT Modernoir Trial';
   font-size: 38px;
   font-weight: bold;
-  color: #FFF1EF;
+  color: #000000;
   margin-bottom: 2rem;
   line-height: 1.2;
   margin-left: 12px;

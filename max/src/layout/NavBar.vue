@@ -1,17 +1,37 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted,computed  } from 'vue'
 
 const menuItems = [
   { text: 'À Propos', href: '#about' },
   { text: 'Fonctionnalités', href: '#fonc' },
-  { text: 'Abonnement', href: '#title' },
   { text: 'Témoignage', href: '#tem' },
+
+  { text: 'Abonnement', href: '#title' },
   { text: 'Newsletter', href: '#news' }
 
 ]
 // État pour ouvrir/fermer le menu mobile
 const isMenuOpen = ref(false);
+const isDropdownOpen = ref(false);
+const isLoggedIn = ref(false);
+const userEmail = ref('');
 
+
+onMounted(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    isLoggedIn.value = true;
+    // Simuler l’email : idéalement, récupère-le après login et stocke-le
+    userEmail.value = localStorage.getItem('name') || 'client@example.com';
+  }
+});
+
+const getInitials = computed(() => {
+  const names = userEmail.value.split(' ');
+  const firstInitial = names[0]?.charAt(0).toUpperCase() || '';
+  const lastInitial = names[1]?.charAt(0).toUpperCase() || '';
+  return firstInitial + lastInitial;
+});
 // Méthode pour scroller vers une section
 const scrollToSection = (href) => {
   const targetElement = document.querySelector(href);
@@ -23,6 +43,16 @@ const scrollToSection = (href) => {
     isMenuOpen.value = false; // Ferme le menu mobile après le clic
   }
 };
+
+
+const logout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('name');
+  isLoggedIn.value = false;
+  isDropdownOpen.value = false;
+};
+
+
 </script>
 
 <template>
@@ -50,19 +80,30 @@ const scrollToSection = (href) => {
 >
   {{ item.text }}
 </a>
-<div class="website-buttons">
-        <button class="connexion-btn cta">
-          <router-link style="color: white; text-decoration: none;" to="/Login">Connexion</router-link>
-        </button>
+
+        </div>
+     
+      </div>
+      <div class="website-buttons">
+        <button v-if="!isLoggedIn" class="connexion-btn cta">
+    <router-link style="color: white; text-decoration: none;" to="/auth">Connexion</router-link>
+  </button>
+  <div v-else class="user-menu">
+    <button class="user-icon" @click="isDropdownOpen = !isDropdownOpen">
+  {{ getInitials }}
+</button>
+    <div v-if="isDropdownOpen" class="dropdown">
+      <p>{{ userEmail }}</p>
+      <button @click="logout">Déconnexion</button>
+    </div>
+  </div>
         <button class="inscription-btn cta">
           
-          <router-link style="color: white; text-decoration: none;" to="/chatbot"> Accèder au site</router-link>
+          <router-link style=" text-decoration: none;" to="/chatbot"><a> Parlez à Max</a></router-link>
 
           <span class="arrow">→</span>
         </button>
         
-      </div>
-        </div>
       </div>
       <!-- Boutons -->
      
@@ -79,7 +120,7 @@ const scrollToSection = (href) => {
 
 .navbar {
   display: flex;
-  gap: 2rem;
+  gap: 0.5rem;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 2rem;
@@ -104,6 +145,7 @@ const scrollToSection = (href) => {
   font-size: 1.5rem;
   font-weight: bold;
   letter-spacing: 2px;
+  margin-right: 1rem;
 }
 
 .nav-items {
@@ -113,19 +155,31 @@ const scrollToSection = (href) => {
 }
 
 .nav-link {
+  position: relative;
   color: white;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  opacity: 0.9;
-  transition: opacity 0.2s;
+  display: inline-block;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
 }
 
-.nav-link:hover {
-  opacity: 1;
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px; /* Ajuste la position en dessous du texte */
+  width: 0;
+  height: 2px; /* Hauteur de la bordure */
+  background-color: white;
+  transition: width 0.3s ease;
 }
+
+.nav-link:hover::after {
+  width: 100%; /* Le soulignement couvre tout le texte */
+}
+
+
+
 
 /* Hamburger menu */
 .hamburger {
@@ -148,7 +202,6 @@ const scrollToSection = (href) => {
 .website-buttons {
   display: flex;
   gap: 1rem;
-  align-items: center;
 }
 
 .connexion-btn {
@@ -170,7 +223,7 @@ const scrollToSection = (href) => {
 
 .inscription-btn {
   background: rgba(28, 83, 114, 0.5);
-  color: white;
+  color: white !important;
   padding: 0.5rem 1.5rem;
   border: 1px solid white;
   border-radius: 25px;
@@ -179,16 +232,76 @@ const scrollToSection = (href) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  backdrop-filter: blur(5px);
   transition: background-color 0.2s;
 }
 
+.inscription-btn a{
+  color: white;
+}
+.inscription-btn a:hover{
+  color: rgba(28, 83, 114, 0.5);
+}
+
+
+/*
+.parlez{
+  color: white;
+}
+.parlez:hover{
+  color: rgba(28, 83, 114, 0.5);
+}
+*/
 .inscription-btn:hover {
-  background: rgba(28, 83, 114, 0.7);
+  background: rgba(255, 255, 255, 0.7);
+  color: rgba(28, 83, 114, 0.5) !important;
 }
 
 .arrow {
   font-size: 1.1em;
+}
+.user-menu {
+  position: relative;
+}
+
+.user-icon {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  line-height: inherit;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  background: white;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  min-width: 150px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 20;
+}
+
+.dropdown p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.dropdown button {
+  background: none;
+  border: none;
+  color: #1c5372;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.dropdown button:hover {
+  text-decoration: underline;
 }
 
 /* Responsive Styles */
@@ -199,7 +312,19 @@ const scrollToSection = (href) => {
     gap: 1rem; /* Ajouter un espace entre les boutons */
     align-items: center;
     margin-top: 1rem;
+    width: 100%;
+
+
   }
+  .website-buttons button {
+  width: 100%;
+  justify-content: center;
+}
+  .website-buttons .inscription-btn,
+.website-buttons .connexion-btn {
+  margin-bottom: 0.5rem;
+}
+
   .navbar {
     flex-wrap: wrap;
     height: auto;
@@ -222,7 +347,7 @@ const scrollToSection = (href) => {
         padding: 1rem;
         border-radius: 20px 20px 20px 20px;
         z-index: 10;
-        transform: translateY(-100%);
+        transform: translateY(-200%);
         opacity: 0;
         transition: transform 0.3s ease, opacity 0.3s ease;
     }

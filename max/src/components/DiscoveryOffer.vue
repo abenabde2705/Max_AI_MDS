@@ -1,6 +1,7 @@
 <template>
   <section class="discovery-section">
-    <div class="content">
+    <div class="content"  data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
+      
       <div class="illustration">
         <img src="../assets/img/valeurs/testi1.png" alt="Illustration découverte">
       </div>
@@ -9,7 +10,7 @@
         <p>
           Découvrez Max, votre compagnon d'écoute intelligent. Profitez d'un essai gratuit pour explorer ses fonctionnalités : écoute bienveillante, conseils personnalisés et interaction adaptée à votre style. Testez-le dès maintenant pour voir comment il peut vous aider au quotidien.
         </p>
-        <button class="discover-btn">Découvrir Max</button>
+        <router-link style=" text-decoration: none;" to="/chatbot"><button class="discover-btn" >Découvrir Max</button> </router-link>
       </div>
     </div>
   </section>
@@ -18,7 +19,7 @@
 <style scoped>
 .discovery-section {
   padding: 4rem 2rem;
-  background: #EDE4DC;
+ /* background: #EDE4DC;*/
 }
 
 .content {

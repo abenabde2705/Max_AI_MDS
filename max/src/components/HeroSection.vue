@@ -4,9 +4,10 @@ import '../styles/buttons.css'
 
 <template>
   <div class="hero">
-    <div class="hero-content">
+    <div class="hero-content" data-aos="fade-up" data-aos-duration="500" data-aos-delay="100">
       <h1 class="title">MAX</h1>
-      <p class="subtitle">Tu n'es jamais seul. Je suis là pour toi.</p>
+      
+      <p class="subtitle">Tu n'es jamais seul. Je suis là pour toi...</p>
       <button class="cta-button"> <router-link to="chatbot" style="text-decoration: none; color: white;">Parlez-moi</router-link></button>
     </div>
   </div>
@@ -14,6 +15,7 @@ import '../styles/buttons.css'
 
 <style scoped>
 .hero {
+  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,6 +39,33 @@ import '../styles/buttons.css'
   color: white;
   margin-bottom: 2rem;
   opacity: 0.9;
+
+  /* Typewriter animation */
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid white;
+  width: 0; /* Start hidden */
+  animation: typing 6s steps(30, end) infinite, blink 0.6s step-end infinite;
+}
+
+/* Keyframes for typing effect */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%; /* Adjust based on the text length */
+  }
+}
+
+/* Keyframes for blinking cursor */
+@keyframes blink {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: white;
+  }
 }
 
 /* Responsive Styles */

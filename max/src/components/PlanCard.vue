@@ -9,6 +9,7 @@
         <li v-for="(feature, index) in features" :key="index">
         <span class="tick-icon">✓</span> {{ feature }}
       </li>      </ul>
+      <button class="plan-button" :class="buttonStyle">{{ buttonText }}</button>
     </div>
   </template>
   
@@ -54,14 +55,21 @@ color: #fff;  }
     .plan-card.highlight p  {
         color: #fff !important;  }
         .plan-card.highlight li  {
-            color: #fff !important;  }
+            color: #fff !important; 
+            margin-bottom: 1.3rem;
+           }
   
   .plan-card:hover {
     transform: scale(1.05);
   }
+  .tick-icon{
+    color: #00970d;
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
   
   .plan-title {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     margin-bottom: 10px;
   }
@@ -103,19 +111,26 @@ color: #fff;  }
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: auto;
   }
   
   .plan-button.primary {
+    background-color: white;
+    transition: all ease-in-out  0.3s;
+
+    color: #007bff;
+    border: 1px solid #007bff;
+  }
+  
+  .plan-button.primary:hover {
     background-color: #007bff;
     color: white;
   }
   
-  .plan-button.primary:hover {
-    background-color: #0056b3;
-  }
-  
   .plan-button.secondary {
     background-color: white;
+    transition: all ease-in-out  0.3s;
+
     color: #007bff;
     border: 1px solid #007bff;
   }

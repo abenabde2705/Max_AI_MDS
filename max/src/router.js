@@ -1,18 +1,26 @@
 import { createWebHistory, createRouter } from 'vue-router' ;
 import LandingPage from './components/LandingPage.vue';
 import ChatBot from './components/Chat.vue';
-import SignUp from './components/SignUp.vue';
-import LogIn from './components/LogIn.vue';
+
+import AuthUser from './components/Authentication/AuthUser.vue'
 import SuccessPage from './components/SuccessPage.vue';
+import ConditionsUtilisation from './components/Politics/ConditionsUtilisation.vue'
+import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite.vue'
+
 //import NotFound from './components/NotFound.vue';
 
 
 const routes = [
     { path: '/',name: 'LandingPage', component: LandingPage }, 
     { path: '/ChatBot',name: 'ChatBot',  component: ChatBot },
-    { path: '/SignUp', name: 'Signup', component: SignUp }, 
-    { path: '/LogIn', name: 'LogIn', component: LogIn },
+  
+    { path: '/Auth', name: 'Auth', component: AuthUser },
+
     { path: '/SuccessPage', name: 'SuccessPage', component: SuccessPage },
+    { path: '/Politics/ConditionsUtilisation', name: 'ConditionsUtilisation', component: ConditionsUtilisation },
+    { path: '/Politics/PolitiqueConfidentialites', name: 'PolitiqueConfidentialites', component: PolitiqueConfidentialites },
+
+
   
     // Route pour la page principale
     {

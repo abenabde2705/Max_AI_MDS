@@ -17,29 +17,54 @@ const testimonials = [
     author: "Thomas, 23 ans"
   }
 ];
+import { ref } from 'vue';
+import TestimonialsPopup from '../components/Modals/TestimonialsPopup.vue';
+
+const isPopupOpen = ref(false);
+
+const openPopup = () => {
+  isPopupOpen.value = true;
+};
+
+const closePopup = () => {
+  isPopupOpen.value = false;
+};
+
+const handleSubmitted = () => {
+  // Faites quelque chose après la soumission réussie si nécessaire
+  console.log('Témoignage soumis avec succès');
+};
 </script>
 
 <template>
   <section class="testimonials-section">
+    <div  data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
     <h2>TÉMOIGNAGES UTILISATEURS</h2>
     <div class="testimonials-container">
       <div class="testimonials-list">
         <div v-for="testimonial in testimonials" :key="testimonial.author" class="testimonial">
           <p class="quote">"{{ testimonial.quote }}" - <span class="author">{{ testimonial.author }}</span></p>
         </div>
-        <button class="voir-plus-btn">Voir plus</button>
-      </div>
+        <button @click="openPopup" class="voir-plus-btn">Partagez votre témoignage</button>
+    
+    <!-- Composant Popup -->
+    <TestimonialsPopup 
+      :isOpen="isPopupOpen"
+      @close="closePopup"
+      @submitted="handleSubmitted"
+    />      </div>
       <div class="illustration">
         <img src="../assets/img/valeurs/testi3.png" alt="Illustration témoignages">
       </div>
     </div>
+  </div>
   </section>
 </template>
 
 <style scoped>
 .testimonials-section {
   padding: 4rem 2rem;
-  background: #EDE4DC;
+  /*background: #EDE4DC;*/
 }
 
 h2 {
