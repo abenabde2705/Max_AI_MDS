@@ -21,6 +21,7 @@ const formatTimestamp = (timestamp) => {
   return `${hours}:${minutes}`;
 };
 
+const showQuestions = ref(false)
 const userMessage = ref('')
 const chatHistory = ref([
   {
@@ -165,6 +166,7 @@ const renderMarkdown = (text) => {
   <div class="app-container">
     <aside class="sidebar">
       <div class="logo">
+        <h1>MAX</h1>
         <h1>MAX</h1>
       </div>
 
@@ -400,6 +402,8 @@ const renderMarkdown = (text) => {
 
 .message-wrapper {
   width: 100%;
+.message-wrapper {
+  width: 100%;
   display: flex;
   margin-bottom: 1.5rem;
   animation: fadeIn 0.3s ease-in-out;
@@ -421,6 +425,7 @@ const renderMarkdown = (text) => {
 }
 
 .user-message .message-container {
+.user-message .message-container {
   flex-direction: row-reverse;
 }
 
@@ -431,8 +436,19 @@ const renderMarkdown = (text) => {
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
+.avatar {
+  width: 40px;
+  height: 40px;
+  margin: 0 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 .avatar-img {
   width: 100%;
   height: 100%;
@@ -451,8 +467,22 @@ const renderMarkdown = (text) => {
 }
 
 .user-message .message {
+.message-content {
+  flex: 1;
+}
+
+.message {
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.user-message .message {
   background-color: #1e40af;
   color: white;
+  border-bottom-right-radius: 4px;
+  margin-left: auto;
   border-bottom-right-radius: 4px;
   margin-left: auto;
 }
@@ -513,6 +543,7 @@ const renderMarkdown = (text) => {
 
 .message-input {
   flex: 1;
+  flex: 1;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
@@ -526,11 +557,22 @@ const renderMarkdown = (text) => {
   border-color: #3b82f6;
   background: white;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .send-button, .questions-button {
   background-color: #1C5372;
+.send-button, .questions-button {
+  background-color: #1C5372;
   border: none;
+  color: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
   width: 2.5rem;
   height: 2.5rem;
@@ -544,9 +586,16 @@ const renderMarkdown = (text) => {
 
 .send-button:hover, .questions-button:hover {
   transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+
+.send-button:hover, .questions-button:hover {
+  transform: scale(1.05);
 }
 
 .send-icon {
+  width: 1.2rem;
+  height: 1.2rem;
   width: 1.2rem;
   height: 1.2rem;
 }
@@ -716,6 +765,29 @@ const renderMarkdown = (text) => {
     margin: 0 8px;
   }
 
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .chat-container {
+    max-width: 95%;
+  }
+
+  .message-container {
+    max-width: 90%;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    margin: 0 8px;
+  }
+
   .bottom-nav {
     position: fixed;
     width: 100%;
@@ -733,9 +805,11 @@ const renderMarkdown = (text) => {
 
   .main-content {
     padding-bottom: 4rem;
+    padding-bottom: 4rem;
   }
 
   .chat-area {
+    padding-bottom: 6rem;
     padding-bottom: 6rem;
   }
 }
