@@ -1,5 +1,5 @@
 <template>
-  <div class="newsletter-container">
+  <div class="newsletter-container" id="news">
     <div class="newsletter-content">
       <div class="newsletter-left">
         <h2 class="newsletter-title">Max Newsletter</h2>
@@ -69,24 +69,24 @@ const handleSubmit = async () => {
   try {
     isSubmitting.value = true;
     errorMessage.value = '';
-    
+
     // Ajouter à Firestore
     const newsletterRef = collection(db, 'newsletter');
     await addDoc(newsletterRef, {
       email: email.value.trim(),
-      dateInscription: serverTimestamp()
+      dateInscription: serverTimestamp(),
     });
-    
-    console.log("Email ajouté avec succès à la newsletter");
+
+    console.log('Email ajouté avec succès à la newsletter');
     isSubscribed.value = true;
     email.value = '';
-    
+
     // Réinitialiser le message de succès après 3 secondes
     setTimeout(() => {
       isSubscribed.value = false;
     }, 3000);
   } catch (error) {
-    console.error("Erreur lors de l'inscription:", error);
+    console.error('Erreur lors de l\'inscription:', error);
     errorMessage.value = `Erreur: ${error.message}`;
   } finally {
     isSubmitting.value = false;

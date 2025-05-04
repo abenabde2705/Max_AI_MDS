@@ -8,6 +8,45 @@
         <span class="subtitle-note">Sans engagement, annulable à tout moment.</span>
       </p>
       <div class="plans-container">
+  <PlanCard
+    :title="'Version Essai'"
+    :price="'0 €'"
+    :description="'Limite de 10 échanges'"
+    :features="[
+      'Chatbot Max (écoute empathique)',
+    ]"
+    :buttonText="'Gratuit'"
+    :buttonStyle="'secondary'"
+  />
+  
+  <PlanCard
+    :title="'Premium'"
+    :price="'15€/mois ou 4,99€/semaine'"
+    :description="'Sans engagement ou avec abonnement'"
+    :features="[
+      'Suivi émotionnel personnalisé',
+      'Statistiques bien-être',
+      'Recommendation des pros (coach)',
+      'Contenus exclusifs audio/vidéo',
+      'Journal émotionnel simple',
+    ]"
+    :buttonText="'Plan Premium'"
+    :buttonStyle="'primary'"
+    highlight
+  />
+  
+  <PlanCard
+    :title="'Campus'"
+    :price="'8€/mois'"
+    :description="'Pris en charge par l’établissement'"
+    :features="[
+      'Offre Premium à tous les étudiants concernés',
+    ]"
+    :buttonText="'Plan Campus'"
+    :buttonStyle="'secondary'"
+  />
+</div>
+    <!--  <div class="plans-container">
         <PlanCard
           :title="'Plan Free'"
           :price="'0 €'"
@@ -52,7 +91,7 @@
         />
         
         
-      </div>
+      </div>-->
     </div>
     </div>
   </template>

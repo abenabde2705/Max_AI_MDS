@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick, computed } from 'vue'
 import axios from 'axios' 
+import { marked } from 'marked';
 import chatheader from "./OnlineBarChat.vue"
 import { 
   Home as HomeIcon,
@@ -154,6 +155,10 @@ const sendMessage = async () => {
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 };
+
+const renderMarkdown = (text) => {
+  return marked(text);
+};
 </script>
 
 <template>
@@ -191,12 +196,12 @@ const sendMessage = async () => {
           </button></router-link>
           <router-link to="/auth"> <button >  <UserIcon class="icon" />
           </button></router-link>
-          <button>
+          <router-link to="/unknown"> <button>
             <BookOpenIcon class="icon" />
-          </button>
-          <button>
+          </button></router-link>
+          <router-link to="/unknown"> <button>
             <SettingsIcon class="icon" />
-          </button>
+          </button></router-link>
         </div>
       </div>
     </aside>
@@ -215,13 +220,14 @@ const sendMessage = async () => {
              
               <div class="message-content">
                 <div class="message" :class="{ 'typing': message.isTyping }">
+                  
                   <div v-if="message.isTyping" class="typing-animation">
                     <span></span>
                     <span></span>
                     <span></span>
                   </div>
                   <template v-else>
-                    {{ message.text }}
+                    <div v-html="renderMarkdown(message.text)"></div>
                   </template>
                 </div>
                 <div v-if="!message.isTyping" class="message-timestamp">
@@ -276,7 +282,7 @@ const sendMessage = async () => {
 }
 
 .sidebar {
-  width: 16rem;
+  width: 25rem;
   background-color: #1C5372;
   color: white;
   text-align: center;
@@ -405,12 +411,13 @@ const sendMessage = async () => {
 
 .message-wrapper.bot-message {
   justify-content: flex-start;
+
 }
 
 .message-container {
   display: flex;
   align-items: flex-start;
-  max-width: 80%;
+  max-width: 90%;
 }
 
 .user-message .message-container {
@@ -454,6 +461,8 @@ const sendMessage = async () => {
   background-color: rgba(255, 255, 255, 0.9);
   color: #333;
   border-bottom-left-radius: 4px;
+  padding-left: 2rem;
+
 }
 
 .typing-animation {
@@ -640,7 +649,7 @@ const sendMessage = async () => {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 16rem;
+  width: inherit;
   background-color: #0A222F;
   padding: 1rem;
 }

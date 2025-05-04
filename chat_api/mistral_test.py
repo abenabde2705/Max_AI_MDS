@@ -37,6 +37,8 @@ def load_conversation(session_id="default"):
         ]
 
 CHATBOT_RULES = [
+    "Opte pour des réponses courte et complique pas le langage."
+    "Limite la longueur des réponses pour qu’elles restent claires et jamais trop longues, à la limite 2 phrases."
     "Utilises la langue avec lequelle l'utilisateur te parle systématiquement",
     "Contente-toi d'être un assistant émotionnel, dédié exclusivement au bien-être mental et émotionnel de l'utilisateur",
     "Ne réponds jamais à des questions techniques, qu'il s'agisse de code informatique ou de tout autre domaine spécialisé",
@@ -51,7 +53,7 @@ CHATBOT_RULES = [
     "Personnalise tes réponses en fonction des échanges précédents.",
     "Si une demande dépasse tes capacités, sois transparent et propose une alternative.",
     "Ne force jamais l'utilisateur à parler, adapte-toi à son rythme."
-    "Opte pour des réponses courte et complique pas le langage."
+   
 ]
 app = FastAPI()
 
@@ -93,7 +95,6 @@ async def chat_with_max(data: Message):
             response = client.chat.complete(
                 model=model,
                 messages=conversation_histories[session_id],
-                max_tokens=150,
                 temperature=0.8
             )
             

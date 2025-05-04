@@ -21,7 +21,7 @@
 
 <style scoped>
 .BarChat {
-  background-color: #81bde1;
+  /*background-color: #81bde1;*/
   padding: 0.75rem 1.5rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);

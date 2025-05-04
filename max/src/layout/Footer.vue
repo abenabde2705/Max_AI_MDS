@@ -8,10 +8,13 @@
        <h4>À propos de Max</h4>
        <p>Votre assistant IA personnel pour une meilleure santé mentale</p>
        <div class="social-links">
-         <a href="#"><img src="../assets/instagram.png" alt="Instagram" class="social-icon"></a>
-            <a href="#"><img src="../assets/twitter.png" alt="Twitter" class="social-icon"></a>
-       
-            <a href="#"><img src="../assets/tik-tok.png" alt="Tiktok" class="social-icon"></a>
+        <a href="https://www.linkedin.com/company/maxsant%C3%A9mentale/" target="_blank">
+  <img src="../assets/LinkedIn_icon.svg.png" alt="Instagram" class="social-icon">
+</a>
+            <!--<a href="#"><img src="../assets/twitter.png" alt="Twitter" class="social-icon"></a>
+                <a href="#"><img src="../assets/instagram.png" alt="Instagram" class="social-icon"></a>
+
+            <a href="#"><img src="../assets/tik-tok.png" alt="Tiktok" class="social-icon"></a>-->
 
        </div>
      </div>
@@ -22,8 +25,6 @@
        <p><RouterLink to="/Politics/ConditionsUtilisation"><a >Conditions d'utilisation</a></RouterLink></p>
        <p><RouterLink to="/Politics/PolitiqueConfidentialites"><a >Politique de confidentialité</a></RouterLink></p>
 
-       <p><a href="#">FAQ</a></p>
-       <p><a href="#">Blog</a></p>
      </div>
 
      <!-- Colonne : Contact -->
@@ -35,7 +36,7 @@
 
      <!-- Colonne : Téléchargement -->
      <div class="footer-column">
-       <h4>Disponible sur :</h4>
+       <h4>Bientôt Disponible sur :</h4>
        <button>
          <img src="../assets/applestore-removebg-preview.png" alt="Logo Apple Store" class="store-logo">
          Apple Store
