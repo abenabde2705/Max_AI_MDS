@@ -13,3 +13,9 @@ services:
       - "5173:5173" # Mappe le port 3000 du conteneur au port 3000 de l'hôte
     command: npm run dev # Lance le serveur de développement Vue.js
     restart: unless-stopped
+  chat_api:
+    build:
+      context: ../chat_api
+    ports:
+      - "8000:8000"
+    restart: always
