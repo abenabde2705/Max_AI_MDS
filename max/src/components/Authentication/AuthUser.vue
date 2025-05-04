@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavBar from '../../layout/NavBar.vue'
-import Footer from '../../layout/footer.vue'
+import Footer from '../../layout/Footer.vue'
 
 export default {
   name: 'AuthPage',
