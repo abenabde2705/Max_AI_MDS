@@ -739,7 +739,33 @@ const renderMarkdown = (text) => {
     padding-bottom: 6rem;
   }
 }
+@media (max-width: 642px) {
+  .new-chat-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
 
+  .conversation-btn {
+    font-size: 0.85rem;
+  }
+
+  .message-input {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  .send-button, .stop-button {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .send-icon, .stop-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  .app-container {
+justify-content: center !important;  }
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -69,36 +69,76 @@ export default {
       return true;
     },
     async handleSubmit() {
-      if (!this.validateForm()) return;
-      
-      this.loading = true;
-      
-      try {
-        // Simulation d'un délai de traitement
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        if (this.mode === 'login') {
-          // logique de connexion
-          console.log('Login:', this.form.email, this.form.password);
-          // this.$router.push('/dashboard');
-        } else {
-          // logique d'inscription
-          console.log('Register:', 
-            this.form.firstName,
-            this.form.lastName,
-            this.form.birthDate,
-            this.form.email,
-            this.form.password
-          );
-          // this.$router.push('/verification');
-        }
-      } catch (error) {
-        this.error = 'Une erreur est survenue. Veuillez réessayer.';
-        console.error('Auth error:', error);
-      } finally {
-        this.loading = false;
+  if (!this.validateForm()) return;
+
+  this.loading = true;
+
+  try {
+    if (this.mode === 'login') {
+      const response = await fetch('http://185.98.139.244/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: this.form.email,
+          password: this.form.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        this.error = data.message || 'Erreur lors de la connexion.';
+        return;
       }
-    },
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
+
+      //console.log('data', data);
+      //console.log('token', data.token);
+      //console.log('name', data.user.firstName + ' ' + data.user.lastName);
+    
+      this.$router.push('/chatbot');
+    } else {
+      // Calculer l'âge à partir de la date de naissance
+      const birthDate = new Date(this.form.birthDate);
+      const ageDiffMs = Date.now() - birthDate.getTime();
+      const ageDate = new Date(ageDiffMs);
+      const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
+      const response = await fetch('http://185.98.139.244/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          firstName: this.form.firstName,
+          lastName: this.form.lastName,
+          age: age,
+          email: this.form.email,
+          password: this.form.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        this.error = data.message || 'Erreur lors de l\'inscription.';
+        return;
+      }
+
+      this.$router.push('/chatbot');  // Redirige vers la page de vérification ou login
+    }
+  } catch (error) {
+    this.error = 'Une erreur est survenue. Veuillez réessayer.';
+    console.error('Auth error:', error);
+  } finally {
+    this.loading = false;
+  }
+}
+,
     goToLogin() {
       this.mode = 'login';
     },
