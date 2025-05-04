@@ -8,7 +8,7 @@ import DiscoveryOffer from './DiscoveryOffer.vue'
 import '../styles/gradients.css'
 import Abonnement from './Abonnement.vue' 
 import newsletter from './newsletter.vue'
-import Footer from '../layout/footer.vue'
+import Footer from '../layout/Footer.vue'
 import Mail from './Mail.vue'
 
 
