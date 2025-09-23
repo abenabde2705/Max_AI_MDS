@@ -1,6 +1,21 @@
-version: '3.8'
 
 services:
+  # mongo:
+  #   image: mongo:6
+  #   container_name: maxai-mongo
+  #   ports: [ "27017:27017" ]
+  #   volumes:
+  #     - ./docker-data/mongo:/data/db
+
+  # back:
+  #   build: ./server-app 
+  #   container_name: maxai-back
+  #   env_file: ./server-app/.env
+  #   ports: [ "3000:3000" ]
+  #   depends_on: [ mongo ]
+  #   volumes:
+  #     - ./server-app:/app
+  #   command: npm run dev
   frontend:
     build:
       context: ./max
@@ -9,7 +24,7 @@ services:
     restart: always
     depends_on:
       - chat_api
-
+   
   chat_api:
     build:
       context: ./chat_api
@@ -18,3 +33,5 @@ services:
     restart: always
     environment:
       - MISTRAL_KEY=P896w2DBvu1lvS5eeF8yn0Paz1TWMBKH
+    volumes:
+      - ./chat_api:/app 

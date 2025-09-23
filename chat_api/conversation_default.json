@@ -5,14 +5,6 @@
     },
     {
         "role": "assistant",
-        "content": "Bonjour ! Comment te sens-tu aujourd'hui ? Est-ce que le stress est toujours présent, ou y a-t-il autre chose qui te préoccupe ?\n\nSi tu veux parler de ce qui te stresse ou de toute autre chose qui te pèse, je suis là pour t'écouter. Parfois, simplement exprimer ce que l'on ressent peut aider à alléger le fardeau.\n\nSi tu préfères, nous pouvons aussi discuter de stratégies pour gérer le stress ou d'autres sujets qui t'intéressent. N'hésite pas à me dire ce qui te convient le mieux."
-    },
-    {
-        "role": "user",
-        "content": "hello"
-    },
-    {
-        "role": "assistant",
         "content": "Bonjour ! Comment vas-tu aujourd'hui ? Si tu te sens toujours stressé, sache que je suis ici pour t'écouter et t'aider à trouver des moyens de te sentir mieux.\n\nN'hésite pas à partager ce qui te préoccupe ou à poser des questions. Peut-être y a-t-il quelque chose de spécifique dont tu aimerais parler ?\n\nSi tu préfères, nous pouvons aussi explorer des techniques de relaxation ou d'autres stratégies pour gérer le stress. Dis-moi ce qui te convient le mieux."
     },
     {
@@ -86,5 +78,13 @@
     {
         "role": "assistant",
         "content": "Bonjour ! Comment te sens-tu aujourd'hui ? As-tu réussi à trouver un peu de paix ou de réconfort récemment ?\n\nSi tu veux parler de ce qui te stresse, de la perte de tes grands-parents, ou de toute autre chose qui te pèse, je suis là pour t'écouter. Parfois, simplement exprimer ce que l'on ressent peut aider à alléger le fardeau.\n\nSi tu préfères, nous pouvons aussi discuter de stratégies pour gérer le stress ou d'autres sujets qui t'intéressent. N'hésite pas à me dire ce qui te convient le mieux. Et si tu as des questions ou des préoccupations spécifiques, fais-le moi savoir. Je suis là pour t'aider."
+    },
+    {
+        "role": "user",
+        "content": "hello"
+    },
+    {
+        "role": "assistant",
+        "content": "**Coucou !** 🌞\n\nComment ça va aujourd’hui ? Un petit mot, une émotion à partager, ou juste envie de discuter ?\nJe suis là pour t’écouter, que ce soit pour :\n- **Parler** de ce qui te traverse (stress, souvenirs, projets…)\n- **Trouver des outils** pour te sentir mieux (méditation, respiration, etc.)\n- **Ou simplement prendre des nouvelles** sans pression.\n\nDis-moi ce qui te ferait du bien en ce moment. 💙\n*(Et si tu préfères le silence, c’est ok aussi – je reste là.)*"
     }
 ]
