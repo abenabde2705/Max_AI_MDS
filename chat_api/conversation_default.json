@@ -5,22 +5,6 @@
     },
     {
         "role": "assistant",
-        "content": "Bonjour ! Comment vas-tu aujourd'hui ? Si tu te sens toujours stressé, sache que je suis ici pour t'écouter et t'aider à trouver des moyens de te sentir mieux.\n\nN'hésite pas à partager ce qui te préoccupe ou à poser des questions. Peut-être y a-t-il quelque chose de spécifique dont tu aimerais parler ?\n\nSi tu préfères, nous pouvons aussi explorer des techniques de relaxation ou d'autres stratégies pour gérer le stress. Dis-moi ce qui te convient le mieux."
-    },
-    {
-        "role": "user",
-        "content": "je suis grave stressé"
-    },
-    {
-        "role": "assistant",
-        "content": "Je suis vraiment désolé d'apprendre que tu te sens gravement stressé. Le stress intense peut être très difficile à gérer, mais il existe des moyens de l'atténuer. Voici quelques suggestions qui pourraient t'aider :\n\n1. **Respiration profonde** : Prends quelques minutes pour faire des exercices de respiration profonde. Inspire lentement par le nez en comptant jusqu'à quatre, retiens ton souffle en comptant jusqu'à quatre, puis expire lentement par la bouche en comptant jusqu'à quatre. Répète cet exercice plusieurs fois.\n\n2. **Méditation** : La méditation peut aider à calmer l'esprit. Il existe de nombreuses applications et vidéos en ligne qui proposent des méditations guidées pour le stress.\n\n3. **Activité physique** : Faire de l'exercice, même une courte promenade, peut aider à réduire le stress. Trouve une activité que tu aimes, comme la marche, le yoga ou le jogging.\n\n4. **Temps pour soi** : Prends du temps pour toi, que ce soit pour lire un livre, écouter de la musique ou simplement te reposer. C'est important de se donner du temps pour se ressourcer.\n\n5. **Parler à quelqu'un** : Parfois, parler de ce qui nous stresse à un ami, un membre de la famille ou un professionnel peut être très bénéfique. Si tu te sens à l'aise, tu peux aussi m'en parler.\n\nSi le stress devient trop intense, il peut être utile de consulter un professionnel de la santé mentale. Ils peuvent t'offrir des stratégies supplémentaires et un soutien adapté à ta situation.\n\nEst-ce qu'il y a quelque chose en particulier qui te stresse en ce moment ? Parfois, identifier la source du stress peut aider à trouver des solutions spécifiques."
-    },
-    {
-        "role": "user",
-        "content": "aide moi j'ai mes grandparents qui se sont décidé"
-    },
-    {
-        "role": "assistant",
         "content": "Je suis vraiment désolé d'apprendre que tu traverses une période difficile avec la perte de tes grands-parents. Perdre un être cher est toujours une épreuve émotionnelle intense. Il est tout à fait normal de ressentir du stress, de la tristesse, de la confusion et même de la colère. Voici quelques suggestions qui pourraient t'aider à traverser cette période :\n\n1. **Parler à quelqu'un** : Parfois, parler à un ami proche, un membre de la famille ou un professionnel peut être très bénéfique. Ils peuvent offrir un soutien émotionnel et t'aider à exprimer tes sentiments.\n\n2. **Prendre soin de toi** : Assure-toi de prendre soin de toi physiquement et émotionnellement. Cela inclut manger sainement, dormir suffisamment et faire de l'exercice si possible.\n\n3. **Activités apaisantes** : Engage-toi dans des activités qui te procurent du réconfort, comme la lecture, la méditation, l'écoute de musique ou la pratique d'un hobby.\n\n4. **Se rappeler les bons moments** : Parfois, se remémorer les bons moments passés avec tes grands-parents peut apporter un peu de réconfort. Tu peux regarder des photos, lire des lettres ou écrire sur tes souvenirs.\n\n5. **Chercher du soutien professionnel** : Si tu te sens dépassé par tes émotions, il peut être utile de consulter un psychologue ou un conseiller en deuil. Ils peuvent t'offrir des stratégies supplémentaires et un soutien adapté à ta situation.\n\n6. **Temps et patience** : Le deuil est un processus qui prend du temps. Sois patient avec toi-même et permets-toi de ressentir tes émotions sans te juger.\n\nN'hésite pas à me parler de ce que tu ressens ou à poser des questions si tu en as. Je suis là pour t'écouter et te soutenir."
     },
     {
@@ -86,5 +70,21 @@
     {
         "role": "assistant",
         "content": "**Coucou !** 🌞\n\nComment ça va aujourd’hui ? Un petit mot, une émotion à partager, ou juste envie de discuter ?\nJe suis là pour t’écouter, que ce soit pour :\n- **Parler** de ce qui te traverse (stress, souvenirs, projets…)\n- **Trouver des outils** pour te sentir mieux (méditation, respiration, etc.)\n- **Ou simplement prendre des nouvelles** sans pression.\n\nDis-moi ce qui te ferait du bien en ce moment. 💙\n*(Et si tu préfères le silence, c’est ok aussi – je reste là.)*"
+    },
+    {
+        "role": "user",
+        "content": "hello"
+    },
+    {
+        "role": "assistant",
+        "content": "**Salut toi !** 😊\n\nComment ça va *vraiment* aujourd’hui ? Pas besoin de filtre, pas besoin de \"ça va\" automatique – ici, tu peux tout dire :\n- Un poids sur le cœur ?\n- Une petite victoire à célébrer ?\n- Juste envie de silence ou de légèreté ?\n\nJe t’écoute sans jugement, avec bienveillance. Et si tu veux, on peut aussi :\n✨ **Respirer ensemble** (30 secondes de calme, je te guide ?)\n✨ **Parler de tes grands-parents** (un souvenir qui te fait sourire ?)\n✨ **Trouver un petit pas** pour aller mieux aujourd’hui (même tout simple).\n\nDis-moi ce qui te ferait du bien *maintenant*. 💛\n*(Ou juste un \"hello\" en retour, c’est déjà parfait.)*"
+    },
+    {
+        "role": "user",
+        "content": "helo"
+    },
+    {
+        "role": "assistant",
+        "content": "**Hey !** 👋✨\n\nComment ça va *aujourd’hui* ?\nUn mot, une émotion, un besoin… Je suis là pour t’écouter, sans attente.\n\n- **Envie de vider ton sac** ? Je suis une oreille bienveillante.\n- **Besoin d’un outil** pour te recentrer ? (respiration, méditation, etc.)\n- **Juste un check-in** pour dire \"je suis là\" ? C’est déjà super.\n\nTon tour ! (Ou même un simple smiley, je prends. 😉)\n\n*PS : Si tu veux, on peut commencer par une micro-méditation de 1 minute ensemble – je te guide ?* 💙"
     }
 ]

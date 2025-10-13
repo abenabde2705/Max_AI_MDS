@@ -1,0 +1,36 @@
+{
+  "name": "vite-react-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "firebase:serve": "firebase emulators:start",
+    "firebase:deploy": "npm run build && firebase deploy",
+    "firebase:deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "firebase:deploy:functions": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "@firebase/firestore": "^4.7.5",
+    "@sendgrid/mail": "^8.1.5",
+    "aos": "^2.3.4",
+    "axios": "^1.9.0",
+    "firebase": "^11.6.1",
+    "lucide-react": "^0.468.0",
+    "marked": "^15.0.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "esbuild": "^0.24.0",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^4.0.3",
+    "vite": "^5.4.2"
+  }
+}
