@@ -24,6 +24,9 @@ services:
     restart: always
     depends_on:
       - chat_api
+    volumes:
+      - ./frontend-react:/app
+      - /app/node_modules
    
   chat_api:
     build:
