@@ -1,82 +1,105 @@
-import mongoose from 'mongoose';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
-const userSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: [true, 'Le prénom est requis'],
-    trim: true
-  },
-  lastName: {
-    type: String,
-    required: [true, 'Le nom est requis'],
-    trim: true
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: () => uuidv4(),
+    primaryKey: true
   },
   email: {
-    type: String,
-    required: [true, 'L\'email est requis'],
+    type: DataTypes.STRING(255),
+    allowNull: false,
     unique: true,
-    lowercase: true,
-    trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Format d\'email invalide']
+    validate: {
+      isEmail: {
+        msg: 'Format d\'email invalide'
+      }
+    }
   },
-  password: {
-    type: String,
-    required: [true, 'Le mot de passe est requis'],
-    minlength: [6, 'Le mot de passe doit contenir au moins 6 caractères']
+  password_hash: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    validate: {
+      len: {
+        args: [6, 255],
+        msg: 'Le mot de passe doit contenir au moins 6 caractères'
+      }
+    }
+  },
+  is_anonymous: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  pseudonym: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  is_premium: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  // Champs additionnels pour compatibilité avec l'ancien système
+  firstName: {
+    type: DataTypes.STRING(100),
+    allowNull: true
+  },
+  lastName: {
+    type: DataTypes.STRING(100),
+    allowNull: true
   },
   age: {
-    type: Number,
-    required: [true, 'L\'âge est requis'],
-    min: [13, 'Vous devez avoir au moins 13 ans'],
-    max: [120, 'Âge invalide']
-  },
-  isVerified: {
-    type: Boolean,
-    default: false
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    validate: {
+      min: {
+        args: 13,
+        msg: 'Vous devez avoir au moins 13 ans'
+      },
+      max: {
+        args: 120,
+        msg: 'Âge invalide'
+      }
+    }
   },
   lastLogin: {
-    type: Date
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
-  timestamps: true
-});
-
-// Middleware pour hasher le mot de passe avant sauvegarde
-userSchema.pre('save', async function(next) {
-  // Ne hasher que si le mot de passe a été modifié
-  if (!this.isModified('password')) return next();
-
-  try {
-    // Hash du mot de passe avec un salt de 12
-    this.password = await bcrypt.hash(this.password, 12);
-    next();
-  } catch (error) {
-    next(error);
+  tableName: 'users',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  hooks: {
+    beforeCreate: async (user) => {
+      if (user.password_hash) {
+        user.password_hash = await bcrypt.hash(user.password_hash, 12);
+      }
+    },
+    beforeUpdate: async (user) => {
+      if (user.changed('password_hash')) {
+        user.password_hash = await bcrypt.hash(user.password_hash, 12);
+      }
+    }
   }
 });
 
-// Méthode pour comparer les mots de passe
-userSchema.methods.comparePassword = async function(candidatePassword) {
+// Méthodes d'instance
+User.prototype.comparePassword = async function(candidatePassword) {
   try {
-    return await bcrypt.compare(candidatePassword, this.password);
+    return await bcrypt.compare(candidatePassword, this.password_hash);
   } catch (error) {
     throw new Error('Erreur lors de la vérification du mot de passe');
   }
 };
 
-// Méthode pour obtenir les informations publiques de l'utilisateur
-userSchema.methods.toJSON = function() {
-  const user = this.toObject();
-  delete user.password;
-  return user;
+User.prototype.toJSON = function() {
+  const values = { ...this.get() };
+  delete values.password_hash;
+  return values;
 };
-
-const User = mongoose.model('User', userSchema);
 
 export default User;

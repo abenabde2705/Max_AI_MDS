@@ -1,46 +1,60 @@
 
 services:
-  mongo:
-    image: mongo:6
-    container_name: maxai-mongo
-    ports: [ "27017:27017" ]
-    volumes:
-      - ./docker-data/mongo:/data/db
+  postgres:
+    image: postgres:15
+    container_name: maxai-postgres
+    ports: [ "5432:5432" ]
     environment:
-      - MONGO_INITDB_DATABASE=maxai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: maxai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./server-app 
     container_name: maxai-backend
     env_file: ./server-app/.env
     ports: [ "3000:3000" ]
-    depends_on: [ mongo ]
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - ./server-app:/app
       - /app/node_modules
     command: npm run dev
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/maxai
-  frontend:
-    build:
-      context: ./frontend-react
-    ports:
-      - "3001:3001"
-    restart: always
-    depends_on:
-      - chat_api
-      - backend
+      - DB_HOST=postgres
+      - DB_NAME=maxai
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_PORT=5432
+  web:
+    build: ./max
+    container_name: maxai-frontend
+    ports: [ "5173:5173" ]
     volumes:
-      - ./frontend-react:/app
+      - ./max:/app
       - /app/node_modules
-   
+    command: npm run dev -- --host
+    depends_on: [ backend ]
+
   chat_api:
     build:
       context: ./chat_api
+    container_name: maxai-chat-api
     ports:
       - "8000:8000"
     restart: always
     environment:
       - MISTRAL_KEY=P896w2DBvu1lvS5eeF8yn0Paz1TWMBKH
     volumes:
-      - ./chat_api:/app 
+      - ./chat_api:/app
+
+volumes:
+  postgres_data: 

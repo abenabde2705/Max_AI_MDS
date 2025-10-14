@@ -1,5 +1,5 @@
 import express from 'express';
-import User from '../models/User.js';
+import { User } from '../models/index.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -17,7 +17,9 @@ router.post('/register', async (req, res) => {
     }
 
     // Vérifier si l'utilisateur existe déjà
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ 
+      where: { email: email.toLowerCase() } 
+    });
     if (existingUser) {
       return res.status(400).json({
         message: 'Un compte existe déjà avec cet email'
@@ -25,24 +27,23 @@ router.post('/register', async (req, res) => {
     }
 
     // Créer un nouvel utilisateur
-    const user = new User({
+    const user = await User.create({
       firstName,
       lastName,
       email: email.toLowerCase(),
-      password,
-      age: parseInt(age)
+      password_hash: password,
+      age: parseInt(age),
+      is_anonymous: false
     });
 
-    await user.save();
-
     // Générer un token JWT
-    const token = generateToken(user._id);
+    const token = generateToken(user.id);
 
     res.status(201).json({
       message: 'Inscription réussie',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -86,7 +87,9 @@ router.post('/login', async (req, res) => {
     }
 
     // Trouver l'utilisateur
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ 
+      where: { email: email.toLowerCase() } 
+    });
     if (!user) {
       return res.status(401).json({
         message: 'Email ou mot de passe incorrect'
@@ -102,22 +105,21 @@ router.post('/login', async (req, res) => {
     }
 
     // Mettre à jour la date de dernière connexion
-    user.lastLogin = new Date();
-    await user.save();
+    await user.update({ lastLogin: new Date() });
 
     // Générer un token JWT
-    const token = generateToken(user._id);
+    const token = generateToken(user.id);
 
     res.json({
       message: 'Connexion réussie',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
         age: user.age,
-        role: user.role
+        is_premium: user.is_premium
       }
     });
 
@@ -134,14 +136,13 @@ router.get('/profile', authenticateToken, async (req, res) => {
   try {
     res.json({
       user: {
-        id: req.user._id,
+        id: req.user.id,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
         email: req.user.email,
         age: req.user.age,
-        role: req.user.role,
-        isVerified: req.user.isVerified,
-        createdAt: req.user.createdAt,
+        is_premium: req.user.is_premium,
+        createdAt: req.user.created_at,
         lastLogin: req.user.lastLogin
       }
     });
@@ -157,24 +158,26 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
     const { firstName, lastName, email } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     const updateData = {};
     if (firstName) updateData.firstName = firstName;
     if (lastName) updateData.lastName = lastName;
     if (email) updateData.email = email.toLowerCase();
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-password');
+    const [updatedCount] = await User.update(updateData, {
+      where: { id: userId }
+    });
 
-    if (!updatedUser) {
+    if (updatedCount === 0) {
       return res.status(404).json({
         message: 'Utilisateur introuvable'
       });
     }
+
+    const updatedUser = await User.findByPk(userId, {
+      attributes: { exclude: ['password_hash'] }
+    });
 
     res.json({
       message: 'Profil mis à jour avec succès',
@@ -184,7 +187,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Erreur lors de la mise à jour du profil:', error);
     
-    if (error.code === 11000) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(400).json({
         message: 'Un compte existe déjà avec cet email'
       });
@@ -207,7 +210,7 @@ router.put('/change-password', authenticateToken, async (req, res) => {
       });
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findByPk(req.user.id);
     
     // Vérifier le mot de passe actuel
     const isCurrentPasswordValid = await user.comparePassword(currentPassword);
@@ -218,7 +221,7 @@ router.put('/change-password', authenticateToken, async (req, res) => {
     }
 
     // Mettre à jour le mot de passe
-    user.password = newPassword;
+    user.password_hash = newPassword;
     await user.save();
 
     res.json({
@@ -238,11 +241,11 @@ router.get('/verify-token', authenticateToken, (req, res) => {
   res.json({
     valid: true,
     user: {
-      id: req.user._id,
+      id: req.user.id,
       firstName: req.user.firstName,
       lastName: req.user.lastName,
       email: req.user.email,
-      role: req.user.role
+      is_premium: req.user.is_premium
     }
   });
 });
