@@ -2,6 +2,21 @@ import { beforeAll, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
+// Mock des modules problématiques
+vi.mock('webidl-conversions', () => ({
+  default: {},
+  __esModule: true
+}));
+
+vi.mock('whatwg-url', () => ({
+  URL: class URL {
+    constructor(url) {
+      this.href = url;
+    }
+  },
+  __esModule: true
+}));
+
 // Configuration globale pour les tests React
 beforeAll(() => {
   // Mock des APIs qui ne sont pas disponibles dans jsdom
