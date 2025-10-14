@@ -86,9 +86,9 @@ const NavBar = () => {
         </div>
         <div className="website-buttons">
           {!isLoggedIn ? (
-            <button className="connexion-btn cta">
-              <Link style={{ color: 'white', textDecoration: 'none' }} to="/auth">Connexion</Link>
-            </button>
+            <Link style={{ color: 'white', textDecoration: 'none' }} to="/auth" className="connexion-btn cta">
+              Connexion
+            </Link>
           ) : (
             <div className="user-menu">
               <button 
@@ -100,16 +100,17 @@ const NavBar = () => {
               {isDropdownOpen && (
                 <div className="dropdown">
                   <p>{userEmail}</p>
+                  <Link to="/dashboard" style={{ textDecoration: 'none', color: '#1c5372', padding: '0.5rem 1rem', display: 'block', width: '100%' }}>
+                    Tableau de bord
+                  </Link>
                   <button onClick={logout}>Déconnexion</button>
                 </div>
               )}
             </div>
           )}
-          <Link style={{ textDecoration: 'none' }} to="/chatbot">
-            <button className="inscription-btn cta">
-              <span> Parlez à Max</span>
-              <span className="arrow">→</span>
-            </button>
+          <Link style={{ textDecoration: 'none' }} to="/chatbot" className="inscription-btn cta">
+            <span> Parlez à Max</span>
+            <span className="arrow">→</span>
           </Link>
         </div>
       </nav>

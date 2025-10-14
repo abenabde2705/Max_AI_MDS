@@ -10,6 +10,8 @@ import SuccessPage from './components/SuccessPage.jsx';
 import ConditionsUtilisation from './components/Politics/ConditionsUtilisation.jsx';
 import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite.jsx';
 import NotFound from './components/NotFound.jsx';
+import Dashboard from './components/DashboardSimple.jsx';
+
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/chatbot" element={<Chat />} />
         <Route path="/auth" element={<AuthUser />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
         <Route path="/politics/politique-confidentialites" element={<PolitiqueConfidentialites />} />

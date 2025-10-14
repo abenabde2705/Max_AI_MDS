@@ -6,10 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     watch: {
-      usePolling: true, // Active le polling pour détecter les changements dans Docker
+      usePolling: true,
     },
-    host: true, // Permet à Vite d'écouter sur toutes les interfaces réseau
-    port: 3001, // Définit le port du serveur de développement
-    strictPort: true, // Assure que le port 5173 est toujours utilisé
+    host: true,
+    port: 3001,
+    strictPort: true,
   },
 });

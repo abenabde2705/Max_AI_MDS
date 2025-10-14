@@ -13,6 +13,8 @@ const HeroSection = ({ id, className }) => {
             Parlez-moi
           </Link>
         </button>
+        
+    
       </div>
     </div>
   );

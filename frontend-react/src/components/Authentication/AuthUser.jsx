@@ -77,7 +77,7 @@ const AuthUser = () => {
 
     try {
       if (mode === 'login') {
-        const response = await fetch('http://185.98.139.244/api/auth/login', {
+        const response = await fetch('http://localhost:3000/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -97,8 +97,9 @@ const AuthUser = () => {
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
+        localStorage.setItem('userId', data.user.id);
       
-        navigate('/chatbot');
+        navigate('/dashboard');
       } else {
         // Calculer l'âge à partir de la date de naissance
         const birthDate = new Date(form.birthDate);
@@ -106,7 +107,7 @@ const AuthUser = () => {
         const ageDate = new Date(ageDiffMs);
         const age = Math.abs(ageDate.getUTCFullYear() - 1970);
 
-        const response = await fetch('http://185.98.139.244/api/auth/register', {
+        const response = await fetch('http://localhost:3000/api/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -127,7 +128,11 @@ const AuthUser = () => {
           return;
         }
 
-        navigate('/chatbot');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
+        localStorage.setItem('userId', data.user.id);
+
+        navigate('/dashboard');
       }
     } catch (error) {
       setError('Une erreur est survenue. Veuillez réessayer.');

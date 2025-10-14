@@ -24,13 +24,13 @@ const Footer = () => {
         <div className="footer-column">
           <h4>Liens utiles</h4>
           <p>
-            <Link to="/Politics/ConditionsUtilisation">
-              <a>Conditions d'utilisation</a>
+            <Link to="/politics/conditions-utilisation">
+              Conditions d'utilisation
             </Link>
           </p>
           <p>
-            <Link to="/Politics/PolitiqueConfidentialites">
-              <a>Politique de confidentialité</a>
+            <Link to="/politics/politique-confidentialites">
+              Politique de confidentialité
             </Link>
           </p>
         </div>
