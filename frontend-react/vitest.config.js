@@ -17,6 +17,11 @@ export default defineConfig({
         '*.config.ts',
         'dist/'
       ]
+    },
+    server: {
+      deps: {
+        inline: ['webidl-conversions', 'whatwg-url']
+      }
     }
   }
 });
