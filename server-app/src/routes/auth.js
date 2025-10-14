@@ -161,9 +161,9 @@ router.put('/profile', authenticateToken, async (req, res) => {
     const userId = req.user.id;
 
     const updateData = {};
-    if (firstName) updateData.firstName = firstName;
-    if (lastName) updateData.lastName = lastName;
-    if (email) updateData.email = email.toLowerCase();
+    if (firstName) {updateData.firstName = firstName;}
+    if (lastName) {updateData.lastName = lastName;}
+    if (email) {updateData.email = email.toLowerCase();}
 
     const [updatedCount] = await User.update(updateData, {
       where: { id: userId }

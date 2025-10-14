@@ -1,12 +1,25 @@
+# Docker data
 docker-data/
 
-# Environment files
-.env
-**/.env
-*/.env
-*.env
-.env.local
-.env.*.local
+# Dependencies
+node_modules/
+**/node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+*/package-lock.json
+**/package-lock.json
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 
 # Environment files
 .env
@@ -15,3 +28,31 @@ docker-data/
 *.env
 .env.local
 .env.*.local
+
+# Build outputs
+dist/
+*/dist/
+**/dist/
+build/
+*/build/
+**/build/
+
+# Coverage reports
+coverage/
+*/coverage/
+**/coverage/
+*.lcov
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log

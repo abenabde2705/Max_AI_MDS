@@ -1,9 +1,15 @@
 {
-  "name": "max-ai-back",
+  "name": "max-ai-backend",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/server.js",
+    "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "lint": "eslint src --fix",
+    "lint:check": "eslint src",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
     "export:data": "node src/utils/exportData.js"
   },
   "dependencies": {
@@ -13,9 +19,16 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "sequelize": "^6.37.3",
     "pg": "^8.12.0",
     "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "eslint": "^9.37.0",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
   }
 }
