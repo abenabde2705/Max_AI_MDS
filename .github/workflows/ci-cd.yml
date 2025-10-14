@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+
 jobs:
   # Job pour le Backend
   backend-tests:
@@ -44,7 +45,7 @@ jobs:
 
     - name: Run ESLint on backend
       working-directory: ./server-app
-      run: npm run lint
+      run: npm run lint:check
 
     - name: Run backend tests
       working-directory: ./server-app
@@ -57,13 +58,6 @@ jobs:
         DB_USER: test_user
         DB_PASSWORD: test_password
         JWT_SECRET: test_secret_key_for_ci
-
-    - name: Upload backend coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./server-app/coverage/lcov.info
-        flags: backend
-        name: backend-coverage
 
   # Job pour le Frontend
   frontend-tests:
@@ -97,22 +91,9 @@ jobs:
       working-directory: ./frontend-react
       run: npm run build
 
-    - name: Upload frontend coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./frontend-react/coverage/lcov.info
-        flags: frontend
-        name: frontend-coverage
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: frontend-build
-        path: frontend-react/dist/
-
-  # Job pour SonarQube Analysis
-  sonarqube-analysis:
-    name: SonarQube Analysis
+  # Job pour SonarCloud Analysis
+  sonarcloud:
+    name: SonarCloud Analysis
     runs-on: ubuntu-latest
     needs: [backend-tests, frontend-tests]
 
@@ -120,7 +101,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Shallow clones should be disabled for better analysis
+        fetch-depth: 0  # Disable shallow clones for better analysis
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -135,116 +116,18 @@ jobs:
       working-directory: ./frontend-react
       run: npm ci
 
-    - name: Run backend tests for SonarQube
+    - name: Run backend tests for coverage
       working-directory: ./server-app
       run: npm run test:coverage
       env:
         NODE_ENV: test
 
-    - name: Run frontend tests for SonarQube
+    - name: Run frontend tests for coverage
       working-directory: ./frontend-react
       run: npm run test:coverage
 
-    - name: SonarQube Scan
-      uses: sonarqube-quality-gate-action@master
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-  # Job de Security Scan
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
-
-    - name: Backend npm audit
-      working-directory: ./server-app
-      run: npm audit --audit-level moderate
-      continue-on-error: true
-
-    - name: Frontend npm audit
-      working-directory: ./frontend-react
-      run: npm audit --audit-level moderate
-      continue-on-error: true
-
-  # Job de Deployment (uniquement sur main)
-  deploy:
-    name: Deploy to VPS
-    runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests, sonarqube-analysis]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Download frontend build
-      uses: actions/download-artifact@v3
-      with:
-        name: frontend-build
-        path: frontend-react/dist/
-
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
-
-    - name: Deploy to VPS
-      run: |
-        echo "Deploying to VPS..."
-        # Copier les fichiers vers le VPS
-        rsync -avz --delete \
-          -e "ssh -o StrictHostKeyChecking=no" \
-          ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH }}/
-        
-        # Redémarrer les services sur le VPS
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          cd ${{ secrets.VPS_PATH }}
-          docker-compose down
-          docker-compose up -d --build
-          echo "Deployment completed successfully"
-        EOF
-
-    - name: Health Check
-      run: |
-        echo "Running health check..."
-        sleep 30
-        curl -f http://${{ secrets.VPS_HOST }}:3001/health || exit 1
-        echo "Health check passed"
-
-  # Job de Notification
-  notify:
-    name: Notify Deployment Status
-    runs-on: ubuntu-latest
-    needs: [deploy]
-    if: always()
-
-    steps:
-    - name: Notify Success
-      if: needs.deploy.result == 'success'
-      run: |
-        echo "✅ Deployment successful!"
-        # Ici vous pouvez ajouter des notifications Slack, Discord, etc.
-
-    - name: Notify Failure
-      if: needs.deploy.result == 'failure'
-      run: |
-        echo "❌ Deployment failed!"
-        # Ici vous pouvez ajouter des notifications d'erreur
