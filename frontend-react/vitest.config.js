@@ -20,7 +20,18 @@ export default defineConfig({
     },
     server: {
       deps: {
-        inline: ['webidl-conversions', 'whatwg-url']
+        inline: [
+          /webidl-conversions/,
+          /whatwg-url/,
+          /node_modules\/webidl-conversions/,
+          /node_modules\/whatwg-url/
+        ]
+      }
+    },
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true
       }
     }
   }
