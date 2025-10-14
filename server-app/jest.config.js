@@ -1,17 +1,14 @@
 export default {
   testEnvironment: 'node',
-  transform: {},
-  // extensionsToTreatAsEsm: ['.js'], // Removed as it's auto-inferred
-  globals: {
-    'ts-jest': {
-      useESM: true
-    }
+  transform: {
+    '^.+\\.js$': 'babel-jest'
   },
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     'src/**/*.js',
     '!src/**/*.test.js',
-    '!src/server.js'
+    '!src/server.js',
+    '!src/tests/**'
   ],
   setupFilesAfterEnv: ['<rootDir>/src/tests/setup.js'],
   testMatch: [
