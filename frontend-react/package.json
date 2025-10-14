@@ -11,6 +11,7 @@
     "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --reporter=verbose",
     "test:ui": "vitest --ui",
     "firebase:serve": "firebase emulators:start",
     "firebase:deploy": "npm run build && firebase deploy",

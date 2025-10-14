@@ -18,21 +18,13 @@ export default defineConfig({
         'dist/'
       ]
     },
-    server: {
-      deps: {
-        inline: [
-          /webidl-conversions/,
-          /whatwg-url/,
-          /node_modules\/webidl-conversions/,
-          /node_modules\/whatwg-url/
-        ]
-      }
+    deps: {
+      external: ['webidl-conversions', 'whatwg-url']
     },
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true
-      }
-    }
+    pool: 'threads',
+    isolate: true
+  },
+  define: {
+    global: 'globalThis'
   }
 });
