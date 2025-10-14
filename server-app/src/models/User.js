@@ -91,7 +91,7 @@ const User = sequelize.define('User', {
 User.prototype.comparePassword = async function(candidatePassword) {
   try {
     return await bcrypt.compare(candidatePassword, this.password_hash);
-  } catch (error) {
+  } catch {
     throw new Error('Erreur lors de la vérification du mot de passe');
   }
 };

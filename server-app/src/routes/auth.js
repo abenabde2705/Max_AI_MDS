@@ -32,7 +32,7 @@ router.post('/register', async (req, res) => {
       lastName,
       email: email.toLowerCase(),
       password_hash: password,
-      age: parseInt(age),
+      age: parseInt(age, 10),
       is_anonymous: false
     });
 

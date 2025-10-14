@@ -25,7 +25,7 @@ export const authenticateToken = async (req, res, next) => {
     }
 
     req.user = user;
-    next();
+    return next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
       return res.status(403).json({ 
@@ -48,9 +48,9 @@ export const authenticateToken = async (req, res, next) => {
 // Middleware pour vérifier le rôle admin
 export const requireAdmin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
-    next();
+    return next();
   } else {
-    res.status(403).json({ 
+    return res.status(403).json({ 
       message: 'Accès réservé aux administrateurs' 
     });
   }

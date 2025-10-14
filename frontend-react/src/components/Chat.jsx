@@ -244,7 +244,7 @@ const Chat = () => {
       });
 
     } catch (error) {
-      console.error("Erreur lors de l'envoi du message :", error);
+      console.error('Erreur lors de l\'envoi du message :', error);
       const errorTime = new Date().getTime();
       
       // Afficher un message d'erreur
@@ -324,8 +324,8 @@ const Chat = () => {
               conversations.map((conv) => {
                 const conversationTitle = conv.lastMessage 
                   ? (conv.lastMessage.content.length > 30 
-                      ? `${conv.lastMessage.content.substring(0, 30)}...`
-                      : conv.lastMessage.content)
+                    ? `${conv.lastMessage.content.substring(0, 30)}...`
+                    : conv.lastMessage.content)
                   : 'Nouvelle conversation';
                 
                 const conversationDate = new Date(conv.started_at).toLocaleDateString('fr-FR', {

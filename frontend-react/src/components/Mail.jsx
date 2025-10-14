@@ -45,13 +45,13 @@ const Mail = () => {
         dateInscription: new Date()
       });
       
-      console.log("Document written with ID: ", docRef.id);
+      console.log('Document written with ID: ', docRef.id);
       setMessage('Inscription réussie !');
       setMessageType('success');
       resetForm();
     } catch (error) {
-      console.error("Erreur détaillée:", error.message);
-      setMessage("Une erreur est survenue lors de l'inscription");
+      console.error('Erreur détaillée:', error.message);
+      setMessage('Une erreur est survenue lors de l\'inscription');
       setMessageType('error');
     } finally {
       setIsSubmitting(false);
@@ -131,7 +131,7 @@ const Mail = () => {
           )}
           
           <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Inscription en cours...' : "S'inscrire à la newsletter"}
+            {isSubmitting ? 'Inscription en cours...' : 'S\'inscrire à la newsletter'}
           </button>
         </div>
       </form>

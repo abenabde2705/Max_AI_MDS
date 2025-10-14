@@ -23,10 +23,10 @@ export default [
       'linebreak-style': ['error', 'unix'],
       'quotes': ['error', 'single'],
       'semi': ['error', 'always'],
-      'no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
-      'no-console': ['warn'],
+      'no-unused-vars': ['error', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_' }],
+      'no-console': ['off'], // Autoriser console.log dans un serveur
       'no-debugger': ['error'],
-      'consistent-return': ['error'],
+      'consistent-return': ['off'], // Désactiver pour les middlewares Express
       'curly': ['error'],
       'eqeqeq': ['error'],
       'no-eval': ['error'],

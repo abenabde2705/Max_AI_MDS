@@ -6,7 +6,7 @@ const PlanCard = ({
   description, 
   features, 
   buttonText, 
-  buttonStyle = "primary", 
+  buttonStyle = 'primary', 
   highlight = false 
 }) => {
   return (

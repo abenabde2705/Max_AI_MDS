@@ -6,20 +6,20 @@ import 'aos/dist/aos.css';
 
 const testimonials = [
   {
-    quote: "Max a changé la manière dont je gère mon anxiété. Je me sens enfin écouté.",
-    author: "Sophie, 20 ans"
+    quote: 'Max a changé la manière dont je gère mon anxiété. Je me sens enfin écouté.',
+    author: 'Sophie, 20 ans'
   },
   {
-    quote: "Grâce à Max, je ne me sens plus seul dans les moments difficiles.",
-    author: "Lucas, 28 ans"
+    quote: 'Grâce à Max, je ne me sens plus seul dans les moments difficiles.',
+    author: 'Lucas, 28 ans'
   },
   {
-    quote: "Avec Max, j'ai enfin trouvé une oreille attentive, sans jugement. Ça change tout.",
-    author: "Emma, 18 ans"
+    quote: 'Avec Max, j\'ai enfin trouvé une oreille attentive, sans jugement. Ça change tout.',
+    author: 'Emma, 18 ans'
   },
   {
-    quote: "Max est toujours là, même quand personne d'autre ne peut l'être. C'est rassurant.",
-    author: "Thomas, 23 ans"
+    quote: 'Max est toujours là, même quand personne d\'autre ne peut l\'être. C\'est rassurant.',
+    author: 'Thomas, 23 ans'
   }
 ];
 

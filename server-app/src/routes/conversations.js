@@ -1,5 +1,5 @@
 import express from 'express';
-import { Conversation, Message, User } from '../models/index.js';
+import { Conversation, Message } from '../models/index.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { Op } from 'sequelize';
 

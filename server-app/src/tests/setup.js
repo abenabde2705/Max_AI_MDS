@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, beforeEach } from '@jest/globals';
+import { beforeAll, afterAll, afterEach } from '@jest/globals';
 import { sequelize } from '../models/index.js';
 
 // Configuration globale pour les tests
@@ -17,7 +17,7 @@ afterEach(async () => {
   try {
     // Supprimer toutes les données de test
     await sequelize.truncate({ cascade: true, restartIdentity: true });
-  } catch (error) {
+  } catch {
     // Si truncate échoue, essayer de supprimer manuellement
     const { User, Conversation, Message } = await import('../models/index.js');
     await Message.destroy({ where: {}, force: true });

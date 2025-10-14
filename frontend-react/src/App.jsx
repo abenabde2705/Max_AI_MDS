@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/chatbot" element={<Chat />} />
         <Route path="/auth" element={<AuthUser />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
 
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
