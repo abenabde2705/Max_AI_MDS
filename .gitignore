@@ -1,1 +1,17 @@
 docker-data/
+
+# Environment files
+.env
+**/.env
+*/.env
+*.env
+.env.local
+.env.*.local
+
+# Environment files
+.env
+**/.env
+*/.env
+*.env
+.env.local
+.env.*.local
