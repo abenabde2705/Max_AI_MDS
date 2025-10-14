@@ -28,7 +28,9 @@ describe('Conversation Logic', () => {
 
     test('should validate conversation title length', () => {
       const validateTitle = (title) => {
-        if (!title || typeof title !== 'string') return false;
+        if (!title || typeof title !== 'string') {
+          return false;
+        }
         return title.length >= 1 && title.length <= 200;
       };
 
@@ -68,7 +70,9 @@ describe('Conversation Logic', () => {
 
     test('should validate message content', () => {
       const validateContent = (content) => {
-        if (!content || typeof content !== 'string') return false;
+        if (!content || typeof content !== 'string') {
+          return false;
+        }
         return content.trim().length > 0 && content.length <= 5000;
       };
 

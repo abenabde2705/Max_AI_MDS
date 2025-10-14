@@ -41,7 +41,7 @@ export default [
     }
   },
   {
-    files: ['**/*.test.js', '**/*.spec.js'],
+    files: ['**/*.test.js', '**/*.spec.js', 'src/tests/**/*.js'],
     languageOptions: {
       globals: {
         describe: 'readonly',
