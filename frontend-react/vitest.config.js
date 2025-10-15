@@ -18,9 +18,9 @@ export default defineConfig({
         'dist/'
       ]
     },
-    deps: {
-      external: ['webidl-conversions', 'whatwg-url']
-    },
+   deps: {
+    external: []
+  },
     pool: 'threads',
     isolate: true
   },
