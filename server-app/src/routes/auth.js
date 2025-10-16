@@ -4,7 +4,84 @@ import { authenticateToken, generateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Route d'inscription
+/**
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: Endpoints pour l'authentification des utilisateurs
+ */
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Inscription d'un nouvel utilisateur
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *               - password
+ *               - age
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 description: Prénom de l'utilisateur
+ *                 example: "Jean"
+ *               lastName:
+ *                 type: string
+ *                 description: Nom de famille
+ *                 example: "Dupont"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Adresse email
+ *                 example: "jean.dupont@email.com"
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: Mot de passe
+ *                 example: "monmotdepasse123"
+ *               age:
+ *                 type: integer
+ *                 minimum: 13
+ *                 description: Âge de l'utilisateur
+ *                 example: 25
+ *     responses:
+ *       201:
+ *         description: Inscription réussie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Inscription réussie"
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT pour l'authentification
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Données invalides ou utilisateur déjà existant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post('/register', async (req, res) => {
   try {
     const { firstName, lastName, email, password, age } = req.body;
@@ -74,7 +151,66 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Route de connexion
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Connexion d'un utilisateur
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Adresse email
+ *                 example: "jean.dupont@email.com"
+ *               password:
+ *                 type: string
+ *                 description: Mot de passe
+ *                 example: "monmotdepasse123"
+ *     responses:
+ *       200:
+ *         description: Connexion réussie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Connexion réussie"
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT pour l'authentification
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Données manquantes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Identifiants incorrects
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;

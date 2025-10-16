@@ -5,7 +5,73 @@ import { Op } from 'sequelize';
 
 const router = express.Router();
 
-// GET /api/conversations - Lister toutes les conversations de l'utilisateur (triées par date)
+/**
+ * @swagger
+ * tags:
+ *   name: Conversations
+ *   description: Gestion des conversations
+ */
+
+/**
+ * @swagger
+ * /api/conversations:
+ *   get:
+ *     summary: Lister toutes les conversations de l'utilisateur
+ *     tags: [Conversations]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des conversations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 allOf:
+ *                   - $ref: '#/components/schemas/Conversation'
+ *                   - type: object
+ *                     properties:
+ *                       lastMessage:
+ *                         type: string
+ *                         description: Dernier message de la conversation
+ *                       messageCount:
+ *                         type: integer
+ *                         description: Nombre total de messages
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *   post:
+ *     summary: Créer une nouvelle conversation
+ *     tags: [Conversations]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Titre de la conversation (optionnel)
+ *                 example: "Discussion sur l'anxiété"
+ *     responses:
+ *       201:
+ *         description: Conversation créée avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Conversation'
+ *       401:
+ *         description: Non autorisé
+ *       500:
+ *         description: Erreur serveur
+ */
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const conversations = await Conversation.findAll({
