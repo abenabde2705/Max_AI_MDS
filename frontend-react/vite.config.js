@@ -9,7 +9,7 @@ export default defineConfig({
       usePolling: true,
     },
     host: true,
-    port: 3001,
+    port: 5173,
     strictPort: true,
   },
 });

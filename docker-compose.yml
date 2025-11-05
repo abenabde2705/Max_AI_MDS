@@ -35,11 +35,11 @@ services:
       - DB_PASSWORD=password
       - DB_PORT=5432
   web:
-    build: ./max
-    container_name: maxai-frontend
+    build: ./frontend-react
+    container_name: maxai-frontend-react
     ports: [ "5173:5173" ]
     volumes:
-      - ./max:/app
+      - ./frontend-react:/app
       - /app/node_modules
     command: npm run dev -- --host
     depends_on: [ backend ]
