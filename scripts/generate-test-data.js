@@ -98,7 +98,7 @@ const insertData = async (users, conversations, messages) => {
   try {
     await client.query('BEGIN');
     
-    console.log(`📝 Insertion de ${users.length} utilisateurs...`);
+    console.log(`Insertion de ${users.length} utilisateurs...`);
     for (const user of users) {
       await client.query(
         `INSERT INTO users (id, email, password_hash, created_at, updated_at) 
@@ -107,7 +107,7 @@ const insertData = async (users, conversations, messages) => {
       );
     }
     
-    console.log(`💬 Insertion de ${conversations.length} conversations...`);
+    console.log(`Insertion de ${conversations.length} conversations...`);
     for (const conv of conversations) {
       await client.query(
         `INSERT INTO conversations (id, user_id, started_at, ended_at) 
@@ -116,7 +116,7 @@ const insertData = async (users, conversations, messages) => {
       );
     }
     
-    console.log(`📨 Insertion de ${messages.length} messages...`);
+    console.log(`Insertion de ${messages.length} messages...`);
     for (const msg of messages) {
       await client.query(
         `INSERT INTO messages (id, conversation_id, sender, content, emotion_detected, sent_at) 
@@ -126,11 +126,11 @@ const insertData = async (users, conversations, messages) => {
     }
     
     await client.query('COMMIT');
-    console.log('✅ Toutes les données ont été insérées avec succès !');
+    console.log('Toutes les données ont été insérées avec succès !');
     
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('❌ Erreur lors de l\'insertion :', error);
+    console.error('Erreur lors de l\'insertion :', error);
     throw error;
   } finally {
     client.release();
@@ -145,13 +145,13 @@ const analyzeData = async () => {
     const convCount = await client.query('SELECT COUNT(*) FROM conversations');
     const msgCount = await client.query('SELECT COUNT(*) FROM messages');
     
-    console.log('\n📊 STATISTIQUES DE LA BASE DE DONNÉES:');
-    console.log(`👥 Utilisateurs: ${userCount.rows[0].count}`);
-    console.log(`💬 Conversations: ${convCount.rows[0].count}`);
-    console.log(`📨 Messages: ${msgCount.rows[0].count}`);
+    console.log('\nSTATISTIQUES DE LA BASE DE DONNÉES:');
+    console.log(`Utilisateurs: ${userCount.rows[0].count}`);
+    console.log(`Conversations: ${convCount.rows[0].count}`);
+    console.log(`Messages: ${msgCount.rows[0].count}`);
     
     // Analyse des performances avec EXPLAIN ANALYZE
-    console.log('\n🔍 ANALYSE DES PERFORMANCES:');
+    console.log('\nANALYSE DES PERFORMANCES:');
     
     const queries = [
       {
@@ -173,7 +173,7 @@ const analyzeData = async () => {
     
     for (const query of queries) {
       if (query.params[0]) {
-        console.log(`\n🔎 ${query.name}:`);
+        console.log(`\n ${query.name}:`);
         const result = await client.query(query.sql, query.params);
         console.log(result.rows.map(row => row['QUERY PLAN']).join('\n'));
       }
@@ -191,31 +191,31 @@ async function main() {
   const avgConversationsPerUser = parseInt(args[1]) || 5;
   const avgMessagesPerConversation = parseInt(args[2]) || 20;
   
-  console.log('🚀 GÉNÉRATION DE DONNÉES DE TEST POUR MAX AI');
-  console.log(`📊 Configuration:`);
+  console.log('GÉNÉRATION DE DONNÉES DE TEST POUR MAX AI');
+  console.log(`Configuration:`);
   console.log(`   - ${userCount} utilisateurs`);
   console.log(`   - ~${avgConversationsPerUser} conversations par utilisateur`);
   console.log(`   - ~${avgMessagesPerConversation} messages par conversation`);
   console.log(`   - ~${userCount * avgConversationsPerUser * avgMessagesPerConversation} messages au total\n`);
   
   try {
-    console.log('🎲 Génération des utilisateurs...');
+    console.log('Génération des utilisateurs...');
     const users = generateUsers(userCount);
     
-    console.log('💬 Génération des conversations...');
+    console.log('Génération des conversations...');
     const conversations = generateConversations(users, avgConversationsPerUser);
     
-    console.log('📨 Génération des messages...');
+    console.log('Génération des messages...');
     const messages = generateMessages(conversations, avgMessagesPerConversation);
     
-    console.log('💾 Insertion dans la base de données...');
+    console.log('Insertion dans la base de données...');
     await insertData(users, conversations, messages);
     
-    console.log('📈 Analyse des performances...');
+    console.log('Analyse des performances...');
     await analyzeData();
     
   } catch (error) {
-    console.error('❌ Erreur:', error.message);
+    console.error('Erreur:', error.message);
     process.exit(1);
   } finally {
     await pool.end();
