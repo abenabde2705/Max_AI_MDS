@@ -77,29 +77,26 @@ async function runBenchmark(name, sql, params, iterations = 10) {
   const times = [];
   
   try {
-    console.log(`\n🔬 Test: ${name}`);
-    console.log(`📝 SQL: ${sql.replace(/\s+/g, ' ').trim()}`);
-    console.log(`🔄 Itérations: ${iterations}`);
+    console.log(`\nTest: ${name}`);
+    console.log(`SQL: ${sql.replace(/\s+/g, ' ').trim()}`);
+    console.log(`Iterations: ${iterations}`);
     
-    // Warm-up
     await client.query(sql, params);
     
-    // Mesures de performance
     for (let i = 0; i < iterations; i++) {
       const start = process.hrtime.bigint();
       const result = await client.query(sql, params);
       const end = process.hrtime.bigint();
       
-      const durationMs = Number(end - start) / 1000000; // Convert nanoseconds to milliseconds
+      const durationMs = Number(end - start) / 1000000;
       times.push(durationMs);
       
       if (i === 0) {
-        console.log(`📊 Résultats: ${result.rows.length} lignes`);
+        console.log(`Results: ${result.rows.length} rows`);
       }
     }
     
-    // Analyse EXPLAIN
-    console.log(`\n📈 Plan d'exécution:`);
+    console.log(`\nExecution Plan:`);
     const explainResult = await client.query(`EXPLAIN ANALYZE ${sql}`, params);
     explainResult.rows.forEach(row => {
       console.log(`   ${row['QUERY PLAN']}`);
@@ -120,21 +117,20 @@ async function analyzeResults(benchmarkName, times) {
   const min = sorted[0];
   const max = sorted[sorted.length - 1];
   
-  console.log(`\n⚡ Résultats de performance pour "${benchmarkName}":`);
-  console.log(`   📊 Moyenne: ${avg.toFixed(2)}ms`);
-  console.log(`   🎯 Médiane: ${median.toFixed(2)}ms`);
-  console.log(`   📈 P95: ${p95.toFixed(2)}ms`);
-  console.log(`   ⬇️  Min: ${min.toFixed(2)}ms`);
-  console.log(`   ⬆️  Max: ${max.toFixed(2)}ms`);
+  console.log(`\nPerformance Results for "${benchmarkName}":`);
+  console.log(`   Average: ${avg.toFixed(2)}ms`);
+  console.log(`   Median: ${median.toFixed(2)}ms`);
+  console.log(`   P95: ${p95.toFixed(2)}ms`);
+  console.log(`   Min: ${min.toFixed(2)}ms`);
+  console.log(`   Max: ${max.toFixed(2)}ms`);
   
-  // Classification des performances
   let status;
-  if (p95 < 10) status = '🟢 EXCELLENT';
-  else if (p95 < 50) status = '🟡 BON';
-  else if (p95 < 100) status = '🟠 ACCEPTABLE';
-  else status = '🔴 LENT';
+  if (p95 < 10) status = 'EXCELLENT';
+  else if (p95 < 50) status = 'GOOD';
+  else if (p95 < 100) status = 'ACCEPTABLE';
+  else status = 'SLOW';
   
-  console.log(`   🚦 Statut: ${status}`);
+  console.log(`   Status: ${status}`);
   
   return { avg, median, p95, min, max, status };
 }
@@ -145,7 +141,7 @@ async function getSampleData() {
   try {
     const userResult = await client.query('SELECT id FROM users ORDER BY RANDOM() LIMIT 1');
     const convResult = await client.query('SELECT id FROM conversations ORDER BY RANDOM() LIMIT 1');
-    const recentDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 jours
+    const recentDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     
     return {
       userId: userResult.rows[0]?.id,
@@ -162,8 +158,7 @@ async function generatePerformanceReport() {
   const client = await pool.connect();
   
   try {
-    // Statistiques générales
-    console.log('\n📋 RAPPORT DE PERFORMANCE - MAX AI DATABASE');
+    console.log('\nPERFORMANCE REPORT - MAX AI DATABASE');
     console.log('='.repeat(50));
     
     const stats = await Promise.all([
@@ -174,14 +169,13 @@ async function generatePerformanceReport() {
       client.query('SELECT pg_size_pretty(pg_database_size(current_database())) as db_size')
     ]);
     
-    console.log(`👥 Utilisateurs: ${stats[0].rows[0].count}`);
-    console.log(`💬 Conversations: ${stats[1].rows[0].count}`);
-    console.log(`📨 Messages: ${stats[2].rows[0].count}`);
-    console.log(`💾 Taille table messages: ${stats[3].rows[0].size}`);
-    console.log(`🗄️  Taille base de données: ${stats[4].rows[0].db_size}`);
+    console.log(`Users: ${stats[0].rows[0].count}`);
+    console.log(`Conversations: ${stats[1].rows[0].count}`);
+    console.log(`Messages: ${stats[2].rows[0].count}`);
+    console.log(`Messages table size: ${stats[3].rows[0].size}`);
+    console.log(`Database size: ${stats[4].rows[0].db_size}`);
     
-    // Index existants
-    console.log(`\n🗂️  INDEX ACTUELS:`);
+    console.log(`\nCURRENT INDEXES:`);
     const indexResult = await client.query(`
       SELECT 
         schemaname,
@@ -194,7 +188,7 @@ async function generatePerformanceReport() {
     `);
     
     indexResult.rows.forEach(row => {
-      console.log(`   📌 ${row.tablename}.${row.indexname}`);
+      console.log(`   ${row.tablename}.${row.indexname}`);
       console.log(`      ${row.indexdef}`);
     });
     
@@ -210,17 +204,16 @@ async function main() {
     const sampleData = await getSampleData();
     
     if (!sampleData.userId || !sampleData.conversationId) {
-      console.log('\n❌ Pas assez de données pour les tests. Générez d\'abord des données avec:');
+      console.log('\nInsufficient data for tests. Generate data first with:');
       console.log('   node scripts/generate-test-data.js 1000 5 20');
       return;
     }
     
-    console.log('\n🚀 DÉBUT DES TESTS DE PERFORMANCE');
+    console.log('\nSTARTING PERFORMANCE TESTS');
     console.log('='.repeat(50));
     
     const results = [];
     
-    // Test 1: Conversations par utilisateur
     const times1 = await runBenchmark(
       benchmarkResults[0].name,
       benchmarkResults[0].sql,
@@ -231,7 +224,6 @@ async function main() {
       ...await analyzeResults(benchmarkResults[0].name, times1)
     });
     
-    // Test 2: Messages par conversation
     const times2 = await runBenchmark(
       benchmarkResults[1].name,
       benchmarkResults[1].sql,
@@ -242,7 +234,6 @@ async function main() {
       ...await analyzeResults(benchmarkResults[1].name, times2)
     });
     
-    // Test 3: Messages récents
     const times3 = await runBenchmark(
       benchmarkResults[2].name,
       benchmarkResults[2].sql,
@@ -253,7 +244,6 @@ async function main() {
       ...await analyzeResults(benchmarkResults[2].name, times3)
     });
     
-    // Test 4: Statistiques utilisateur
     const times4 = await runBenchmark(
       benchmarkResults[3].name,
       benchmarkResults[3].sql,
@@ -264,7 +254,6 @@ async function main() {
       ...await analyzeResults(benchmarkResults[3].name, times4)
     });
     
-    // Test 5: Recherche textuelle
     const times5 = await runBenchmark(
       benchmarkResults[4].name,
       benchmarkResults[4].sql,
@@ -275,33 +264,31 @@ async function main() {
       ...await analyzeResults(benchmarkResults[4].name, times5)
     });
     
-    // Résumé final
-    console.log('\n📊 RÉSUMÉ DES PERFORMANCES');
+    console.log('\nPERFORMANCE SUMMARY');
     console.log('='.repeat(50));
     results.forEach(result => {
       console.log(`${result.status} ${result.name}: P95=${result.p95.toFixed(2)}ms`);
     });
     
     const avgP95 = results.reduce((sum, r) => sum + r.p95, 0) / results.length;
-    console.log(`\n🎯 Performance moyenne P95: ${avgP95.toFixed(2)}ms`);
+    console.log(`\nAverage P95 performance: ${avgP95.toFixed(2)}ms`);
     
     if (avgP95 < 20) {
-      console.log('🏆 EXCELLENT! Les index fonctionnent parfaitement.');
+      console.log('EXCELLENT! Indexes working perfectly.');
     } else if (avgP95 < 50) {
-      console.log('👍 BON! Les performances sont acceptables.');
+      console.log('GOOD! Performance is acceptable.');
     } else {
-      console.log('⚠️  ATTENTION! Optimisations supplémentaires recommandées.');
+      console.log('WARNING! Additional optimizations recommended.');
     }
     
   } catch (error) {
-    console.error('❌ Erreur lors du benchmark:', error.message);
+    console.error('Error during benchmark:', error.message);
     process.exit(1);
   } finally {
     await pool.end();
   }
 }
 
-// Fix: Use performanceBenchmarks instead of benchmarkResults
 const benchmarkResults = performanceBenchmarks;
 
 if (require.main === module) {

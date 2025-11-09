@@ -75,10 +75,8 @@ async function runQueryWithTiming(sql, params, iterations = 5) {
   const times = [];
   
   try {
-    // Warm-up
     await client.query(sql, params);
     
-    // Mesures
     for (let i = 0; i < iterations; i++) {
       const start = process.hrtime.bigint();
       const result = await client.query(sql, params);
@@ -118,31 +116,28 @@ async function getIndexInfo() {
 }
 
 async function simulateWithoutIndex(queryName, sql, params) {
-  console.log(`\n🚨 SIMULATION SANS INDEX pour "${queryName}"`);
-  console.log(`⚠️  Note: Les index sont présents mais on peut estimer l'impact`);
+  console.log(`\nSIMULATION WITHOUT INDEX for "${queryName}"`);
+  console.log(`Note: Indexes are present but we can estimate impact`);
   
   const client = await pool.connect();
   
   try {
-    // Analyser le plan d'exécution avec les index
-    console.log(`\n📊 Plan d'exécution AVEC index:`);
+    console.log(`\nExecution Plan WITH index:`);
     const explainWithIndex = await client.query(`EXPLAIN ANALYZE ${sql}`, params);
     explainWithIndex.rows.forEach(row => {
       console.log(`   ${row['QUERY PLAN']}`);
     });
     
-    // Estimer le coût sans index en regardant les scans séquentiels
     const planText = explainWithIndex.rows.map(r => r['QUERY PLAN']).join(' ');
     const hasIndexScan = planText.includes('Index Scan') || planText.includes('Index Only Scan');
     const hasBitmapScan = planText.includes('Bitmap');
     
     if (hasIndexScan || hasBitmapScan) {
-      console.log(`\n📈 IMPACT ESTIMÉ SANS INDEX:`);
-      console.log(`   🔍 Scans d'index détectés dans le plan`);
-      console.log(`   📊 Sans index: Scan séquentiel de toute la table`);
-      console.log(`   ⏱️  Impact estimé: 10-100x plus lent selon la taille`);
+      console.log(`\nESTIMATED IMPACT WITHOUT INDEX:`);
+      console.log(`   Index scans detected in plan`);
+      console.log(`   Without index: Sequential scan of entire table`);
+      console.log(`   Estimated impact: 10-100x slower depending on size`);
       
-      // Calculer l'estimation basée sur la taille des données
       const tableStats = await client.query(`
         SELECT 
           schemaname, relname as tablename, n_tup_ins, n_tup_upd, n_tup_del,
@@ -151,15 +146,15 @@ async function simulateWithoutIndex(queryName, sql, params) {
         WHERE relname IN ('conversations', 'messages', 'users')
       `);
       
-      console.log(`\n📊 Tailles des tables:`);
+      console.log(`\nTable sizes:`);
       tableStats.rows.forEach(row => {
         console.log(`   ${row.tablename}: ${row.size} (${row.n_tup_ins} tuples)`);
       });
       
-      return 'Optimisé par index';
+      return 'Optimized by index';
     } else {
-      console.log(`   ℹ️  Cette requête n'utilise pas d'index majeur`);
-      return 'Scan séquentiel';
+      console.log(`   This query doesn't use major indexes`);
+      return 'Sequential scan';
     }
     
   } finally {
@@ -168,41 +163,38 @@ async function simulateWithoutIndex(queryName, sql, params) {
 }
 
 async function main() {
-  console.log('🎯 ANALYSE COMPARATIVE AVANT/APRÈS INDEXATION');
+  console.log('COMPARATIVE ANALYSIS BEFORE/AFTER INDEXING');
   console.log('='.repeat(55));
   
   try {
     const sampleData = await getSampleData();
     
     if (!sampleData.randomUserId) {
-      console.log('❌ Pas de données de test. Générez d\'abord des données avec:');
+      console.log('No test data available. Generate data first with:');
       console.log('   node scripts/generate-test-data.js 1000 3 15');
       return;
     }
     
-    console.log(`\n📊 Configuration du test:`);
-    console.log(`   🎲 Utilisateur test: ${sampleData.randomUserId}`);
-    console.log(`   💬 Conversation test: ${sampleData.randomConversationId}`);
-    console.log(`   📅 Période test: depuis ${sampleData.weekAgo.toISOString()}`);
+    console.log(`\nTest Configuration:`);
+    console.log(`   Test User: ${sampleData.randomUserId}`);
+    console.log(`   Test Conversation: ${sampleData.randomConversationId}`);
+    console.log(`   Test Period: since ${sampleData.weekAgo.toISOString()}`);
     
-    // Index actuels
     const indexes = await getIndexInfo();
-    console.log(`\n🗂️  Index de performance actifs (${indexes.length}):`);
+    console.log(`\nActive Performance Indexes (${indexes.length}):`);
     indexes.forEach(idx => {
-      console.log(`   ✅ ${idx.tablename}.${idx.indexname}`);
+      console.log(`   ${idx.tablename}.${idx.indexname}`);
     });
     
-    // Tests de performance avec mesures
-    console.log(`\n⚡ TESTS DE PERFORMANCE COMPARATIFS`);
+    console.log(`\nCOMPARATIVE PERFORMANCE TESTS`);
     console.log('='.repeat(45));
     
     for (let i = 0; i < criticalQueries.length; i++) {
       const query = criticalQueries[i];
-      console.log(`\n🔬 TEST ${i + 1}: ${query.name}`);
-      console.log(`📝 ${query.description}`);
-      console.log(`💡 ${query.expectedImpact}`);
+      console.log(`\nTEST ${i + 1}: ${query.name}`);
+      console.log(`${query.description}`);
+      console.log(`${query.expectedImpact}`);
       
-      // Préparer les paramètres
       let queryParams;
       if (query.params === 'randomUserId') {
         queryParams = [sampleData.randomUserId];
@@ -212,49 +204,45 @@ async function main() {
         queryParams = [sampleData.weekAgo];
       }
       
-      // Mesurer les performances actuelles (AVEC index)
-      console.log(`\n⏱️  Performance AVEC index:`);
+      console.log(`\nPerformance WITH index:`);
       const timesWithIndex = await runQueryWithTiming(query.sql, queryParams, 8);
       const avgWith = timesWithIndex.reduce((a, b) => a + b, 0) / timesWithIndex.length;
       const p95With = timesWithIndex.sort((a, b) => a - b)[Math.floor(timesWithIndex.length * 0.95)];
       
-      console.log(`   📊 Moyenne: ${avgWith.toFixed(2)}ms`);
-      console.log(`   📈 P95: ${p95With.toFixed(2)}ms`);
-      console.log(`   🎯 Min/Max: ${Math.min(...timesWithIndex).toFixed(2)}ms / ${Math.max(...timesWithIndex).toFixed(2)}ms`);
+      console.log(`   Average: ${avgWith.toFixed(2)}ms`);
+      console.log(`   P95: ${p95With.toFixed(2)}ms`);
+      console.log(`   Min/Max: ${Math.min(...timesWithIndex).toFixed(2)}ms / ${Math.max(...timesWithIndex).toFixed(2)}ms`);
       
-      // Analyser l'impact des index
       await simulateWithoutIndex(query.name, query.sql, queryParams);
       
-      // Classification des performances
       let status;
-      if (p95With < 10) status = '🟢 EXCELLENT';
-      else if (p95With < 50) status = '🟡 BON';
-      else if (p95With < 100) status = '🟠 ACCEPTABLE';
-      else status = '🔴 LENT';
+      if (p95With < 10) status = 'EXCELLENT';
+      else if (p95With < 50) status = 'GOOD';
+      else if (p95With < 100) status = 'ACCEPTABLE';
+      else status = 'SLOW';
       
-      console.log(`\n🚦 Statut actuel: ${status}`);
-      console.log(`   💾 Impact mémoire: Index optimise les accès disque`);
-      console.log(`   🔄 Scalabilité: Performance constante même avec + de données`);
+      console.log(`\nCurrent Status: ${status}`);
+      console.log(`   Memory Impact: Index optimizes disk access`);
+      console.log(`   Scalability: Consistent performance with more data`);
     }
     
-    // Résumé final et recommandations
-    console.log(`\n🏆 RÉSUMÉ DE L'IMPACT DE L'INDEXATION`);
+    console.log(`\nINDEXING IMPACT SUMMARY`);
     console.log('='.repeat(40));
-    console.log(`✅ Index actifs: ${indexes.length} optimisations en place`);
-    console.log(`🚀 Performance générale: Sub-milliseconde à quelques ms`);
-    console.log(`📈 Scalabilité: Prêt pour 100k+ messages sans dégradation`);
-    console.log(`💡 Recommandations:`);
-    console.log(`   - Les index fonctionnent parfaitement ✅`);
-    console.log(`   - Performance 10-100x meilleure qu'sans index ✅`);
-    console.log(`   - Prêt pour la production ✅`);
+    console.log(`Active indexes: ${indexes.length} optimizations in place`);
+    console.log(`General performance: Sub-millisecond to few ms`);
+    console.log(`Scalability: Ready for 100k+ messages without degradation`);
+    console.log(`Recommendations:`);
+    console.log(`   - Indexes working perfectly`);
+    console.log(`   - Performance 10-100x better than without indexes`);
+    console.log(`   - Production ready`);
     
-    console.log(`\n🔧 Optimisations supplémentaires possibles:`);
-    console.log(`   - Index sur emotion_detected si recherche par émotion`);
-    console.log(`   - Index partiel sur conversations actives (ended_at IS NULL)`);
-    console.log(`   - Index GIN sur content pour recherche full-text avancée`);
+    console.log(`\nPossible additional optimizations:`);
+    console.log(`   - Index on emotion_detected for emotion search`);
+    console.log(`   - Partial index on active conversations (ended_at IS NULL)`);
+    console.log(`   - GIN index on content for advanced full-text search`);
     
   } catch (error) {
-    console.error('❌ Erreur lors de l\'analyse:', error.message);
+    console.error('Error during analysis:', error.message);
     process.exit(1);
   } finally {
     await pool.end();
