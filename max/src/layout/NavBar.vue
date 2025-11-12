@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted,computed  } from 'vue'
+import FeedbackModal from '../components/FeedbackModal.vue'
 
 const menuItems = [
   { text: 'À Propos', href: '#about' },
@@ -15,6 +16,7 @@ const isMenuOpen = ref(false);
 const isDropdownOpen = ref(false);
 const isLoggedIn = ref(false);
 const userEmail = ref('');
+const isFeedbackOpen = ref(false);
 
 
 onMounted(() => {
@@ -49,8 +51,24 @@ const logout = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('name');
   isLoggedIn.value = false;
+  userEmail.value = '';
   isDropdownOpen.value = false;
+  // Rediriger vers la page d'accueil ou connexion
+  window.location.href = '/';
 };
+
+const openFeedback = () => {
+  isFeedbackOpen.value = true
+}
+
+const closeFeedback = () => {
+  isFeedbackOpen.value = false
+}
+
+const onFeedbackSubmitted = (data) => {
+  console.log('Feedback soumis:', data)
+  // Ici, on pourrait afficher une notification ou autre
+}
 
 
 </script>
@@ -95,8 +113,12 @@ const logout = () => {
     <div v-if="isDropdownOpen" class="dropdown">
       <p>{{ userEmail }}</p>
       <button @click="logout">Déconnexion</button>
+      <button @click="openFeedback" class="feedback-menu-btn">📬 Feedback</button>
     </div>
   </div>
+        <button v-if="isLoggedIn" @click="openFeedback" class="feedback-btn cta" title="Envoyer un feedback">
+          📬 Feedback
+        </button>
         <button class="inscription-btn cta">
           
           <router-link style=" text-decoration: none;" to="/chatbot"><a> Parlez à Max</a></router-link>
@@ -108,6 +130,13 @@ const logout = () => {
       <!-- Boutons -->
      
     </nav>
+
+    <!-- Modal Feedback -->
+    <FeedbackModal 
+      :is-open="isFeedbackOpen" 
+      @close="closeFeedback" 
+      @submitted="onFeedbackSubmitted"
+    />
   </div>
 </template>
 
@@ -369,6 +398,43 @@ const logout = () => {
     justify-content: space-between;
     width: 100%;
   }
+}
+
+/* Styles pour le bouton feedback */
+.feedback-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.feedback-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.feedback-menu-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.feedback-menu-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+</style>
 
   .logo {
     font-size: 1.2rem;

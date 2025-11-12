@@ -123,6 +123,7 @@ const sendMessage = async () => {
     // Appeler l'API Mistral avec une requête POST
     const response = await axios.post('http://localhost:8000/chat', {
       message: messageText,
+      session_id: `session-${activeConversation.value}` // Utiliser l'ID de conversation active
     }, { signal: abortController.value.signal });
 
     const responseTime = new Date().getTime();

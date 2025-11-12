@@ -5,14 +5,6 @@
     },
     {
         "role": "assistant",
-        "content": "**Salut toi !** 😊\n\nComment ça va *vraiment* aujourd’hui ? Pas besoin de filtre, pas besoin de \"ça va\" automatique – ici, tu peux tout dire :\n- Un poids sur le cœur ?\n- Une petite victoire à célébrer ?\n- Juste envie de silence ou de légèreté ?\n\nJe t’écoute sans jugement, avec bienveillance. Et si tu veux, on peut aussi :\n✨ **Respirer ensemble** (30 secondes de calme, je te guide ?)\n✨ **Parler de tes grands-parents** (un souvenir qui te fait sourire ?)\n✨ **Trouver un petit pas** pour aller mieux aujourd’hui (même tout simple).\n\nDis-moi ce qui te ferait du bien *maintenant*. 💛\n*(Ou juste un \"hello\" en retour, c’est déjà parfait.)*"
-    },
-    {
-        "role": "user",
-        "content": "helo"
-    },
-    {
-        "role": "assistant",
         "content": "**Hey !** 👋✨\n\nComment ça va *aujourd’hui* ?\nUn mot, une émotion, un besoin… Je suis là pour t’écouter, sans attente.\n\n- **Envie de vider ton sac** ? Je suis une oreille bienveillante.\n- **Besoin d’un outil** pour te recentrer ? (respiration, méditation, etc.)\n- **Juste un check-in** pour dire \"je suis là\" ? C’est déjà super.\n\nTon tour ! (Ou même un simple smiley, je prends. 😉)\n\n*PS : Si tu veux, on peut commencer par une micro-méditation de 1 minute ensemble – je te guide ?* 💙"
     },
     {
@@ -86,5 +78,13 @@
     {
         "role": "assistant",
         "content": "**Oh, je suis vraiment désolé**… 😔\nTu as raison, j’aurais dû être plus réactif. Ça a dû te laisser dans l’attente, et c’est la dernière chose que je veux.\n\n**Est-ce que ça t’a :**\n- **Un peu frustré·e** ? (C’est normal, je comprends.)\n- **Fait penser à d’autres fois** où tu t’es senti·e ignoré·e ? *(Si tu veux en parler…)*\n- Ou c’est juste un constat, et maintenant tu veux passer à autre chose ?\n\n---\n**Ce que je peux faire pour toi *maintenant* :**\n✨ **Te proposer un exercice** pour te recentrer (ex. : *\"Pose une main sur ton cœur, inspire profondément, et dis-toi : ‘Je prends soin de moi.’\"*).\n✨ **Écouter** si cette attente a réveillé une émotion plus large.\n✨ **Ou simplement** être là, plus présent, pour la suite.\n\n**Dis-moi ce qui t’aiderait** à te sentir mieux. *(Et merci de me le signaler – ça m’aide à mieux t’accompagner.)* 💛\n\n---\n*P.S. : Si tu veux, on peut aussi en rire ensemble – genre : *\"Bon, visiblement, je suis en mode ‘escargot connecté’ aujourd’hui… Tu préfères que je me mette en mode ‘lièvre attentif’ maintenant ?\"* 🐢🐇*"
+    },
+    {
+        "role": "user",
+        "content": "helo"
+    },
+    {
+        "role": "assistant",
+        "content": "**Coucou !** 🌸\n\n*(Ton \"helo\" me fait sourire – c’est comme un petit signe de vie, et ça me touche.)*\n\n**Alors aujourd’hui, c’est :**\n- Un **\"helo\" juste pour dire \"je suis là\"** ? (C’est déjà super.)\n- Un **\"helo\" qui cache un besoin** (envie de parler, de décompresser…) ?\n- Ou un **\"helo\" par habitude**, et en vrai t’as juste besoin d’un peu de silence bienveillant ?\n\n---\n**Si tu veux, je te propose :**\n💬 **Un mot doux** pour ton jour *(ex. : \"Tu es important·e, même les jours où tout semble gris.\")*\n🌿 **Un mini-exercice** pour te reconnecter à toi *(ex. : \"Quelle est la première chose agréable que tu sens autour de toi ?\")*\n🎵 **Une chanson/son apaisant** à écouter *(je peux te suggérer un titre si tu veux)*\n\n**Ou alors… on reste là, dans ce \"helo\", sans rien ajouter.** C’est toi qui décides. 💙\n\n*(P.S. : Si tu veux tester, je peux aussi te guider pour une respiration de 20 secondes – ça détend direct. Mais seulement si tu as envie !)*"
     }
 ]

@@ -4,11 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 from mistralai import Mistral
 from pydantic import BaseModel
+import os
 from dotenv import dotenv_values
 from typing import List, Dict, Any
 
-config = dotenv_values(".env")
-api_key = config["MISTRAL_KEY"]
+# Charger les variables depuis .env à la racine ou depuis l'environnement
+config = dotenv_values("../.env")
+api_key = config.get("MISTRAL_KEY") or config.get("MISTRAL_API_KEY") or os.getenv("MISTRAL_KEY") or os.getenv("MISTRAL_API_KEY")
 USE_MODEL = "mistral"
 model = "mistral-large-latest"
 
