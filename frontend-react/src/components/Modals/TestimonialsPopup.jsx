@@ -79,7 +79,6 @@ const TestimonialsPopup = ({ isOpen, onClose, onSubmitted }) => {
         email: email.trim(),
         text: testimonialText.trim(),
         createdAt: serverTimestamp(),
-        approved: false // Add an approval flag for moderation
       });
       
       setSuccessMessage('Merci pour votre témoignage !');
