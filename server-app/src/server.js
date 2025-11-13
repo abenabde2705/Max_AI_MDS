@@ -6,6 +6,7 @@ import sequelize from './config/db.js';
 import authRoutes from './routes/auth.js';
 import conversationRoutes from './routes/conversations.js';
 import messageRoutes from './routes/messages.js';
+import feedbackRoutes from './routes/feedback.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
 
 // Monitoring imports
@@ -13,7 +14,18 @@ import pino from 'pino';
 import { register, collectDefaultMetrics, Histogram, Counter } from 'prom-client';
 
 // Configuration des variables d'environnement
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// En development local, charger depuis .env centralisé
+if (process.env.NODE_ENV !== 'production' && !process.env.DOCKER_ENV) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  dotenv.config({ path: path.join(__dirname, '../../.env') });
+} else {
+  // En Docker, utiliser dotenv.config() standard
+  dotenv.config();
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -120,6 +132,7 @@ app.get('/metrics', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Route de test avec métrique custom
 app.get('/api/health', (req, res) => {

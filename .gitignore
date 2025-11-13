@@ -21,13 +21,15 @@ __pycache__/
 *.pyd
 .Python
 
-# Environment files
+# Environment files (tous les .env)
 .env
 **/.env
 */.env
-*.env
+/.env
 .env.local
 .env.*.local
+# Fichiers de sauvegarde
+**/.env.backup
 
 # Build outputs
 dist/

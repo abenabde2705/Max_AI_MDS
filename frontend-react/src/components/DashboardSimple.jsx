@@ -87,36 +87,23 @@ const Dashboard = () => {
             <p>Gérez votre compte et vos préférences depuis votre tableau de bord.</p>
           </div>
           <button onClick={handleLogout} className="logout-btn">
-            🚪 Déconnexion
+             Déconnexion
           </button>
         </div>
 
         {/* Stats Cards */}
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon">
-              👤
-            </div>
+           
             <div className="stat-info">
               <h3>Profil</h3>
               <p>Compte actif</p>
             </div>
           </div>
+     
           
           <div className="stat-card">
-            <div className="stat-icon">
-              🛡️
-            </div>
-            <div className="stat-info">
-              <h3>Sécurité</h3>
-              <p>Protégé</p>
-            </div>
-          </div>
           
-          <div className="stat-card">
-            <div className="stat-icon">
-              📅
-            </div>
             <div className="stat-info">
               <h3>Membre depuis</h3>
               <p>{formatDate(user.createdAt)}</p>
@@ -130,7 +117,6 @@ const Dashboard = () => {
           <div className="info-grid">
             <div className="info-card">
               <div className="info-header">
-                <span>📧</span>
                 <h3>Email</h3>
               </div>
               <p className="info-value">{user.email}</p>
@@ -138,7 +124,6 @@ const Dashboard = () => {
             
             <div className="info-card">
               <div className="info-header">
-                <span>👤</span>
                 <h3>Nom complet</h3>
               </div>
               <p className="info-value">{user.name}</p>
@@ -146,7 +131,6 @@ const Dashboard = () => {
             
             <div className="info-card">
               <div className="info-header">
-                <span>📅</span>
                 <h3>Date d'inscription</h3>
               </div>
               <p className="info-value">{formatDate(user.createdAt)}</p>
@@ -154,7 +138,6 @@ const Dashboard = () => {
             
             <div className="info-card">
               <div className="info-header">
-                <span>⚙️</span>
                 <h3>Statut du compte</h3>
               </div>
               <p className="info-value status-active">Actif</p>
@@ -167,17 +150,15 @@ const Dashboard = () => {
           <h2>Actions rapides</h2>
           <div className="actions-grid">
             <button className="action-btn" onClick={() => navigate('/chatbot')}>
-              💬 Parler à Max
+               Parler à Max
             </button>
             <button className="action-btn" onClick={() => navigate('/')}>
-              🏠 Accueil
+              Accueil
             </button>
             <button className="action-btn" onClick={() => window.location.href = '#about'}>
-              ℹ️ À propos
+               À propos
             </button>
-            <button className="action-btn logout-action" onClick={handleLogout}>
-              🚪 Se déconnecter
-            </button>
+        
           </div>
         </div>
       </div>

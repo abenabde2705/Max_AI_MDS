@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import FeedbackModal from '../components/FeedbackModal';
 import LinkedInIcon from '../assets/LinkedIn_icon.svg.png';
 import AppleStoreIcon from '../assets/applestore-removebg-preview.png';
 import PlayStoreIcon from '../assets/playstore-removebg-preview.png';
 
 const Footer = () => {
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <footer className="footer">
       {/* Footer content */}
@@ -41,6 +50,15 @@ const Footer = () => {
           <p>
             <a href="mailto:Max@outlook.com">Max@outlook.com</a>
           </p>
+          {isLoggedIn && (
+            <button 
+              onClick={() => setIsFeedbackOpen(true)}
+              className="feedback-footer-btn"
+              title="Envoyer un feedback"
+            >
+              Envoyer un Feedback
+            </button>
+          )}
         </div>
 
         {/* Colonne : Téléchargement */}
@@ -61,6 +79,14 @@ const Footer = () => {
       <div className="footer-bottom">
         <p>&copy; 2024 Max IA. Tous droits réservés.</p>
       </div>
+
+      {/* Modal Feedback */}
+      {isLoggedIn && (
+        <FeedbackModal 
+          isOpen={isFeedbackOpen} 
+          onClose={() => setIsFeedbackOpen(false)} 
+        />
+      )}
     </footer>
   );
 };
