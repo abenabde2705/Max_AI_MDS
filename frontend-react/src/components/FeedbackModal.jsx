@@ -105,7 +105,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     <div className="feedback-overlay" onClick={handleClose}>
       <div className="feedback-modal" onClick={(e) => e.stopPropagation()}>
         <div className="feedback-header">
-          <h2> Envoyer un Feedback</h2>
+          <h2>Envoyer un Feedback</h2>
           <button className="close-btn" onClick={handleClose} disabled={isSubmitting}>
             &times;
           </button>
@@ -150,12 +150,12 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 required
                 disabled={isSubmitting}
               >
-                <option value="bug"> Bug / Problème</option>
-                <option value="feature"> Nouvelle fonctionnalité</option>
-                <option value="improvement"> Amélioration</option>
-                <option value="ui_ux"> Interface utilisateur</option>
+                <option value="bug">Bug / Problème</option>
+                <option value="feature">Nouvelle fonctionnalité</option>
+                <option value="improvement">Amélioration</option>
+                <option value="ui_ux">Interface utilisateur</option>
                 <option value="performance">Performance</option>
-                <option value="other"> Autre</option>
+                <option value="other">Autre</option>
               </select>
             </div>
 
@@ -204,7 +204,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
               className="btn-submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? ' Envoi...' : ' Envoyer'}
+              {isSubmitting ? 'Envoi...' : 'Envoyer'}
             </button>
           </div>
         </form>

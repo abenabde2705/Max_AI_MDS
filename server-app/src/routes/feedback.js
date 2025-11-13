@@ -12,13 +12,13 @@ class WebhookService {
   // GitHub - Issues pour bugs critiques
   async createGitHubIssue(feedbackData) {
     if (!process.env.GITHUB_TOKEN) {
-      console.log('⚠️ GitHub token non configuré, skip GitHub issue');
+      console.log('GitHub token non configuré, skip GitHub issue');
       return { skipped: true, reason: 'Token manquant' };
     }
 
     const issueData = {
       title: `[${feedbackData.severity.toUpperCase()}] ${feedbackData.title}`,
-      body: `## 🐛 Feedback Utilisateur\n\n**Type:** ${feedbackData.type}\n**Sévérité:** ${feedbackData.severity}\n**Email:** ${feedbackData.userEmail}\n**Date:** ${feedbackData.createdAt}\n\n### Description\n${feedbackData.description}\n\n---\n*Feedback automatique depuis Max AI*`,
+      body: `## Feedback Utilisateur\n\n**Type:** ${feedbackData.type}\n**Sévérité:** ${feedbackData.severity}\n**Email:** ${feedbackData.userEmail}\n**Date:** ${feedbackData.createdAt}\n\n### Description\n${feedbackData.description}\n\n---\n*Feedback automatique depuis Max AI*`,
       labels: ['user-feedback', feedbackData.type, `severity:${feedbackData.severity}`]
     };
 
@@ -39,7 +39,7 @@ class WebhookService {
         url: response.data.html_url
       };
     } catch (error) {
-      console.error('❌ Erreur GitHub:', error.response?.data || error.message);
+      console.error('Erreur GitHub:', error.response?.data || error.message);
       throw new Error(`Failed to create GitHub issue: ${error.message}`);
     }
   }
@@ -47,11 +47,11 @@ class WebhookService {
   // Airtable - Tous les feedbacks  
   async createAirtableRecord(recordData) {
     if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
-      console.log('⚠️ Airtable non configuré, skip enregistrement');
+      console.log('Airtable non configuré, skip enregistrement');
       return { skipped: true, reason: 'Configuration manquante' };
     }
 
-    console.log('🔄 Tentative Airtable:', {
+    console.log('Tentative Airtable:', {
       baseId: process.env.AIRTABLE_BASE_ID,
       tableName: process.env.AIRTABLE_TABLE_NAME,
       hasApiKey: !!process.env.AIRTABLE_API_KEY
@@ -63,15 +63,38 @@ class WebhookService {
       tableName: process.env.AIRTABLE_TABLE_NAME || 'Feedback'
     };
 
+    // Mapping des valeurs pour correspondre aux options Airtable
+    const mapType = (type) => {
+      const mapping = {
+        'bug': 'Bug',
+        'feature': 'Feature Request',
+        'improvement': 'Enhancement', 
+        'ui_ux': 'Enhancement',
+        'performance': 'Enhancement',
+        'other': 'Other'
+      };
+      return mapping[type] || 'Other';
+    };
+
+    const mapSeverity = (severity) => {
+      const mapping = {
+        'low': 'Low',
+        'medium': 'Medium',
+        'high': 'High',
+        'critical': 'Critical'
+      };
+      return mapping[severity] || 'Medium';
+    };
+
     const payload = {
       records: [{
         fields: {
           'Title': recordData.title,
-          'Type': recordData.type,
-          'Severity': recordData.severity,
+          'Type': mapType(recordData.type),
+          'Severity': mapSeverity(recordData.severity),
           'Description': recordData.description,
           'User Email': recordData.userEmail,
-          'Status': 'New',
+          'Status': 'Open',
           'Created': recordData.createdAt,
           'Source': 'Max AI Web App',
           'Conversation ID': recordData.conversationId || '',
@@ -86,7 +109,7 @@ class WebhookService {
 
     try {
       const url = `https://api.airtable.com/v0/${airtableConfig.baseId}/${airtableConfig.tableName}`;
-      console.log('🌐 URL Airtable:', url);
+      console.log('URL Airtable:', url);
       
       const response = await axios.post(url, payload, {
         headers: {
@@ -95,14 +118,14 @@ class WebhookService {
         }
       });
 
-      console.log('✅ Succès Airtable:', response.data.records[0].id);
+      console.log('Succès Airtable:', response.data.records[0].id);
       
       return {
         id: response.data.records[0].id,
         url: `https://airtable.com/${airtableConfig.baseId}/${airtableConfig.tableName}`
       };
     } catch (error) {
-      console.error('❌ Erreur Airtable:', {
+      console.error('Erreur Airtable:', {
         status: error.response?.status,
         data: error.response?.data,
         message: error.message
@@ -252,7 +275,7 @@ router.post('/', authenticateToken, async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    console.log('📤 Traitement feedback:', {
+    console.log('Traitement feedback:', {
       title: feedbackData.title,
       type: feedbackData.type,
       severity: feedbackData.severity,
