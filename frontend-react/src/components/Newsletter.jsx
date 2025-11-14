@@ -52,14 +52,12 @@ const Newsletter = () => {
     <div className="newsletter-container" id="news">
       <div className="newsletter-content">
         <div className="newsletter-left">
-          <h2 className="newsletter-title">Max Newsletter</h2>
+          <h2 className="newsletter-title">MAX Newsletter</h2>
         </div>
         
         <div className="newsletter-right">
           <p className="newsletter-description">
-            Faites partie de l'histoire et
-            abonnez-vous à la newsletter pour des nouvelles et des mises à jour
-            sur nos ateliers
+            Faites partie de l'histoire et abonnez-vous à la newsletter pour des nouvelles et des mises à jour sur nos ateliers
           </p>
           
           <form onSubmit={handleSubmit} className="newsletter-form">
@@ -67,7 +65,7 @@ const Newsletter = () => {
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="max@mds.fr" 
+              placeholder="" 
               className="newsletter-input"
               aria-label="Email address"
               disabled={isSubmitting}
@@ -79,8 +77,7 @@ const Newsletter = () => {
               className="newsletter-button" 
               disabled={!isValidEmail || isSubmitting}
             >
-              <span className="arrow-icon">→</span>
-              {isSubmitting ? 'ENVOI...' : 'S\'ABONNER'}
+              {isSubmitting ? 'ENVOI...' : 'Découvrir Max'}
             </button>
           </form>
     
@@ -97,8 +94,7 @@ const Newsletter = () => {
           )}
           
           <p className="privacy-notice">
-            Nous prenons soin de vos données dans notre &nbsp;
-            <a href="#" className="privacy-link">politique de confidentialité</a>
+            Nous prenons soin de vos données dans notre <a href="#" className="privacy-link">politique de confidentialité</a>
           </p>
         </div>
       </div>

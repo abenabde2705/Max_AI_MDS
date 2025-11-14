@@ -55,19 +55,19 @@ const TestimonialsSection = ({ id, className }) => {
                 </p>
               </div>
             ))}
+          </div>
+          
+          <div className="testimonials-button-container">
             <button onClick={openPopup} className="voir-plus-btn">
-              Partagez votre témoignage
+              Voir plus
             </button>
-            
-            <TestimonialsPopup 
-              isOpen={isPopupOpen}
-              onClose={closePopup}
-              onSubmitted={handleSubmitted}
-            />
           </div>
-          <div className="illustration">
-            <img src={testi3} alt="Illustration témoignages" />
-          </div>
+          
+          <TestimonialsPopup 
+            isOpen={isPopupOpen}
+            onClose={closePopup}
+            onSubmitted={handleSubmitted}
+          />
         </div>
       </div>
     </section>

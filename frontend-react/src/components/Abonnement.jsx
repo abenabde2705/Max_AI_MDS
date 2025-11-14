@@ -9,51 +9,62 @@ const Abonnement = ({ className }) => {
   }, []);
 
   return (
-    <div id="app" className={className}>
+    <div id="app" className="Abonnement" >
       <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
-        <h1 id="title" className="title">ABONNEMENT</h1>
-        <p className="subtitle">
-          Choisissez l'abonnement qui vous convient et profitez pleinement de Max.<br />
-          <span className="subtitle-note">Sans engagement, annulable à tout moment.</span>
-        </p>
+        <h1 id="title" className="title">ABONNEMENTS</h1>
         
         <div className="plans-container">
           <PlanCard
-            title="Version Essai"
-            price="0 €"
-            description="Limite de 10 échanges"
+            title="Plan Free"
+            price="Gratuit"
+            priceLabel=""
+            description="Version D'essai"
             features={[
-              'Chatbot Max (écoute empathique)',
+              'Fonctionnalités Incluses :',
+              '',
+              'Limite De 10 Échanges',
+              '',
+              'Chatbot Max (Écoute Empathique)',
             ]}
-            buttonText="Gratuit"
-            buttonStyle="secondary"
+            buttonText=""
+            buttonStyle="free"
           />
           
           <PlanCard
-            title="Premium"
-            price="15€/mois ou 4,99€/semaine"
-            description="Sans engagement ou avec abonnement"
+            title="Plan Premium"
+            price="14,99€"
+            priceLabel=" / mois"
+            description="Engagement : Sans engagement ou avec abonnement"
             features={[
-              'Suivi émotionnel personnalisé',
-              'Statistiques bien-être',
-              'Recommendation des pros (coach)',
-              'Contenus exclusifs audio/vidéo',
-              'Journal émotionnel simple',
+              'Fonctionnalités Incluses :',
+              '',
+              'Suivi Émotionnel Personnalisé',
+              '',
+              'Statistiques Bien-Être',
+              '',
+              'Recommandation De Professionnels (Coach)',
+              '',
+              'Contenus Exclusifs Audio / Vidéo',
+              '',
+              'Journal Émotionnel Simple',
             ]}
-            buttonText="Plan Premium"
+            buttonText=""
             buttonStyle="primary"
             highlight={true}
           />
           
           <PlanCard
-            title="Campus"
-            price="8€/mois"
+            title="Plan Campus"
+            price="8€"
+            priceLabel=" / mois"
             description="Pris en charge par l'établissement"
             features={[
-              'Offre Premium à tous les étudiants concernés',
+              'Fonctionnalités Incluses :',
+              '',
+              'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
             ]}
-            buttonText="Plan Campus"
-            buttonStyle="secondary"
+            buttonText=""
+            buttonStyle="campus"
           />
         </div>
       </div>

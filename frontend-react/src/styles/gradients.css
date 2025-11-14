@@ -16,3 +16,73 @@
   );
   pointer-events: none;
 }
+
+/* Unified landing-page gradients (single gradient for all main sections)
+   Colors from designer: #514A9D -> #24C6DC */
+.gradient-bg,
+.gradient-bg2,
+.gradient-bg3 {
+  /* Use the same diagonal gradient for visual unity */
+  background: linear-gradient(360deg, #514A9D 0%, #24C6DC 100%);
+}
+
+/* About section background using public image */
+.about-section--bg {
+  background-repeat: no-repeat;
+  background-position: center center;
+  /* Change from cover to contain so the image is not zoomed/cropped */
+  background-size: 1500px 750px;
+  position: relative;
+  /* Ensure content is readable over the image */
+  color: #fff;
+}
+
+
+
+.about-section--bg > div {
+  /* make sure the inner content sits above overlay */
+  position: relative;
+  z-index: 1;
+}
+
+/* Typography and decorative lines for the About section to match the design */
+.about-section--bg > div {
+  padding: 0px 60px;
+  
+}
+
+.about-title {
+  font-family: 'TT Modernoir Trial', sans-serif;
+  font-size: 48px;
+  letter-spacing: 1px;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+  position: relative;
+  text-transform: uppercase;
+}
+
+
+
+.about-description p {
+  color: rgba(255,255,255,0.95);
+  line-height: 1.7;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.feature-text h2 {
+  font-family: 'TT Modernoir Trial', sans-serif;
+  font-size: 48px;
+  color: #fff;
+  margin-top: 20px;
+  margin-bottom: 16px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .about-section--bg > div {
+    padding: 40px 20px;
+  }
+  .about-title { font-size: 26px; }
+  .feature-text h2 { font-size: 20px; }
+}
