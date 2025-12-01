@@ -13,7 +13,7 @@ describe('Auth Utils', () => {
       expect(token).toBeDefined();
       expect(typeof token).toBe('string');
       
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as jwt.JwtPayload;
       expect(decoded.userId).toBe(userId);
     });
 
@@ -22,7 +22,7 @@ describe('Auth Utils', () => {
       process.env.JWT_SECRET = 'test-secret';
       
       const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as jwt.JwtPayload;
       
       expect(decoded.userId).toBe(userId);
       expect(decoded.exp).toBeDefined();

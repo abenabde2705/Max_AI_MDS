@@ -2,13 +2,14 @@
  * Script pour exécuter les migrations de performance
  */
 import { addPerformanceIndexes } from './migrations/001-add-performance-indexes.js';
-import sequelize from './config/db.js';
+import { sequelize } from './config/db.js';
+import { fileURLToPath } from 'node:url';
 
-const runMigration = async () => {
+const runMigration = async (): Promise<void> => {
   try {
     console.log('🚀 Démarrage de la migration des index de performance...');
     
-    await addPerformanceIndexes(sequelize.getQueryInterface(), sequelize);
+    await addPerformanceIndexes(sequelize.getQueryInterface(), sequelize.constructor as any);
     
     console.log('🎉 Migration terminée avec succès !');
     process.exit(0);
@@ -19,7 +20,8 @@ const runMigration = async () => {
 };
 
 // Exécuter la migration si ce fichier est appelé directement
-if (import.meta.url === `file://${process.argv[1]}`) {
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
   runMigration();
 }
 

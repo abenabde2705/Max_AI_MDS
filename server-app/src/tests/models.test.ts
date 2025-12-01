@@ -1,10 +1,26 @@
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
+interface UserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  age: number;
+  is_anonymous: boolean;
+  is_premium: boolean;
+}
+
+interface UserWithPassword extends Omit<UserData, 'is_anonymous' | 'is_premium'> {
+  password_hash: string;
+}
+
+interface SafeUser extends Omit<UserData, 'is_anonymous' | 'is_premium'> {}
+
 describe('User Model Logic', () => {
   describe('User Data Validation', () => {
     test('should validate user data structure', () => {
-      const userData = {
+      const userData: UserData = {
         id: uuidv4(),
         firstName: 'John',
         lastName: 'Doe',
@@ -32,7 +48,7 @@ describe('User Model Logic', () => {
     });
 
     test('should validate age constraints', () => {
-      const validateAge = (age) => {
+      const validateAge = (age: number): boolean => {
         return age >= 13 && age <= 120;
       };
 
@@ -81,7 +97,7 @@ describe('User Model Logic', () => {
 
   describe('User Object Methods', () => {
     test('should create safe user object without password', () => {
-      const userWithPassword = {
+      const userWithPassword: UserWithPassword = {
         id: uuidv4(),
         firstName: 'John',
         lastName: 'Doe',
@@ -90,7 +106,7 @@ describe('User Model Logic', () => {
         age: 25
       };
 
-      const safeUser = {
+      const safeUser: SafeUser = {
         id: userWithPassword.id,
         firstName: userWithPassword.firstName,
         lastName: userWithPassword.lastName,
@@ -98,7 +114,7 @@ describe('User Model Logic', () => {
         age: userWithPassword.age
       };
 
-      expect(safeUser.password_hash).toBeUndefined();
+      expect((safeUser as any).password_hash).toBeUndefined();
       expect(safeUser.id).toBe(userWithPassword.id);
       expect(safeUser.email).toBe(userWithPassword.email);
     });

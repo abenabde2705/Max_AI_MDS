@@ -5,59 +5,60 @@ import EmotionalJournal from './EmotionalJournal.js';
 import Recommendation from './Recommendation.js';
 import Subscription from './Subscription.js';
 
-// Définir les associations
+// Définir les associations avec types
 // User associations
 User.hasMany(Conversation, {
-  foreignKey: 'user_id',
+  foreignKey: 'userId',
   onDelete: 'CASCADE'
 });
 
 User.hasMany(Subscription, {
-  foreignKey: 'user_id',
+  foreignKey: 'userId',
   onDelete: 'CASCADE'
 });
 
 User.hasMany(EmotionalJournal, {
-  foreignKey: 'user_id',
+  foreignKey: 'userId',
   onDelete: 'CASCADE'
 });
 
 // Conversation associations
 Conversation.belongsTo(User, {
-  foreignKey: 'user_id'
+  foreignKey: 'userId'
 });
 
 Conversation.hasMany(Message, {
-  foreignKey: 'conversation_id',
+  foreignKey: 'conversationId',
   onDelete: 'CASCADE',
   as: 'messages'
 });
 
 Conversation.hasMany(EmotionalJournal, {
-  foreignKey: 'conversation_id',
+  foreignKey: 'conversationId',
   onDelete: 'CASCADE'
 });
 
 // Message associations
 Message.belongsTo(Conversation, {
-  foreignKey: 'conversation_id',
+  foreignKey: 'conversationId',
   as: 'conversation'
 });
 
 // EmotionalJournal associations
 EmotionalJournal.belongsTo(User, {
-  foreignKey: 'user_id'
+  foreignKey: 'userId'
 });
 
 EmotionalJournal.belongsTo(Conversation, {
-  foreignKey: 'conversation_id'
+  foreignKey: 'conversationId'
 });
 
 // Subscription associations
 Subscription.belongsTo(User, {
-  foreignKey: 'user_id'
+  foreignKey: 'userId'
 });
 
+// Export des modèles avec types
 export {
   User,
   Conversation,
@@ -66,3 +67,12 @@ export {
   Recommendation,
   Subscription
 };
+
+// Types pour les relations
+declare module 'sequelize' {
+  interface Model {
+    getUser?: () => Promise<User>;
+    getConversations?: () => Promise<Conversation[]>;
+    getMessages?: () => Promise<Message[]>;
+  }
+}

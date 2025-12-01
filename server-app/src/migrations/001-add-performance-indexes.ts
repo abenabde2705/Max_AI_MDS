@@ -4,8 +4,10 @@
  * Description: Optimisation des requêtes avec des index sur les colonnes fréquemment utilisées
  */
 
-const addPerformanceIndexes = async (queryInterface, Sequelize) => {
-  await queryInterface.sequelize.transaction(async (transaction) => {
+import { QueryInterface, DataTypes, Transaction } from 'sequelize';
+
+const addPerformanceIndexes = async (queryInterface: QueryInterface, Sequelize: typeof DataTypes): Promise<void> => {
+  await queryInterface.sequelize.transaction(async (transaction: Transaction) => {
     try {
       console.log('🔧 Ajout des index de performance...');
 
@@ -59,13 +61,13 @@ const addPerformanceIndexes = async (queryInterface, Sequelize) => {
   });
 };
 
-const removePerformanceIndexes = async (queryInterface, Sequelize) => {
-  await queryInterface.sequelize.transaction(async (transaction) => {
+const removePerformanceIndexes = async (queryInterface: QueryInterface, Sequelize: typeof DataTypes): Promise<void> => {
+  await queryInterface.sequelize.transaction(async (transaction: Transaction) => {
     try {
       console.log('🗑️ Suppression des index de performance...');
 
       // Supprimer tous les index ajoutés
-      const indexes = [
+      const indexes: string[] = [
         'idx_conversations_user_id',
         'idx_conversations_started_at',
         'idx_conversations_user_started',

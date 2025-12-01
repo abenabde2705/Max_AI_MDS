@@ -1,8 +1,7 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
 
 // Configuration Swagger
-const swaggerOptions = {
+const swaggerOptions: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
@@ -64,6 +63,10 @@ const swaggerOptions = {
               minimum: 13,
               description: 'Âge de l\'utilisateur'
             },
+            isPremium: {
+              type: 'boolean',
+              description: 'Statut premium de l\'utilisateur'
+            },
             createdAt: {
               type: 'string',
               format: 'date-time',
@@ -83,21 +86,28 @@ const swaggerOptions = {
               type: 'string',
               description: 'Titre de la conversation'
             },
-            user_id: {
+            userId: {
               type: 'string',
               format: 'uuid',
               description: 'ID de l\'utilisateur propriétaire'
             },
-            started_at: {
-              type: 'string',
-              format: 'date-time',
-              description: 'Date de début de la conversation'
+            isArchived: {
+              type: 'boolean',
+              description: 'Statut d\'archivage de la conversation'
             },
-            ended_at: {
+            emotionalContext: {
+              type: 'object',
+              description: 'Contexte émotionnel de la conversation'
+            },
+            createdAt: {
               type: 'string',
               format: 'date-time',
-              nullable: true,
-              description: 'Date de fin de la conversation'
+              description: 'Date de création de la conversation'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date de dernière modification'
             }
           }
         },
@@ -110,7 +120,7 @@ const swaggerOptions = {
               format: 'uuid',
               description: 'ID unique du message'
             },
-            conversation_id: {
+            conversationId: {
               type: 'string',
               format: 'uuid',
               description: 'ID de la conversation'
@@ -121,13 +131,103 @@ const swaggerOptions = {
             },
             sender: {
               type: 'string',
-              enum: ['user', 'ai'],
+              enum: ['user', 'assistant'],
               description: 'Expéditeur du message'
             },
-            sent_at: {
+            emotionDetected: {
+              type: 'string',
+              nullable: true,
+              description: 'Émotion détectée dans le message'
+            },
+            sentAt: {
               type: 'string',
               format: 'date-time',
               description: 'Date d\'envoi du message'
+            }
+          }
+        },
+        Subscription: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID unique de l\'abonnement'
+            },
+            userId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID de l\'utilisateur'
+            },
+            status: {
+              type: 'string',
+              enum: ['active', 'canceled'],
+              description: 'Statut de l\'abonnement'
+            },
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date de début de l\'abonnement'
+            },
+            endDate: {
+              type: 'string',
+              format: 'date-time',
+              nullable: true,
+              description: 'Date de fin de l\'abonnement'
+            }
+          }
+        },
+        Recommendation: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID unique de la recommandation'
+            },
+            name: {
+              type: 'string',
+              description: 'Nom de la recommandation'
+            },
+            description: {
+              type: 'string',
+              nullable: true,
+              description: 'Description de la recommandation'
+            },
+            type: {
+              type: 'string',
+              enum: ['video', 'article', 'exercise', 'professionnel de santé'],
+              description: 'Type de recommandation'
+            }
+          }
+        },
+        EmotionalJournal: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID unique de l\'entrée du journal émotionnel'
+            },
+            conversationId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID de la conversation associée'
+            },
+            userId: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID de l\'utilisateur'
+            },
+            globalEmotion: {
+              type: 'object',
+              nullable: true,
+              description: 'Pourcentage des émotions ressenties pendant une conversation'
+            },
+            dateLogged: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date d\'enregistrement de l\'entrée'
             }
           }
         },
@@ -152,10 +252,11 @@ const swaggerOptions = {
       }
     ]
   },
-  apis: ['./src/routes/*.js', './src/server.js'], // Chemins vers les fichiers contenant les annotations
+  apis: ['./src/routes/*.ts', './src/server.ts'], // Mis à jour pour les fichiers TypeScript
 };
 
 // Générer la documentation
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-export { swaggerSpec, swaggerUi };
+export { swaggerSpec };
+export { default as swaggerUi } from 'swagger-ui-express';

@@ -7,9 +7,9 @@ process.env.DB_USER = 'test_user';
 process.env.DB_PASSWORD = 'test_password';
 
 // Mock console pour réduire le bruit dans les tests
-global.console = {
+globalThis.console = {
   ...console,
   log: jest.fn(),
   error: jest.fn(),
   warn: jest.fn(),
-};
+} as any;

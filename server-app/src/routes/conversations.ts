@@ -1,9 +1,27 @@
-import express from 'express';
-import { Conversation, Message } from '../models/index.js';
+import express, { Request, Response } from 'express';
+import Conversation from '../models/Conversation.js';
+import Message from '../models/Message.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { Op } from 'sequelize';
 
 const router = express.Router();
+
+interface AuthenticatedRequest extends Request {
+    user?: {
+        id: string;
+        email: string;
+        username: string;
+        firstname?: string | undefined;
+        lastname?: string | undefined;
+        is_premium: boolean;
+    };
+}
+
+interface CreateConversationRequest extends AuthenticatedRequest {
+    body: {
+        title?: string;
+    };
+}
 
 /**
  * @swagger
@@ -72,104 +90,132 @@ const router = express.Router();
  *       500:
  *         description: Erreur serveur
  */
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
     const conversations = await Conversation.findAll({
-      where: { user_id: req.user.id },
+      where: { userId: req.user.id },
       include: [
         {
           model: Message,
           as: 'messages',
-          attributes: ['content', 'sender', 'sent_at'],
+          attributes: ['content', 'sender', 'sentAt'],
           limit: 1,
-          order: [['sent_at', 'DESC']],
+          order: [['sentAt', 'DESC']],
           required: false
         }
       ],
-      order: [['started_at', 'DESC']], // Triées par date (plus récente en premier)
-      attributes: ['id', 'started_at', 'ended_at']
+      order: [['createdAt', 'DESC']], // Triées par date (plus récente en premier)
+      attributes: ['id', 'title', 'isArchived', 'createdAt', 'updatedAt']
     });
 
     // Enrichir avec informations supplémentaires
     const enrichedConversations = conversations.map(conv => ({
       id: conv.id,
-      started_at: conv.started_at,
-      ended_at: conv.ended_at,
-      lastMessage: conv.messages[0] || null,
+      title: conv.title,
+      isArchived: conv.isArchived,
+      createdAt: conv.createdAt,
+      updatedAt: conv.updatedAt,
+      lastMessage: (conv as any).messages?.[0] || null,
       messageCount: 0 // Will be populated separately if needed
     }));
 
     res.json(enrichedConversations);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la récupération des conversations:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ 
       message: 'Erreur lors de la récupération des conversations', 
-      error: error.message 
+      error: message 
     });
   }
 });
 
 // POST /api/conversations - Créer une nouvelle conversation
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, async (req: CreateConversationRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
     const conversation = await Conversation.create({
-      user_id: req.user.id,
-      started_at: new Date()
+      userId: req.user.id,
+      title: req.body.title || 'Nouvelle conversation',
+      isArchived: false
     });
     
     res.status(201).json(conversation);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la création de la conversation:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ 
       message: 'Erreur lors de la création de la conversation', 
-      error: error.message 
+      error: message 
     });
   }
 });
 
 // GET /api/conversations/:id - Récupérer une conversation avec tous ses messages
-router.get('/:id', authenticateToken, async (req, res) => {
+router.get('/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
     const conversation = await Conversation.findOne({
       where: { 
         id: req.params.id,
-        user_id: req.user.id // Sécurité : seulement les conversations de l'utilisateur
+        userId: req.user.id // Sécurité : seulement les conversations de l'utilisateur
       },
       include: [
         {
           model: Message,
           as: 'messages',
-          order: [['sent_at', 'ASC']] // Messages triés chronologiquement
+          order: [['sentAt', 'ASC']] // Messages triés chronologiquement
         }
       ]
     });
     
     if (!conversation) {
-      return res.status(404).json({ message: 'Conversation non trouvée' });
+      res.status(404).json({ message: 'Conversation non trouvée' });
+      return;
     }
     
     res.json(conversation);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la récupération de la conversation:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ 
       message: 'Erreur lors de la récupération de la conversation', 
-      error: error.message 
+      error: message 
     });
   }
 });
 
 // DELETE /api/conversations/:id - Supprimer une conversation (suppression définitive)
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
     const conversation = await Conversation.findOne({
       where: { 
         id: req.params.id,
-        user_id: req.user.id // Sécurité : seulement les conversations de l'utilisateur
+        userId: req.user.id // Sécurité : seulement les conversations de l'utilisateur
       }
     });
     
     if (!conversation) {
-      return res.status(404).json({ message: 'Conversation non trouvée' });
+      res.status(404).json({ message: 'Conversation non trouvée' });
+      return;
     }
     
     // Supprimer la conversation (les messages seront supprimés automatiquement grâce à CASCADE)
@@ -179,85 +225,104 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       message: 'Conversation supprimée définitivement',
       deletedId: req.params.id
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la suppression de la conversation:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ 
       message: 'Erreur lors de la suppression de la conversation', 
-      error: error.message 
+      error: message 
     });
   }
 });
 
 // DELETE /api/conversations - Supprimer tout l'historique de l'utilisateur
-router.delete('/', authenticateToken, async (req, res) => {
+router.delete('/', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
     const deletedCount = await Conversation.destroy({
-      where: { user_id: req.user.id }
+      where: { userId: req.user.id }
     });
     
     res.json({ 
       message: 'Historique supprimé définitivement',
       deletedConversations: deletedCount
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la suppression de l\'historique:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ 
       message: 'Erreur lors de la suppression de l\'historique', 
-      error: error.message 
+      error: message 
     });
   }
 });
 
 // PUT /api/conversations/:id/end - Terminer une conversation
-router.put('/:id/end', authenticateToken, async (req, res) => {
+router.put('/:id/end', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
     const conversation = await Conversation.findOne({
       where: { 
         id: req.params.id,
-        user_id: req.user.id
+        userId: req.user.id
       }
     });
     
     if (!conversation) {
-      return res.status(404).json({ message: 'Conversation non trouvée' });
+      res.status(404).json({ message: 'Conversation non trouvée' });
+      return;
     }
     
-    conversation.ended_at = new Date();
+    conversation.isArchived = true;
     await conversation.save();
     
     res.json({ 
-      message: 'Conversation terminée',
+      message: 'Conversation archivée',
       conversation
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la fin de conversation:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ 
       message: 'Erreur lors de la fin de conversation', 
-      error: error.message 
+      error: message 
     });
   }
 });
 
 // GET /api/conversations/stats/summary - Statistiques des conversations de l'utilisateur
-router.get('/stats/summary', authenticateToken, async (req, res) => {
+router.get('/stats/summary', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
     const totalConversations = await Conversation.count({
-      where: { user_id: req.user.id }
+      where: { userId: req.user.id }
     });
     
     const totalMessages = await Message.count({
       include: [{
         model: Conversation,
         as: 'conversation',
-        where: { user_id: req.user.id },
+        where: { userId: req.user.id },
         attributes: []
       }]
     });
     
     const recentConversations = await Conversation.count({
       where: { 
-        user_id: req.user.id,
-        started_at: {
+        userId: req.user.id,
+        createdAt: {
           [Op.gte]: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 derniers jours
         }
       }
@@ -269,11 +334,12 @@ router.get('/stats/summary', authenticateToken, async (req, res) => {
       recentConversations,
       averageMessagesPerConversation: totalConversations > 0 ? Math.round(totalMessages / totalConversations) : 0
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors du calcul des statistiques:', error);
+    const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ 
       message: 'Erreur lors du calcul des statistiques', 
-      error: error.message 
+      error: message 
     });
   }
 });

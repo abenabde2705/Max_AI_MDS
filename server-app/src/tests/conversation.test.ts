@@ -1,9 +1,31 @@
 import { v4 as uuidv4 } from 'uuid';
 
+interface ConversationData {
+  id: string;
+  title: string;
+  user_id: string;
+  started_at: Date;
+  ended_at: Date | null;
+}
+
+interface MessageData {
+  id: string;
+  conversation_id: string;
+  content: string;
+  sender: 'user' | 'ai';
+  sent_at: Date;
+}
+
+interface MessageForSorting {
+  id: string;
+  sent_at: Date;
+  content: string;
+}
+
 describe('Conversation Logic', () => {
   describe('Conversation Data Structure', () => {
     test('should create valid conversation object', () => {
-      const conversation = {
+      const conversation: ConversationData = {
         id: uuidv4(),
         title: 'Test Conversation',
         user_id: uuidv4(),
@@ -27,7 +49,7 @@ describe('Conversation Logic', () => {
     });
 
     test('should validate conversation title length', () => {
-      const validateTitle = (title) => {
+      const validateTitle = (title: any): boolean => {
         if (!title || typeof title !== 'string') {
           return false;
         }
@@ -45,7 +67,7 @@ describe('Conversation Logic', () => {
 
   describe('Message Data Structure', () => {
     test('should create valid message object', () => {
-      const message = {
+      const message: MessageData = {
         id: uuidv4(),
         conversation_id: uuidv4(),
         content: 'Hello, this is a test message',
@@ -61,15 +83,15 @@ describe('Conversation Logic', () => {
     });
 
     test('should validate sender types', () => {
-      const validSenders = ['user', 'ai'];
+      const validSenders = new Set<'user' | 'ai'>(['user', 'ai']);
       
-      expect(validSenders.includes('user')).toBe(true);
-      expect(validSenders.includes('ai')).toBe(true);
-      expect(validSenders.includes('invalid')).toBe(false);
+      expect(validSenders.has('user')).toBe(true);
+      expect(validSenders.has('ai')).toBe(true);
+      expect(validSenders.has('invalid' as any)).toBe(false);
     });
 
     test('should validate message content', () => {
-      const validateContent = (content) => {
+      const validateContent = (content: any): boolean => {
         if (!content || typeof content !== 'string') {
           return false;
         }
@@ -91,20 +113,20 @@ describe('Conversation Logic', () => {
       const startTime = new Date('2024-01-01T10:00:00Z');
       const endTime = new Date('2024-01-01T10:30:00Z');
       
-      const duration = endTime - startTime;
+      const duration = endTime.getTime() - startTime.getTime();
       const durationInMinutes = duration / (1000 * 60);
       
       expect(durationInMinutes).toBe(30);
     });
 
     test('should order messages by timestamp', () => {
-      const messages = [
+      const messages: MessageForSorting[] = [
         { id: '1', sent_at: new Date('2024-01-01T10:02:00Z'), content: 'Second' },
         { id: '2', sent_at: new Date('2024-01-01T10:01:00Z'), content: 'First' },
         { id: '3', sent_at: new Date('2024-01-01T10:03:00Z'), content: 'Third' }
       ];
 
-      const sortedMessages = messages.sort((a, b) => new Date(a.sent_at) - new Date(b.sent_at));
+      const sortedMessages = messages.sort((a, b) => a.sent_at.getTime() - b.sent_at.getTime());
       
       expect(sortedMessages[0].content).toBe('First');
       expect(sortedMessages[1].content).toBe('Second');
@@ -117,7 +139,7 @@ describe('Conversation Logic', () => {
       const userId = uuidv4();
       const conversationOwner = uuidv4();
       
-      const checkOwnership = (requestUserId, conversationOwnerId) => {
+      const checkOwnership = (requestUserId: string, conversationOwnerId: string): boolean => {
         return requestUserId === conversationOwnerId;
       };
 

@@ -1,8 +1,40 @@
-import express from 'express';
-import { User } from '../models/index.js';
+import express, { Request, Response } from 'express';
+import User from '../models/User.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
 
 const router = express.Router();
+
+interface RegisterRequest extends Request {
+    body: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        password: string;
+        age: string | number;
+    };
+}
+
+interface LoginRequest extends Request {
+    body: {
+        email: string;
+        password: string;
+    };
+}
+
+interface UpdateProfileRequest extends Request {
+    body: {
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+    };
+}
+
+interface ChangePasswordRequest extends Request {
+    body: {
+        currentPassword: string;
+        newPassword: string;
+    };
+}
 
 /**
  * @swagger
@@ -82,25 +114,28 @@ const router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: RegisterRequest, res: Response): Promise<void> => {
   try {
     const { firstName, lastName, email, password, age } = req.body;
 
     // Validation des données
     if (!firstName || !lastName || !email || !password || !age) {
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Tous les champs sont requis'
       });
+      return;
     }
 
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ 
       where: { email: email.toLowerCase() } 
     });
+    
     if (existingUser) {
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Un compte existe déjà avec cet email'
       });
+      return;
     }
 
     // Créer un nouvel utilisateur
@@ -108,9 +143,10 @@ router.post('/register', async (req, res) => {
       firstName,
       lastName,
       email: email.toLowerCase(),
-      password_hash: password,
-      age: parseInt(age, 10),
-      is_anonymous: false
+      password: password, // Le modèle hashera automatiquement via le beforeSave hook
+      age: Number.parseInt(age.toString(), 10),
+      isAnonymous: false,
+      isPremium: false
     });
 
     // Générer un token JWT
@@ -128,21 +164,22 @@ router.post('/register', async (req, res) => {
       }
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de l\'inscription:', error);
     
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
-      return res.status(400).json({
+    if (error instanceof Error && error.name === 'SequelizeValidationError') {
+      res.status(400).json({
         message: 'Données invalides',
-        errors
+        error: error.message
       });
+      return;
     }
 
-    if (error.code === 11000) {
-      return res.status(400).json({
+    if (error instanceof Error && 'code' in error && error.code === '23505') {
+      res.status(400).json({
         message: 'Un compte existe déjà avec cet email'
       });
+      return;
     }
 
     res.status(500).json({
@@ -211,33 +248,37 @@ router.post('/register', async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: LoginRequest, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
     // Validation des données
     if (!email || !password) {
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Email et mot de passe requis'
       });
+      return;
     }
 
     // Trouver l'utilisateur
     const user = await User.findOne({ 
       where: { email: email.toLowerCase() } 
     });
+    
     if (!user) {
-      return res.status(401).json({
+      res.status(401).json({
         message: 'Email ou mot de passe incorrect'
       });
+      return;
     }
 
     // Vérifier le mot de passe
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(401).json({
+      res.status(401).json({
         message: 'Email ou mot de passe incorrect'
       });
+      return;
     }
 
     // Mettre à jour la date de dernière connexion
@@ -255,11 +296,11 @@ router.post('/login', async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         age: user.age,
-        is_premium: user.is_premium
+        isPremium: user.isPremium
       }
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la connexion:', error);
     res.status(500).json({
       message: 'Erreur serveur lors de la connexion'
@@ -268,21 +309,37 @@ router.post('/login', async (req, res) => {
 });
 
 // Route pour obtenir le profil utilisateur (protégée)
-router.get('/profile', authenticateToken, async (req, res) => {
+router.get('/profile', authenticateToken, async (req: Request, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({
+        message: 'Utilisateur non authentifié'
+      });
+      return;
+    }
+
+    const user = await User.findByPk(req.user.id);
+    
+    if (!user) {
+      res.status(404).json({
+        message: 'Utilisateur non trouvé'
+      });
+      return;
+    }
+
     res.json({
       user: {
-        id: req.user.id,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        email: req.user.email,
-        age: req.user.age,
-        is_premium: req.user.is_premium,
-        createdAt: req.user.created_at,
-        lastLogin: req.user.lastLogin
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        age: user.age,
+        isPremium: user.isPremium,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin
       }
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la récupération du profil:', error);
     res.status(500).json({
       message: 'Erreur serveur'
@@ -291,42 +348,63 @@ router.get('/profile', authenticateToken, async (req, res) => {
 });
 
 // Route pour mettre à jour le profil utilisateur (protégée)
-router.put('/profile', authenticateToken, async (req, res) => {
+router.put('/profile', authenticateToken, async (req: UpdateProfileRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({
+        message: 'Utilisateur non authentifié'
+      });
+      return;
+    }
+
     const { firstName, lastName, email } = req.body;
     const userId = req.user.id;
 
-    const updateData = {};
-    if (firstName) {updateData.firstName = firstName;}
-    if (lastName) {updateData.lastName = lastName;}
-    if (email) {updateData.email = email.toLowerCase();}
+    const updateData: Partial<{ firstName: string; lastName: string; email: string }> = {};
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    if (email) updateData.email = email.toLowerCase();
 
     const [updatedCount] = await User.update(updateData, {
       where: { id: userId }
     });
 
     if (updatedCount === 0) {
-      return res.status(404).json({
+      res.status(404).json({
         message: 'Utilisateur introuvable'
       });
+      return;
     }
 
-    const updatedUser = await User.findByPk(userId, {
-      attributes: { exclude: ['password_hash'] }
-    });
+    const updatedUser = await User.findByPk(userId);
+    
+    if (!updatedUser) {
+      res.status(404).json({
+        message: 'Utilisateur introuvable après mise à jour'
+      });
+      return;
+    }
 
     res.json({
       message: 'Profil mis à jour avec succès',
-      user: updatedUser
+      user: {
+        id: updatedUser.id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        age: updatedUser.age,
+        isPremium: updatedUser.isPremium
+      }
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la mise à jour du profil:', error);
     
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(400).json({
+    if (error instanceof Error && error.name === 'SequelizeUniqueConstraintError') {
+      res.status(400).json({
         message: 'Un compte existe déjà avec cet email'
       });
+      return;
     }
 
     res.status(500).json({
@@ -336,35 +414,51 @@ router.put('/profile', authenticateToken, async (req, res) => {
 });
 
 // Route pour changer le mot de passe (protégée)
-router.put('/change-password', authenticateToken, async (req, res) => {
+router.put('/change-password', authenticateToken, async (req: ChangePasswordRequest, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({
+        message: 'Utilisateur non authentifié'
+      });
+      return;
+    }
+
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({
+      res.status(400).json({
         message: 'Mot de passe actuel et nouveau mot de passe requis'
       });
+      return;
     }
 
     const user = await User.findByPk(req.user.id);
     
+    if (!user) {
+      res.status(404).json({
+        message: 'Utilisateur non trouvé'
+      });
+      return;
+    }
+    
     // Vérifier le mot de passe actuel
     const isCurrentPasswordValid = await user.comparePassword(currentPassword);
     if (!isCurrentPasswordValid) {
-      return res.status(401).json({
+      res.status(401).json({
         message: 'Mot de passe actuel incorrect'
       });
+      return;
     }
 
-    // Mettre à jour le mot de passe
-    user.password_hash = newPassword;
+    // Mettre à jour le mot de passe (le hook beforeSave s'occupera du hachage)
+    user.password = newPassword;
     await user.save();
 
     res.json({
       message: 'Mot de passe changé avec succès'
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Erreur lors du changement de mot de passe:', error);
     res.status(500).json({
       message: 'Erreur serveur'
@@ -373,13 +467,21 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 });
 
 // Route pour vérifier la validité du token
-router.get('/verify-token', authenticateToken, (req, res) => {
+router.get('/verify-token', authenticateToken, (req: Request, res: Response): void => {
+  if (!req.user) {
+    res.status(401).json({
+      valid: false,
+      message: 'Token invalide'
+    });
+    return;
+  }
+
   res.json({
     valid: true,
     user: {
       id: req.user.id,
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
+      firstName: req.user.firstname,
+      lastName: req.user.lastname,
       email: req.user.email,
       is_premium: req.user.is_premium
     }
