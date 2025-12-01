@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SuccessPage = () => {
+const SuccessPage: React.FC = () => {
   return (
     <div>
       <h1>Success Page - En cours de conversion...</h1>

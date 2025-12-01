@@ -1,9 +1,13 @@
 import React, { useEffect } from 'react';
-import PlanCard from './PlanCard.jsx';
+import PlanCard from './PlanCard';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-const Abonnement = ({ className }) => {
+interface AbonnementProps {
+  className?: string;
+}
+
+const Abonnement: React.FC<AbonnementProps> = ({ className }) => {
   useEffect(() => {
     AOS.init();
   }, []);

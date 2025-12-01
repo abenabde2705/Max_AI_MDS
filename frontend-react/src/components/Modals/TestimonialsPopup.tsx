@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 
-const TestimonialsPopup = ({ isOpen, onClose, onSubmitted }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [age, setAge] = useState('');
-  const [email, setEmail] = useState('');
-  const [testimonialText, setTestimonialText] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+interface TestimonialsPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmitted: () => void;
+}
+
+const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, onSubmitted }) => {
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
+  const [age, setAge] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [testimonialText, setTestimonialText] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
 
   const closePopup = () => {
     onClose();
@@ -24,7 +30,7 @@ const TestimonialsPopup = ({ isOpen, onClose, onSubmitted }) => {
     setSuccessMessage('');
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string): boolean => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
@@ -97,9 +103,10 @@ const TestimonialsPopup = ({ isOpen, onClose, onSubmitted }) => {
         closePopup();
       }, 2000);
       
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Erreur lors de l\'envoi du témoignage:', error);
-      setErrorMessage(`Une erreur est survenue: ${error.message}`);
+      const firebaseError = error as Error;
+      setErrorMessage(`Une erreur est survenue: ${firebaseError.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -184,7 +191,7 @@ const TestimonialsPopup = ({ isOpen, onClose, onSubmitted }) => {
               value={testimonialText}
               onChange={(e) => setTestimonialText(e.target.value)}
               placeholder="Partagez votre expérience avec MAX..."
-              rows="4"
+              rows={4}
               disabled={isSubmitting}
             />
           </div>

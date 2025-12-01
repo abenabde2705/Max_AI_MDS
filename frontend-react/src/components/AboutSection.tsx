@@ -1,7 +1,12 @@
 import React from 'react';
-import ChatExample from './ChatExample.jsx';
+import ChatExample from './ChatExample';
 
-const AboutSection = ({ id, className }) => {
+interface AboutSectionProps {
+  id?: string;
+  className?: string;
+}
+
+const AboutSection: React.FC<AboutSectionProps> = ({ id, className }) => {
   // Use the public folder image as background. Spaces and special chars encoded in URL.
   const bgUrl = '/LOGO%20rose%20pale@300x.png';
   return (

@@ -1,19 +1,23 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, FormEvent, ChangeEvent } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-const Newsletter = () => {
-  const [email, setEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+interface NewsletterProps {
+  className?: string;
+}
+
+const Newsletter: React.FC<NewsletterProps> = ({ className }) => {
+  const [email, setEmail] = useState<string>('');
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const isValidEmail = useMemo(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }, [email]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!isValidEmail) {
@@ -40,9 +44,10 @@ const Newsletter = () => {
       setTimeout(() => {
         setIsSubscribed(false);
       }, 3000);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Erreur lors de l\'inscription:', error);
-      setErrorMessage(`Erreur: ${error.message}`);
+      const firebaseError = error as Error;
+      setErrorMessage(`Erreur: ${firebaseError.message}`);
     } finally {
       setIsSubmitting(false);
     }

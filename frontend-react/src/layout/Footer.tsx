@@ -4,7 +4,7 @@ import LinkedInIcon from '../assets/LinkedIn_icon.svg.png';
 import AppleStoreIcon from '../assets/applestore-removebg-preview.png';
 import PlayStoreIcon from '../assets/playstore-removebg-preview.png';
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <footer className="footer">
       {/* Footer content */}

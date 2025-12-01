@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavBar from '../../layout/NavBar.jsx';
-import Footer from '../../layout/Footer.jsx';
+import NavBar from '../../layout/NavBar';
+import Footer from '../../layout/Footer';
 
-const AuthUser = () => {
+interface FormData {
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  acceptTerms: boolean;
+}
+
+const AuthUser: React.FC = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState('login');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [form, setForm] = useState<FormData>({
     firstName: '',
     lastName: '',
     birthDate: '',
@@ -18,12 +28,12 @@ const AuthUser = () => {
     acceptTerms: false
   });
 
-  const toggleMode = () => {
+  const toggleMode = (): void => {
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value, type, checked } = e.target;
     setForm(prev => ({
       ...prev,
@@ -69,7 +79,7 @@ const AuthUser = () => {
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!validateForm()) return;
 

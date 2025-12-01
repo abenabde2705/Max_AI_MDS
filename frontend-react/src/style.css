@@ -109,8 +109,20 @@ button {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 2rem;
-  background: rgba(28, 83, 114, 1);
-  backdrop-filter: blur(10px);
+  /* Liquid Glass Effect */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
   border-radius: 50px;
   width: 90%;
   height: 55px;
@@ -122,6 +134,7 @@ button {
 .nav-left {
   display: flex;
   align-items: center;
+  gap: 87px;
 }
 
 .logo {

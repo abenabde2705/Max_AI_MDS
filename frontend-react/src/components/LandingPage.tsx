@@ -1,17 +1,16 @@
 import React from 'react';
-import NavBar from '../layout/NavBar.jsx';
-import HeroSection from './HeroSection.jsx';
-import AboutSection from './AboutSection.jsx';
-import FeatureCards from './FeatureCards.jsx';
-import TestimonialsSection from './TestimonialsSection.jsx';
-import DiscoveryOffer from './DiscoveryOffer.jsx';
+import NavBar from '../layout/NavBar';
+import HeroSection from './HeroSection';
+import AboutSection from './AboutSection';
+import FeatureCards from './FeatureCards';
+import TestimonialsSection from './TestimonialsSection';
+import DiscoveryOffer from './DiscoveryOffer';
 import '../styles/gradients.css';
-import Abonnement from './Abonnement.jsx';
-import Newsletter from './Newsletter.jsx';
-import Footer from '../layout/Footer.jsx';
-import Mail from './Mail.jsx';
+import Abonnement from './Abonnement';
+import Newsletter from './Newsletter';
+import Footer from '../layout/Footer';
 
-const LandingPage = () => {
+const LandingPage: React.FC = () => {
   return (
     <div className="landing-page gradient-bg2">
       <div>

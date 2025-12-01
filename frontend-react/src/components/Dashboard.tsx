@@ -2,9 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Calendar, LogOut, Settings, Shield } from 'lucide-react';
 
-const Dashboard = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+interface UserData {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  name: string;
+  createdAt?: string;
+}
+
+const Dashboard: React.FC = () => {
+  const [user, setUser] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,7 +60,7 @@ const Dashboard = () => {
     navigate('/');
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       year: 'numeric',
       month: 'long',
@@ -119,7 +128,7 @@ const Dashboard = () => {
             </div>
             <div className="stat-info">
               <h3>Membre depuis</h3>
-              <p>{formatDate(user.createdAt)}</p>
+              <p>{formatDate(user.createdAt || '')}</p>
             </div>
           </div>
         </div>
@@ -149,7 +158,7 @@ const Dashboard = () => {
                 <Calendar size={20} />
                 <h3>Date d'inscription</h3>
               </div>
-              <p className="info-value">{formatDate(user.createdAt)}</p>
+              <p className="info-value">{formatDate(user.createdAt || '')}</p>
             </div>
             
             <div className="info-card">

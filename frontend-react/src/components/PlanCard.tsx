@@ -1,6 +1,17 @@
 import React from 'react';
 
-const PlanCard = ({ 
+interface PlanCardProps {
+  title: string;
+  price: string;
+  priceLabel?: string;
+  description: string;
+  features: string[];
+  buttonText?: string;
+  buttonStyle?: 'primary' | 'secondary' | 'free' | 'campus';
+  highlight?: boolean;
+}
+
+const PlanCard: React.FC<PlanCardProps> = ({ 
   title, 
   price, 
   priceLabel = '',

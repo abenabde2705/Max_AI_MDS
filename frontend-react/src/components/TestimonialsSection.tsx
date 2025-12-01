@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import TestimonialsPopup from './Modals/TestimonialsPopup.jsx';
-import { testi3 } from '../assets/images.js';
+import TestimonialsPopup from './Modals/TestimonialsPopup';
+import { testi3 } from '../assets/images';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-const testimonials = [
+interface Testimonial {
+  quote: string;
+  author: string;
+}
+
+interface TestimonialsSectionProps {
+  id?: string;
+  className?: string;
+}
+
+const testimonials: Testimonial[] = [
   {
     quote: 'Max a changé la manière dont je gère mon anxiété. Je me sens enfin écouté.',
     author: 'Sophie, 20 ans'
@@ -23,7 +33,7 @@ const testimonials = [
   }
 ];
 
-const TestimonialsSection = ({ id, className }) => {
+const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {

@@ -1,7 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const HeroSection = ({ id, className }) => {
+interface HeroSectionProps {
+  id?: string;
+  className?: string;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ id, className }) => {
   return (
     <div id={id} className={`hero ${className}`}>
       <div className="hero-content" data-aos="fade-up" data-aos-duration="500" data-aos-delay="100">
