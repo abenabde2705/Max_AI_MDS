@@ -14,6 +14,7 @@ interface AuthenticatedRequest extends Request {
         firstname?: string;
         lastname?: string;
         is_premium: boolean;
+        role: 'user' | 'admin' | 'moderator';
     };
 }
 

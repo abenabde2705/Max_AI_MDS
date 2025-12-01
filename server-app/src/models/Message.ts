@@ -62,20 +62,21 @@ Message.init({
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'sent_at',
+    field: 'created_at',
     defaultValue: DataTypes.NOW
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'sent_at'
+    field: 'updated_at',
+    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,
   tableName: 'messages',
   timestamps: true,
-  createdAt: 'sent_at',
-  updatedAt: 'sent_at'
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 export default Message;

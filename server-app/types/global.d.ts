@@ -13,6 +13,7 @@ declare global {
         firstname?: string | undefined;
         lastname?: string | undefined;
         is_premium: boolean;
+        role: 'user' | 'admin' | 'moderator';
       };
     }
   }
@@ -29,6 +30,7 @@ export interface UserAttributes {
   firstName?: string;
   lastName?: string;
   age?: number;
+  role: 'user' | 'admin' | 'moderator';
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;

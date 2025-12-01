@@ -59,7 +59,8 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
             username: user.pseudonym || '',
             firstname: user.firstName,
             lastname: user.lastName,
-            is_premium: user.isPremium
+            is_premium: user.isPremium,
+            role: user.role
         };
 
         next();
@@ -116,7 +117,8 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
                 username: user.pseudonym || '',
                 firstname: user.firstName,
                 lastname: user.lastName,
-                is_premium: user.isPremium
+                is_premium: user.isPremium,
+                role: user.role
             };
         }
 

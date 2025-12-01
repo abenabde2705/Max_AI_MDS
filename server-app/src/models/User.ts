@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserAttributes } from '../../types/global.js';
 
 // Interface pour les attributs optionnels lors de la création
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym' | 'role'> {}
 
 // Classe du modèle User avec tous les types
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -18,6 +18,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public firstName?: string;
   public lastName?: string;
   public age?: number;
+  public role!: 'user' | 'admin' | 'moderator';
   public lastLogin?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -25,11 +26,18 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   // Méthodes d'instance avec types
   public async comparePassword(candidatePassword: string): Promise<boolean> {
     try {
-      if (!this.password) {
+      // Accéder au password_hash directement depuis la base de données
+      const hashedPassword = this.getDataValue('password') || this.dataValues.password;
+      
+      if (!hashedPassword) {
+        console.error('Aucun hash trouvé pour utilisateur:', this.email);
         throw new Error('Aucun mot de passe défini pour cet utilisateur');
       }
-      return await bcrypt.compare(candidatePassword, this.password);
+      
+      console.log('Comparing password with hash:', hashedPassword.substring(0, 20) + '...');
+      return await bcrypt.compare(candidatePassword, hashedPassword);
     } catch (error) {
+      console.error('Erreur dans comparePassword:', error);
       throw new Error('Erreur lors de la vérification du mot de passe');
     }
   }
@@ -105,6 +113,17 @@ User.init({
       }
     }
   },
+  role: {
+    type: DataTypes.ENUM('user', 'admin', 'moderator'),
+    allowNull: false,
+    defaultValue: 'user',
+    validate: {
+      isIn: {
+        args: [['user', 'admin', 'moderator']],
+        msg: 'Le rôle doit être user, admin ou moderator'
+      }
+    }
+  },
   lastLogin: {
     type: DataTypes.DATE,
     allowNull: true
@@ -112,12 +131,14 @@ User.init({
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'created_at'
+    field: 'created_at',
+    defaultValue: DataTypes.NOW
   },
   updatedAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    field: 'updated_at'
+    field: 'updated_at',
+    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,
@@ -127,15 +148,23 @@ User.init({
   updatedAt: 'updated_at',
   hooks: {
     beforeCreate: async (user: User) => {
-      if (user.password) {
-        const hashedPassword = await bcrypt.hash(user.password, 12);
-        user.password = hashedPassword;
+      // Hasher le mot de passe avant création
+      const password = user.getDataValue('password') || user.dataValues.password;
+      if (password) {
+        console.log('Hashing password for new user:', user.email);
+        const hashedPassword = await bcrypt.hash(password, 12);
+        user.setDataValue('password', hashedPassword);
       }
     },
     beforeUpdate: async (user: User) => {
-      if (user.changed('password') && user.password) {
-        const hashedPassword = await bcrypt.hash(user.password, 12);
-        user.password = hashedPassword;
+      // Hasher le mot de passe avant mise à jour s'il a changé
+      if (user.changed('password')) {
+        const password = user.getDataValue('password');
+        if (password) {
+          console.log('Hashing password for user update:', user.email);
+          const hashedPassword = await bcrypt.hash(password, 12);
+          user.setDataValue('password', hashedPassword);
+        }
       }
     }
   }

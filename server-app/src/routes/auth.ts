@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import User from '../models/User.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
+import { requireAdmin } from '../middleware/roleAuth.js';
 
 const router = express.Router();
 
@@ -146,7 +147,8 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
       password: password, // Le modèle hashera automatiquement via le beforeSave hook
       age: Number.parseInt(age.toString(), 10),
       isAnonymous: false,
-      isPremium: false
+      isPremium: false,
+      role: 'user' // Par défaut, tous les nouveaux utilisateurs sont des utilisateurs normaux
     });
 
     // Générer un token JWT
@@ -262,7 +264,8 @@ router.post('/login', async (req: LoginRequest, res: Response): Promise<void> =>
 
     // Trouver l'utilisateur
     const user = await User.findOne({ 
-      where: { email: email.toLowerCase() } 
+      where: { email: email.toLowerCase() },
+      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isAnonymous', 'isPremium', 'age', 'lastLogin', 'createdAt', 'updatedAt'] // Spécifier tous les champs
     });
     
     if (!user) {
@@ -273,7 +276,13 @@ router.post('/login', async (req: LoginRequest, res: Response): Promise<void> =>
     }
 
     // Vérifier le mot de passe
+    console.log('Password provided:', password);
+    console.log('Stored hash:', user.password);
+    console.log('GetDataValue hash:', user.getDataValue('password'));
+    
     const isPasswordValid = await user.comparePassword(password);
+    console.log('Password comparison result:', isPasswordValid);
+    
     if (!isPasswordValid) {
       res.status(401).json({
         message: 'Email ou mot de passe incorrect'
@@ -486,6 +495,116 @@ router.get('/verify-token', authenticateToken, (req: Request, res: Response): vo
       is_premium: req.user.is_premium
     }
   });
+});
+
+/**
+ * @swagger
+ * /api/auth/create-admin:
+ *   post:
+ *     summary: Créer un compte administrateur (Admin seulement)
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *               - password
+ *               - role
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: "Super"
+ *               lastName:
+ *                 type: string
+ *                 example: "Admin"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "admin@maxai.com"
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: "adminPassword123"
+ *               role:
+ *                 type: string
+ *                 enum: [admin, moderator]
+ *                 example: "admin"
+ *     responses:
+ *       201:
+ *         description: Administrateur créé avec succès
+ *       403:
+ *         description: Accès refusé
+ *       409:
+ *         description: Email déjà utilisé
+ */
+router.post('/create-admin', authenticateToken, requireAdmin, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { firstName, lastName, email, password, role } = req.body;
+
+    // Validation
+    if (!firstName || !lastName || !email || !password || !role) {
+      res.status(400).json({
+        message: 'Tous les champs sont requis'
+      });
+      return;
+    }
+
+    // Vérifier que le rôle est valide
+    if (!['admin', 'moderator'].includes(role)) {
+      res.status(400).json({
+        message: 'Rôle invalide. Seuls admin et moderator sont autorisés.'
+      });
+      return;
+    }
+
+    // Vérifier si l'email existe déjà
+    const existingUser = await User.findOne({ 
+      where: { email: email.toLowerCase() } 
+    });
+
+    if (existingUser) {
+      res.status(409).json({
+        message: 'Un compte existe déjà avec cet email'
+      });
+      return;
+    }
+
+    // Créer l'administrateur
+    const adminUser = await User.create({
+      firstName,
+      lastName,
+      email: email.toLowerCase(),
+      password,
+      role,
+      isAnonymous: false,
+      isPremium: true // Les admins sont automatiquement premium
+    });
+
+    res.status(201).json({
+      message: `${role.charAt(0).toUpperCase() + role.slice(1)} créé avec succès`,
+      user: {
+        id: adminUser.id,
+        firstName: adminUser.firstName,
+        lastName: adminUser.lastName,
+        email: adminUser.email,
+        role: adminUser.role,
+        isPremium: adminUser.isPremium
+      }
+    });
+
+  } catch (error: unknown) {
+    console.error('Erreur lors de la création de l\'admin:', error);
+    res.status(500).json({
+      message: 'Erreur serveur lors de la création de l\'administrateur'
+    });
+  }
 });
 
 export default router;
