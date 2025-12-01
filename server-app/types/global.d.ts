@@ -31,6 +31,7 @@ export interface UserAttributes {
   lastName?: string;
   age?: number;
   role: 'user' | 'admin' | 'moderator';
+  emailVerified: boolean;
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;

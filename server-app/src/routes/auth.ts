@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/roleAuth.js';
@@ -34,6 +35,18 @@ interface ChangePasswordRequest extends Request {
     body: {
         currentPassword: string;
         newPassword: string;
+    };
+}
+
+interface AuthenticatedRequest extends Request {
+    user?: {
+        id: string;
+        email: string;
+        username: string;
+        firstname?: string | undefined;
+        lastname?: string | undefined;
+        is_premium: boolean;
+        role: 'user' | 'admin' | 'moderator';
     };
 }
 
@@ -604,6 +617,329 @@ router.post('/create-admin', authenticateToken, requireAdmin, async (req: Reques
     res.status(500).json({
       message: 'Erreur serveur lors de la création de l\'administrateur'
     });
+  }
+});
+
+/**
+ * @swagger
+ * /api/auth/request-email-verification:
+ *   post:
+ *     summary: Demander la vérification d'email
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Email de vérification envoyé
+ *       400:
+ *         description: Email déjà vérifié
+ *       401:
+ *         description: Non authentifié
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
+router.post('/request-email-verification', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const user = await User.findByPk(req.user!.id);
+    if (!user) {
+      res.status(404).json({ message: 'Utilisateur non trouvé' });
+      return;
+    }
+
+    if (user.emailVerified) {
+      res.status(400).json({ message: 'Email déjà vérifié' });
+      return;
+    }
+
+    const verificationToken = jwt.sign(
+      { userId: user.id, type: 'email_verification' },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '24h' }
+    );
+
+    // TODO: Envoyer email avec le token
+    // await sendVerificationEmail(user.email, verificationToken);
+
+    res.json({ 
+      message: 'Email de vérification envoyé',
+      // En développement, retourner le token pour tester
+      ...(process.env.NODE_ENV === 'development' && { verificationToken })
+    });
+  } catch (error) {
+    console.error('Erreur envoi vérification email:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   post:
+ *     summary: Vérifier l'email avec un token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Token de vérification d'email
+ *     responses:
+ *       200:
+ *         description: Email vérifié avec succès
+ *       400:
+ *         description: Token invalide ou email déjà vérifié
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
+router.post('/verify-email', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      res.status(400).json({ message: 'Token requis' });
+      return;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+
+    if (decoded.type !== 'email_verification') {
+      res.status(400).json({ message: 'Token invalide' });
+      return;
+    }
+
+    const user = await User.findByPk(decoded.userId);
+    if (!user) {
+      res.status(404).json({ message: 'Utilisateur non trouvé' });
+      return;
+    }
+
+    if (user.emailVerified) {
+      res.status(400).json({ message: 'Email déjà vérifié' });
+      return;
+    }
+
+    await user.update({ emailVerified: true });
+
+    res.json({ 
+      message: 'Email vérifié avec succès',
+      user: {
+        id: user.id,
+        email: user.email,
+        emailVerified: true
+      }
+    });
+  } catch (error: unknown) {
+    console.error('Erreur vérification email:', error);
+    if (error instanceof jwt.JsonWebTokenError) {
+      res.status(400).json({ message: 'Token invalide ou expiré' });
+    } else {
+      res.status(500).json({ message: 'Erreur serveur' });
+    }
+  }
+});
+
+/**
+ * @swagger
+ * /api/auth/request-password-reset:
+ *   post:
+ *     summary: Demander la réinitialisation de mot de passe
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Adresse email
+ *     responses:
+ *       200:
+ *         description: Email de réinitialisation envoyé (si l'email existe)
+ *       400:
+ *         description: Email requis
+ */
+router.post('/request-password-reset', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ message: 'Email requis' });
+      return;
+    }
+
+    const user = await User.findOne({ where: { email: email.toLowerCase() } });
+    
+    // Pour des raisons de sécurité, on renvoie toujours le même message
+    // même si l'utilisateur n'existe pas
+    const successMessage = 'Si un compte avec cet email existe, un lien de réinitialisation a été envoyé';
+
+    if (!user) {
+      res.json({ message: successMessage });
+      return;
+    }
+
+    const resetToken = jwt.sign(
+      { userId: user.id, type: 'password_reset' },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '1h' }
+    );
+
+    // TODO: Envoyer email avec le token
+    // await sendPasswordResetEmail(user.email, resetToken);
+
+    res.json({ 
+      message: successMessage,
+      // En développement, retourner le token pour tester
+      ...(process.env.NODE_ENV === 'development' && { resetToken })
+    });
+  } catch (error) {
+    console.error('Erreur demande reset password:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Réinitialiser le mot de passe avec un token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - newPassword
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Token de réinitialisation
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: Nouveau mot de passe
+ *     responses:
+ *       200:
+ *         description: Mot de passe réinitialisé avec succès
+ *       400:
+ *         description: Token invalide ou mot de passe trop court
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
+router.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      res.status(400).json({ message: 'Token et nouveau mot de passe requis' });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400).json({ message: 'Le mot de passe doit contenir au moins 6 caractères' });
+      return;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+
+    if (decoded.type !== 'password_reset') {
+      res.status(400).json({ message: 'Token invalide' });
+      return;
+    }
+
+    const user = await User.findByPk(decoded.userId);
+    if (!user) {
+      res.status(404).json({ message: 'Utilisateur non trouvé' });
+      return;
+    }
+
+    // Le hook beforeUpdate va automatiquement hasher le nouveau mot de passe
+    await user.update({ password: newPassword });
+
+    res.json({ message: 'Mot de passe réinitialisé avec succès' });
+  } catch (error: unknown) {
+    console.error('Erreur reset password:', error);
+    if (error instanceof jwt.JsonWebTokenError) {
+      res.status(400).json({ message: 'Token invalide ou expiré' });
+    } else {
+      res.status(500).json({ message: 'Erreur serveur' });
+    }
+  }
+});
+
+/**
+ * @swagger
+ * /api/auth/refresh-token:
+ *   post:
+ *     summary: Rafraîchir le token JWT
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token rafraîchi avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Nouveau token JWT
+ *                 user:
+ *                   type: object
+ *                   description: Informations utilisateur mises à jour
+ *       401:
+ *         description: Non authentifié
+ *       404:
+ *         description: Utilisateur non trouvé
+ */
+router.post('/refresh-token', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const user = await User.findByPk(req.user!.id);
+    if (!user) {
+      res.status(404).json({ message: 'Utilisateur non trouvé' });
+      return;
+    }
+
+    const newToken = jwt.sign(
+      { 
+        id: user.id, 
+        email: user.email, 
+        role: user.role 
+      },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '7d' }
+    );
+
+    res.json({ 
+      token: newToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        emailVerified: user.emailVerified
+      }
+    });
+  } catch (error) {
+    console.error('Erreur refresh token:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 
