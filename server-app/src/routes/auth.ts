@@ -324,7 +324,6 @@ router.post('/login', async (req: LoginRequest, res: Response): Promise<void> =>
         email: user.getDataValue('email'),
         age: user.getDataValue('age'),
         isPremium: user.getDataValue('isPremium')
-        isPremium: user.isPremium
       }
     });
 

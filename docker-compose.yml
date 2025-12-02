@@ -34,7 +34,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: node dist/index.js
+    command: node dist/server.js
     environment:
       - DB_HOST=postgres
   web:

@@ -20,11 +20,11 @@ interface Message {
   text: string;
   isTyping: boolean;
   timestamp: number;
-  id?: number;
+  id?: string;
 }
 
 interface Conversation {
-  id: number;
+  id: string;
   title?: string;
   created_at: string;
   started_at?: string;
@@ -36,7 +36,7 @@ interface Conversation {
 }
 
 interface ApiMessage {
-  id: number;
+  id: string;
   sender: string;
   content: string;
   sent_at: string;
@@ -54,7 +54,7 @@ const Chat: React.FC = () => {
   const [userMessage, setUserMessage] = useState<string>('');
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeConversation, setActiveConversation] = useState<number | null>(null);
+  const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const [isWaitingForResponse, setIsWaitingForResponse] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const abortController = useRef<AbortController>(new AbortController());
@@ -88,10 +88,13 @@ const Chat: React.FC = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${API_BASE}/conversations`, axiosConfig);
+      console.log('Conversations reçues:', response.data);
+      console.log('Première conversation:', response.data[0]);
       setConversations(response.data);
       
       // Si aucune conversation active et qu'il y en a au moins une, sélectionner la première
-      if (!activeConversation && response.data.length > 0) {
+      if (!activeConversation && response.data.length > 0 && response.data[0].id) {
+        console.log('Switching to conversation ID:', response.data[0].id);
         await switchConversation(response.data[0].id);
       }
       // Si pas de conversations, laisser l'interface vide - l'utilisateur créera une conversation manuellement
@@ -108,10 +111,15 @@ const Chat: React.FC = () => {
   };
 
   // Charger les messages d'une conversation spécifique
-  const loadMessages = async (conversationId: number): Promise<Message[]> => {
+  const loadMessages = async (conversationId: string | null): Promise<Message[]> => {
+    if (!conversationId || conversationId === undefined) {
+      console.warn('Tentative de chargement de messages avec un ID invalide:', conversationId);
+      return [];
+    }
+    
     try {
-      const response = await axios.get(`${API_BASE}/messages/${conversationId}`, axiosConfig);
-      const messages: Message[] = response.data.map((msg: ApiMessage) => ({
+      const response = await axios.get(`${API_BASE}/messages?conversation_id=${conversationId}`, axiosConfig);
+      const messages: Message[] = response.data.messages.map((msg: ApiMessage) => ({
         sender: msg.sender === 'user' ? 'user' : 'bot',
         text: msg.content,
         isTyping: false,
@@ -179,13 +187,24 @@ const Chat: React.FC = () => {
     }
   };
 
-  const switchConversation = async (id: number): Promise<void> => {
+  const switchConversation = async (id: string | null): Promise<void> => {
+    if (!id || id === undefined) {
+      console.warn('Tentative de switch vers une conversation avec un ID invalide:', id);
+      return;
+    }
     setActiveConversation(id);
     await loadMessages(id);
   };
 
-  const deleteConversation = async (conversationId: number, event?: React.MouseEvent): Promise<void> => {
+  const deleteConversation = async (conversationId: string | null | undefined, event?: React.MouseEvent): Promise<void> => {
     event?.stopPropagation();
+    
+    console.log('Tentative de suppression avec ID:', conversationId, 'Type:', typeof conversationId);
+    
+    if (!conversationId || conversationId === undefined) {
+      console.warn('Tentative de suppression avec un ID invalide:', conversationId);
+      return;
+    }
     
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette conversation ?')) {
       try {

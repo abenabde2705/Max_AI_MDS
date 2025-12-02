@@ -39,8 +39,8 @@ Message.init({
     allowNull: false,
     validate: {
       isIn: {
-        args: [['user', 'assistant']],
-        msg: 'Le sender doit être "user" ou "assistant"'
+        args: [['user', 'ai']],
+        msg: 'Le sender doit être "user" ou "ai"'
       }
     }
   },
