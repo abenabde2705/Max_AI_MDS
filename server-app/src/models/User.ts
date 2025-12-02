@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserAttributes } from '../../types/global.js';
 
 // Interface pour les attributs optionnels lors de la création
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym' | 'role' | 'emailVerified'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym'> {}
 
 // Classe du modèle User avec tous les types
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -18,8 +18,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public firstName?: string;
   public lastName?: string;
   public age?: number;
-  public role!: 'user' | 'admin' | 'moderator';
-  public emailVerified!: boolean;
   public lastLogin?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -113,23 +111,6 @@ User.init({
         msg: 'Âge invalide'
       }
     }
-  },
-  role: {
-    type: DataTypes.ENUM('user', 'admin', 'moderator'),
-    allowNull: false,
-    defaultValue: 'user',
-    validate: {
-      isIn: {
-        args: [['user', 'admin', 'moderator']],
-        msg: 'Le rôle doit être user, admin ou moderator'
-      }
-    }
-  },
-  emailVerified: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-    field: 'email_verified'
   },
   lastLogin: {
     type: DataTypes.DATE,

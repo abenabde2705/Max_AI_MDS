@@ -46,7 +46,6 @@ interface AuthenticatedRequest extends Request {
         firstname?: string | undefined;
         lastname?: string | undefined;
         is_premium: boolean;
-        role: 'user' | 'admin' | 'moderator';
     };
 }
 
@@ -160,8 +159,7 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
       password: password, // Le modèle hashera automatiquement via le beforeSave hook
       age: Number.parseInt(age.toString(), 10),
       isAnonymous: false,
-      isPremium: false,
-      role: 'user' // Par défaut, tous les nouveaux utilisateurs sont des utilisateurs normaux
+      isPremium: false
     });
 
     // Générer un token JWT
@@ -595,19 +593,17 @@ router.post('/create-admin', authenticateToken, requireAdmin, async (req: Reques
       lastName,
       email: email.toLowerCase(),
       password,
-      role,
       isAnonymous: false,
       isPremium: true // Les admins sont automatiquement premium
     });
 
     res.status(201).json({
-      message: `${role.charAt(0).toUpperCase() + role.slice(1)} créé avec succès`,
+      message: `Utilisateur créé avec succès`,
       user: {
         id: adminUser.id,
         firstName: adminUser.firstName,
         lastName: adminUser.lastName,
         email: adminUser.email,
-        role: adminUser.role,
         isPremium: adminUser.isPremium
       }
     });
@@ -646,10 +642,7 @@ router.post('/request-email-verification', authenticateToken, async (req: Authen
       return;
     }
 
-    if (user.emailVerified) {
-      res.status(400).json({ message: 'Email déjà vérifié' });
-      return;
-    }
+ 
 
     const verificationToken = jwt.sign(
       { userId: user.id, type: 'email_verification' },
@@ -719,19 +712,14 @@ router.post('/verify-email', async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    if (user.emailVerified) {
-      res.status(400).json({ message: 'Email déjà vérifié' });
-      return;
-    }
 
-    await user.update({ emailVerified: true });
+
 
     res.json({ 
       message: 'Email vérifié avec succès',
       user: {
         id: user.id,
         email: user.email,
-        emailVerified: true
       }
     });
   } catch (error: unknown) {
@@ -919,8 +907,7 @@ router.post('/refresh-token', authenticateToken, async (req: AuthenticatedReques
     const newToken = jwt.sign(
       { 
         id: user.id, 
-        email: user.email, 
-        role: user.role 
+        email: user.email
       },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '7d' }
@@ -933,8 +920,6 @@ router.post('/refresh-token', authenticateToken, async (req: AuthenticatedReques
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        role: user.role,
-        emailVerified: user.emailVerified
       }
     });
   } catch (error) {

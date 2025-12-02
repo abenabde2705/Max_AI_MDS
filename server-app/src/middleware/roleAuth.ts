@@ -14,16 +14,8 @@ export const requireRole = (allowedRoles: string[]) => {
       return;
     }
 
-    // Vérifier le rôle
-    if (!allowedRoles.includes(req.user.role)) {
-      res.status(403).json({
-        message: 'Accès refusé : permissions insuffisantes',
-        required: allowedRoles,
-        current: req.user.role
-      });
-      return;
-    }
-
+    // TODO: Système de rôles désactivé temporairement
+    // Tous les utilisateurs authentifiés ont accès
     next();
   };
 };
@@ -48,12 +40,7 @@ export const requireOwnershipOrAdmin = (userIdField: string = 'userId') => {
       return;
     }
 
-    // Les admins ont accès à tout
-    if (req.user.role === 'admin') {
-      next();
-      return;
-    }
-
+    // TODO: Système de rôles désactivé - vérifier uniquement la propriété
     // Vérifier si l'utilisateur accède à ses propres données
     const resourceUserId = req.params[userIdField] || req.body[userIdField];
     

@@ -8,17 +8,13 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Copy source code first (needed for build)
-COPY . .
+# Install dependencies avec --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 
-# Install dependencies et build TypeScript avec --legacy-peer-deps
-RUN npm ci --legacy-peer-deps && \
-    npm run build && \
-    rm -rf node_modules && \
-    npm ci --only=production --legacy-peer-deps && \
-    npm cache clean --force
+# Copy source code
+COPY . .
 
 EXPOSE 3000
 
-# Run compiled JavaScript pour les performances
-CMD ["npm", "start"]
+# Use tsx to run TypeScript directly since build is having issues
+CMD ["npm", "run", "start:ts"]

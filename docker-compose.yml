@@ -34,7 +34,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: npm start
+    command: npm run start:ts
     environment:
       - DB_HOST=postgres
   web:
