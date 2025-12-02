@@ -10,26 +10,33 @@ interface JWTPayload {
 
 // Fonction pour générer un token JWT
 export const generateToken = (userId: string): string => {
-    if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET non configuré');
-    }
-    
-    // Cast en any pour contourner les problèmes de types JWT
-    return (jwt as any).sign(
-        { id: userId }, 
-        process.env.JWT_SECRET, 
-        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined');
+  }
+  
+  console.log('Generating token for user ID:', userId);
+  const payload = { id: userId };
+  console.log('Token payload:', payload);
+  const options: jwt.SignOptions = { expiresIn: '24h' };
+  
+  const token = jwt.sign(payload, process.env.JWT_SECRET, options);
+  console.log('Generated token preview:', token.substring(0, 30) + '...');
+  return token;
 };
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const authHeader = req.headers['authorization'];
+        console.log('Auth header:', authHeader);
+        
         const token = authHeader?.startsWith('Bearer ') 
             ? authHeader.substring(7) 
             : null;
 
+        console.log('Extracted token:', token ? `${token.substring(0, 20)}...` : 'null');
+
         if (!token) {
+            console.log('No token provided');
             res.status(401).json({ 
                 success: false, 
                 message: 'Token d\'accès manquant' 
@@ -42,9 +49,13 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
+        console.log('Decoded token:', decoded);
         
         const user = await User.findByPk(decoded.id);
+        console.log('User found:', user ? `${user.getDataValue('email')} (${user.getDataValue('id')})` : 'null');
+        
         if (!user) {
+            console.log('User not found for ID:', decoded.id);
             res.status(401).json({ 
                 success: false, 
                 message: 'Utilisateur non trouvé' 
@@ -54,19 +65,21 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
         // Ajouter l'utilisateur à l'objet request
         req.user = {
-            id: user.id,
-            email: user.email,
-            username: user.pseudonym || '',
-            firstname: user.firstName,
-            lastname: user.lastName,
-            is_premium: user.isPremium
+            id: user.getDataValue('id'),
+            email: user.getDataValue('email'),
+            username: user.getDataValue('pseudonym') || '',
+            firstname: user.getDataValue('firstName'),
+            lastname: user.getDataValue('lastName'),
+            is_premium: user.getDataValue('isPremium')
         };
 
+        console.log('Auth successful for user:', user.getDataValue('email'));
         next();
     } catch (error: unknown) {
         console.error('Erreur d\'authentification:', error);
         
         if (error instanceof jwt.JsonWebTokenError) {
+            console.log('JWT Error:', error.message);
             res.status(401).json({ 
                 success: false, 
                 message: 'Token invalide' 
@@ -75,6 +88,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         }
         
         if (error instanceof jwt.TokenExpiredError) {
+            console.log('JWT Expired:', error.message);
             res.status(401).json({ 
                 success: false, 
                 message: 'Token expiré' 
@@ -111,12 +125,12 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
         const user = await User.findByPk(decoded.id);
         if (user) {
             req.user = {
-                id: user.id,
-                email: user.email,
-                username: user.pseudonym || '',
-                firstname: user.firstName,
-                lastname: user.lastName,
-                is_premium: user.isPremium
+                id: user.getDataValue('id'),
+                email: user.getDataValue('email'),
+                username: user.getDataValue('pseudonym') || '',
+                firstname: user.getDataValue('firstName'),
+                lastname: user.getDataValue('lastName'),
+                is_premium: user.getDataValue('isPremium')
             };
         }
 

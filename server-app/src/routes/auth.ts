@@ -162,18 +162,25 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
       isPremium: false
     });
 
+    console.log('Created user:', user);
+    console.log('User ID:', user.getDataValue('id'));
+    console.log('User dataValues:', user.dataValues);
+    console.log('User getDataValue id:', user.getDataValue('id'));
+
     // Générer un token JWT
-    const token = generateToken(user.id);
+    const userId = user.getDataValue('id');
+    console.log('Using userId for token:', userId);
+    const token = generateToken(userId);
 
     res.status(201).json({
       message: 'Inscription réussie',
       token,
       user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        age: user.age
+        id: user.getDataValue('id'),
+        firstName: user.getDataValue('firstName'),
+        lastName: user.getDataValue('lastName'),
+        email: user.getDataValue('email'),
+        age: user.getDataValue('age')
       }
     });
 
@@ -288,7 +295,7 @@ router.post('/login', async (req: LoginRequest, res: Response): Promise<void> =>
 
     // Vérifier le mot de passe
     console.log('Password provided:', password);
-    console.log('Stored hash:', user.password);
+    console.log('Stored hash:', user.getDataValue('password'));
     console.log('GetDataValue hash:', user.getDataValue('password'));
     
     const isPasswordValid = await user.comparePassword(password);
@@ -305,17 +312,18 @@ router.post('/login', async (req: LoginRequest, res: Response): Promise<void> =>
     await user.update({ lastLogin: new Date() });
 
     // Générer un token JWT
-    const token = generateToken(user.id);
+    const token = generateToken(user.getDataValue('id'));
 
     res.json({
       message: 'Connexion réussie',
       token,
       user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        age: user.age,
+        id: user.getDataValue('id'),
+        firstName: user.getDataValue('firstName'),
+        lastName: user.getDataValue('lastName'),
+        email: user.getDataValue('email'),
+        age: user.getDataValue('age'),
+        isPremium: user.getDataValue('isPremium')
         isPremium: user.isPremium
       }
     });
@@ -338,7 +346,12 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
       return;
     }
 
+    console.log('Profile request - req.user:', req.user);
+    console.log('Profile request - req.user.id:', req.user.id);
+    console.log('Profile request - typeof req.user.id:', typeof req.user.id);
+
     const user = await User.findByPk(req.user.id);
+    console.log('Profile request - found user:', user ? `${user.email} (${user.id})` : 'null');
     
     if (!user) {
       res.status(404).json({
@@ -349,14 +362,14 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
 
     res.json({
       user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        age: user.age,
-        isPremium: user.isPremium,
-        createdAt: user.createdAt,
-        lastLogin: user.lastLogin
+        id: user.getDataValue('id'),
+        firstName: user.getDataValue('firstName'),
+        lastName: user.getDataValue('lastName'),
+        email: user.getDataValue('email'),
+        age: user.getDataValue('age'),
+        isPremium: user.getDataValue('isPremium'),
+        createdAt: user.getDataValue('createdAt'),
+        lastLogin: user.getDataValue('lastLogin')
       }
     });
   } catch (error: unknown) {

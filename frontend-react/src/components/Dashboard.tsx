@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Mail, Calendar, LogOut, Settings, Shield } from 'lucide-react';
 
 interface UserData {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
