@@ -16,27 +16,31 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: maxai-pgadmin
+    ports: [ "5050:80" ]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres
+
   backend:
     build: ./server-app 
     container_name: maxai-backend
-    env_file: ./server-app/.env
+    env_file: ./.env
     ports: [ "3000:3000" ]
     depends_on:
       postgres:
         condition: service_healthy
-    volumes:
-      - ./server-app:/app
-      - /app/node_modules
-    command: npm run dev
+    command: npm start
     environment:
       - DB_HOST=postgres
-      - DB_NAME=maxai
-      - DB_USER=postgres
-      - DB_PASSWORD=password
-      - DB_PORT=5432
   web:
     build: ./frontend-react
     container_name: maxai-frontend-react
+    env_file: ./.env
     ports: [ "5173:5173" ]
     volumes:
       - ./frontend-react:/app
@@ -48,11 +52,10 @@ services:
     build:
       context: ./chat_api
     container_name: maxai-chat-api
+    env_file: ./.env
     ports:
       - "8000:8000"
     restart: always
-    environment:
-      - MISTRAL_KEY=P896w2DBvu1lvS5eeF8yn0Paz1TWMBKH
     volumes:
       - ./chat_api:/app
 
