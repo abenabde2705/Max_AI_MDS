@@ -1,33 +1,41 @@
 import React from 'react';
-import NavBar from '../layout/NavBar.jsx';
-import HeroSection from './HeroSection.jsx';
-import AboutSection from './AboutSection.jsx';
-import FeatureCards from './FeatureCards.jsx';
-import TestimonialsSection from './TestimonialsSection.jsx';
-import DiscoveryOffer from './DiscoveryOffer.jsx';
+import NavBar from '../layout/NavBar';
+import HeroSection from './HeroSection';
+import AboutSection from './AboutSection';
+import FeatureCards from './FeatureCards';
+import TestimonialsSection from './TestimonialsSection';
+import DiscoveryOffer from './DiscoveryOffer';
 import '../styles/gradients.css';
-import Abonnement from './Abonnement.jsx';
-import Newsletter from './Newsletter.jsx';
-import Footer from '../layout/Footer.jsx';
-import Mail from './Mail.jsx';
+import Abonnement from './Abonnement';
+import Newsletter from './Newsletter';
+import Footer from '../layout/Footer';
 
-const LandingPage = () => {
+const LandingPage: React.FC = () => {
   return (
-    <div className="landing-page">
-      <div className="gradient-bg">
+    <div className="landing-page gradient-bg2">
+      <div>
         <NavBar className="component-margin" />
         <HeroSection id="hero" className="component-margin" />
       </div>
-      <div className="gradient-bg2">
+      
+      <div className="section-spacer"></div>
+      
+      <div>
         <AboutSection id="about" className="component-margin" />
+        <div className="section-spacer"></div>
         <FeatureCards id="fonc" className="component-margin" />
       </div>
-      <div className="gradient-bg3">
+      
+      <div className="section-spacer"></div>
+      
+      <div>
         <TestimonialsSection id="tem" className="component-margin" />
         <DiscoveryOffer id="desc" className="component-margin" />
         <Abonnement className="component-margin" />
         <Newsletter className="component-margin last-component" />
       </div>
+      
+      
       <div className="footer-container">
         <Footer />
       </div>

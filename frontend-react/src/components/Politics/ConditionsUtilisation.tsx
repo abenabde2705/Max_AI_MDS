@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ConditionsUtilisation = () => {
+const ConditionsUtilisation: React.FC = () => {
   return (
     <div>
       <h1>Conditions d'Utilisation - En cours de conversion...</h1>

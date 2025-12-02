@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import MaxLogo from '../assets/LOGO_rose_pale300x.png';
 
-const OnlineBarChat = () => {
+const OnlineBarChat: React.FC = () => {
   const navigate = useNavigate();
 
   const handlePremiumClick = () => {

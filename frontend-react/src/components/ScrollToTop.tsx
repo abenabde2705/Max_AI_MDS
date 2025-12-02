@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-const ScrollToTop = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const scrollThreshold = 300; // Apparaît après avoir défilé de 300px
+const ScrollToTop: React.FC = () => {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const scrollThreshold: number = 300; // Apparaît après avoir défilé de 300px
 
-  const checkScroll = () => {
+  const checkScroll = (): void => {
     setIsVisible(window.scrollY > scrollThreshold);
   };
 
-  const scrollToTop = () => {
+  const scrollToTop = (): void => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'

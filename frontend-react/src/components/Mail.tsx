@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-const Mail = () => {
-  const [formData, setFormData] = useState({
+interface FormData {
+  prenom: string;
+  nom: string;
+  age: string;
+  email: string;
+  telephone: string;
+}
+
+const Mail: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>({
     prenom: '',
     nom: '',
     age: '',
@@ -11,11 +19,11 @@ const Mail = () => {
     telephone: ''
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // 'success' ou 'error'
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
+  const [messageType, setMessageType] = useState<string>(''); // 'success' ou 'error'
 
-  const resetForm = () => {
+  const resetForm = (): void => {
     setFormData({
       prenom: '',
       nom: '',
@@ -25,7 +33,7 @@ const Mail = () => {
     });
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -33,7 +41,7 @@ const Mail = () => {
     }));
   };
 
-  const submitForm = async (e) => {
+  const submitForm = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage('');
@@ -49,8 +57,9 @@ const Mail = () => {
       setMessage('Inscription réussie !');
       setMessageType('success');
       resetForm();
-    } catch (error) {
-      console.error('Erreur détaillée:', error.message);
+    } catch (error: unknown) {
+      const firebaseError = error as Error;
+      console.error('Erreur détaillée:', firebaseError.message);
       setMessage('Une erreur est survenue lors de l\'inscription');
       setMessageType('error');
     } finally {

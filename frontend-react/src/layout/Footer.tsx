@@ -5,11 +5,12 @@ import LinkedInIcon from '../assets/LinkedIn_icon.svg.png';
 import AppleStoreIcon from '../assets/applestore-removebg-preview.png';
 import PlayStoreIcon from '../assets/playstore-removebg-preview.png';
 
-const Footer = () => {
+const Footer: React.FC = () => {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    // Vérifier si l'utilisateur est connecté
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
   }, []);

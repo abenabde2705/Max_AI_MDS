@@ -4,7 +4,18 @@ import image2 from '../assets/img/valeurs/aide.png';
 import image3 from '../assets/img/valeurs/securite.png';
 import image4 from '../assets/img/valeurs/confidentialite.png';
 
-const features = [
+interface Feature {
+  title: string;
+  description: string;
+  image: string;
+}
+
+interface FeatureCardsProps {
+  id?: string;
+  className?: string;
+}
+
+const features: Feature[] = [
   {
     title: 'Toujours à vos côtés',
     description: 'Une aide accessible 24/7 pour vous accompagner à chaque étape de votre vie.',
@@ -27,7 +38,7 @@ const features = [
   }
 ];
 
-const FeatureCards = ({ id, className }) => {
+const FeatureCards: React.FC<FeatureCardsProps> = ({ id, className }) => {
   return (
     <section id={id} className={`features-section ${className}`}>
       <div className="features-grid" data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">

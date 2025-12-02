@@ -1,7 +1,7 @@
 import React from 'react';
 import ChatExampleImage from '../assets/img/valeurs/JOUR_2.webp';
 
-const ChatExample = () => {
+const ChatExample: React.FC = () => {
   return (
     <div className="chat-example">
       <div className="chat-window">

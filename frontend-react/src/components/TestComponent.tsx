@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TestComponent = () => {
+const TestComponent: React.FC = () => {
   return (
     <div style={{ padding: '20px', background: '#f0f0f0', margin: '20px' }}>
       <h2>🎉 Test de Configuration</h2>

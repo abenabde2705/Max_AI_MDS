@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, KeyboardEvent, ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { marked } from 'marked';
-import OnlineBarChat from './OnlineBarChat.jsx';
+import OnlineBarChat from './OnlineBarChat';
 import { 
   Home as HomeIcon,
   User as UserIcon, 
@@ -15,22 +15,49 @@ import {
   MessageCircle as MessageIcon
 } from 'lucide-react';
 
-const formatTimestamp = (timestamp) => {
+interface Message {
+  sender: 'user' | 'bot';
+  text: string;
+  isTyping: boolean;
+  timestamp: number;
+  id?: number;
+}
+
+interface Conversation {
+  id: number;
+  title?: string;
+  created_at: string;
+  started_at?: string;
+  lastMessage?: {
+    content: string;
+    sender: string;
+    sent_at: string;
+  };
+}
+
+interface ApiMessage {
+  id: number;
+  sender: string;
+  content: string;
+  sent_at: string;
+}
+
+const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp);
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
 };
 
-const Chat = () => {
+const Chat: React.FC = () => {
   const navigate = useNavigate();
-  const [userMessage, setUserMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState([]);
-  const [conversations, setConversations] = useState([]);
-  const [activeConversation, setActiveConversation] = useState(null);
-  const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const abortController = useRef(new AbortController());
+  const [userMessage, setUserMessage] = useState<string>('');
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversation, setActiveConversation] = useState<number | null>(null);
+  const [isWaitingForResponse, setIsWaitingForResponse] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const abortController = useRef<AbortController>(new AbortController());
 
   // Configuration API
   const API_BASE = 'http://localhost:3000/api';
@@ -68,9 +95,10 @@ const Chat = () => {
         await switchConversation(response.data[0].id);
       }
       // Si pas de conversations, laisser l'interface vide - l'utilisateur créera une conversation manuellement
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Erreur lors du chargement des conversations:', error);
-      if (error.response?.status === 401) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 401) {
         localStorage.removeItem('token');
         navigate('/auth');
       }
@@ -80,10 +108,10 @@ const Chat = () => {
   };
 
   // Charger les messages d'une conversation spécifique
-  const loadMessages = async (conversationId) => {
+  const loadMessages = async (conversationId: number): Promise<Message[]> => {
     try {
       const response = await axios.get(`${API_BASE}/messages/${conversationId}`, axiosConfig);
-      const messages = response.data.map(msg => ({
+      const messages: Message[] = response.data.map((msg: ApiMessage) => ({
         sender: msg.sender === 'user' ? 'user' : 'bot',
         text: msg.content,
         isTyping: false,
@@ -151,12 +179,12 @@ const Chat = () => {
     }
   };
 
-  const switchConversation = async (id) => {
+  const switchConversation = async (id: number): Promise<void> => {
     setActiveConversation(id);
     await loadMessages(id);
   };
 
-  const deleteConversation = async (conversationId, event) => {
+  const deleteConversation = async (conversationId: number, event?: React.MouseEvent): Promise<void> => {
     event?.stopPropagation();
     
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cette conversation ?')) {
@@ -282,11 +310,11 @@ const Chat = () => {
     }, 100);
   };
 
-  const renderMarkdown = (text) => {
-    return marked(text);
+  const renderMarkdown = (text: string): string => {
+    return marked(text) as string;
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -328,7 +356,7 @@ const Chat = () => {
                     : conv.lastMessage.content)
                   : 'Nouvelle conversation';
                 
-                const conversationDate = new Date(conv.started_at).toLocaleDateString('fr-FR', {
+                const conversationDate = new Date(conv.started_at || conv.created_at).toLocaleDateString('fr-FR', {
                   day: '2-digit',
                   month: '2-digit'
                 });

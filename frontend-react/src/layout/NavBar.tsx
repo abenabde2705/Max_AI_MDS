@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
-const menuItems = [
+interface MenuItem {
+  text: string;
+  href: string;
+}
+
+const menuItems: MenuItem[] = [
   { text: 'À Propos', href: '#about' },
   { text: 'Fonctionnalités', href: '#fonc' },
   { text: 'Témoignage', href: '#tem' },
@@ -9,41 +14,43 @@ const menuItems = [
   { text: 'Newsletter', href: '#news' }
 ];
 
-const NavBar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userEmail, setUserEmail] = useState('');
+interface NavBarProps {
+  className?: string;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ className }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [userEmail, setUserEmail] = useState<string>('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
-      // Simuler l'email : idéalement, récupère-le après login et stocke-le
       setUserEmail(localStorage.getItem('name') || 'client@example.com');
     }
   }, []);
 
-  const getInitials = useMemo(() => {
+  const getInitials = useMemo<string>(() => {
     const names = userEmail.split(' ');
     const firstInitial = names[0]?.charAt(0).toUpperCase() || '';
     const lastInitial = names[1]?.charAt(0).toUpperCase() || '';
     return firstInitial + lastInitial;
   }, [userEmail]);
 
-  // Méthode pour scroller vers une section
-  const scrollToSection = (href) => {
+  const scrollToSection = (href: string): void => {
     const targetElement = document.querySelector(href);
     if (targetElement) {
       targetElement.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
-      setIsMenuOpen(false); // Ferme le menu mobile après le clic
+      setIsMenuOpen(false);
     }
   };
 
-  const logout = () => {
+  const logout = (): void => {
     localStorage.removeItem('token');
     localStorage.removeItem('name');
     setIsLoggedIn(false);
@@ -108,8 +115,8 @@ const NavBar = () => {
               )}
             </div>
           )}
-          <Link style={{ textDecoration: 'none' }} to="/chatbot" className="inscription-btn cta">
-            <span> Parlez à Max</span>
+          <Link style={{ textDecoration: 'none',background: 'none' }} to="/chatbot" className="inscription-btn cta">
+            <span> Accéder au chat</span>
             <span className="arrow">→</span>
           </Link>
         </div>

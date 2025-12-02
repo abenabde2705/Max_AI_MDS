@@ -1,19 +1,19 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ScrollToTop from './components/ScrollToTop.jsx';
+import ScrollToTop from './components/ScrollToTop';
 
-// Import des composants (nous les créerons ensuite)
-import LandingPage from './components/LandingPage.jsx';
-import Chat from './components/Chat.jsx';
-import AuthUser from './components/Authentication/AuthUser.jsx';
-import SuccessPage from './components/SuccessPage.jsx';
-import ConditionsUtilisation from './components/Politics/ConditionsUtilisation.jsx';
-import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite.jsx';
-import NotFound from './components/NotFound.jsx';
-import Dashboard from './components/DashboardSimple.jsx';
+// Import des composants
+import LandingPage from './components/LandingPage';
+import Chat from './components/Chat';
+import AuthUser from './components/Authentication/AuthUser';
+import SuccessPage from './components/SuccessPage';
+import ConditionsUtilisation from './components/Politics/ConditionsUtilisation';
+import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite';
+import NotFound from './components/NotFound';
+import Dashboard from './components/DashboardSimple';
 
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
