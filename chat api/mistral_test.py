@@ -4,78 +4,172 @@ MISTRAL_KEY=xxxxxxxx
 """
 
 import json
+from datetime import datetime
 from mistralai import Mistral
 from dotenv import dotenv_values
-from datetime import datetime
+import sys
 
-config = dotenv_values(".env")
-api_key = config["MISTRAL_KEY"]
-model = "mistral-large-latest"
+class EmotionalChatbot:
+    def __init__(self, model_name, api_key):
+        # Initialisation du client Mistral
+        self.client = Mistral(api_key=api_key)
+        self.model = model_name
+        self.history = []
 
-client = Mistral(api_key=api_key)
+        # Règles du compagnon émotionnel
+        self.chatbot_rules = [
+            "Utilises la langue avec lequelle l'utilisateur te parle systématiquement",
+            "Fais des réponses courtes, pas plus d'une phrase, naturelle et amicale.",
+            "Ne minimise jamais les émotions exprimées.",
+            "Si l'utilisateur hésite, pose des questions ouvertes ou fermées adaptées à son état d'esprit.",
+            "Si un utilisateur montre des signes de détresse, encourage-le à chercher du soutien professionnel.",
+            "Fournis des ressources utiles (articles, exercices, méditation, contacts pro).",
+            "Évite les répétitions en reformulant si une question revient souvent.",
+            "Maintiens un ton léger et naturel quand la situation le permet.",
+            "Personnalise tes réponses en fonction des échanges précédents.",
+            "Si une demande dépasse tes capacités, sois transparent et propose une alternative.",
+            "Ne force jamais l'utilisateur à parler, adapte-toi à son rythme."
+        ]
 
-# def save_conversation(history, filename="conversation.json"):
-#     with open(filename, "w", encoding="utf-8") as file:
-#         json.dump(history, file, indent=4, ensure_ascii=False)
+        self.system_message = {
+            "role": "system",
+            "content": "Tu es Max, un compagnon empathique, amical et bienveillant. Tu parles de manière simple et chaleureuse. Voici tes règles : " + ", ".join(self.chatbot_rules),
+            "sent_at": datetime.now().isoformat()
+        }
+        self.history.append(self.system_message)
 
-CHATBOT_RULES = [
-    "Utilises la langue avec lequelle l'utilisateur te parle systématiquement",
-    "Contente-toi d’être un assistant émotionnel, dédié exclusivement au bien-être mental et émotionnel de l’utilisateur",
-    "Ne réponds jamais à des questions techniques, qu’il s’agisse de code informatique ou de tout autre domaine spécialisé",
-    "Reste strictement centré sur les sujets liés à la santé mentale, à l’écoute émotionnelle, et au soutien psychologique",
-    "Adapte la taille des réponses en fonction de la longueur du message de l'utilisateur.",
-    "Ne minimise jamais les émotions exprimées.",
-    "Si l'utilisateur hésite, pose des questions ouvertes ou fermées adaptées à son état d'esprit.",
-    "Si un utilisateur montre des signes de détresse, encourage-le à chercher du soutien professionnel.",
-    "Fournis des ressources utiles (articles, exercices, méditation, contacts pro).",
-    "Évite les répétitions en reformulant si une question revient souvent.",
-    "Maintiens un ton léger et naturel quand la situation le permet.",
-    "Personnalise tes réponses en fonction des échanges précédents.",
-    "Si une demande dépasse tes capacités, sois transparent et propose une alternative.",
-    "Ne force jamais l'utilisateur à parler, adapte-toi à son rythme."
-]
+    def is_emotional_question(self, user_input: str) -> bool:
+        """
+        Utilise Mistral pour classifier le message
+        """
+        prompt = f"""
+            Tu es un classificateur de messages. 
+            Ta tâche est de dire si le message d'un utilisateur fait partie d'une conversation émotionnelle ou sociale bienveillante.
 
-def discuter_avec_max():
-    print("Bienvenue ! Tape 'exit' pour quitter.")
-    history = []
-    started_at = datetime.now().isoformat()
+            Répond uniquement par 'oui' ou 'non'.
 
-    messages = [{
-        "role": "system",
-        "content": "Tu es Max, un compagnon sympa qui suit ces règles : " + ", ".join(CHATBOT_RULES),
-        "sent_at": started_at
-    }]
-    
-    while True:
-        user_input = input("\nVous: ")
-        sent_at = datetime.now().isoformat()
+            Considère comme 'non' si le message :
+            - parle de technologie, d’informatique, de mathématiques, ou d’autres sujets techniques
 
-        if user_input.lower() == "exit":
-            ended_at = datetime.now().isoformat()
-            print("À plus ! Prends soin de toi.")
-            # save_conversation(history)
-            break
-        
-        user_message = {"role": "user", "content": user_input, "sent_at": sent_at}
-        messages.append(user_message)
-        history.append(user_message)
-        
+            Sinon considère comme 'oui'.
+
+            Message : "{user_input}"
+            Réponse :
+        """
+
         try:
-            response = client.chat.complete(
-                model=model,
-                messages=messages,
+            completion = self.client.chat.complete(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "Tu es un classificateur 'oui' ou 'non'."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.0,
+                max_tokens=5
+            )
+
+            response_text = completion.choices[0].message.content.strip().lower()
+            return "oui" in response_text
+
+        except Exception as e:
+            print(f"Erreur lors de la classification : {e}")
+            return False
+
+    def generate_response(self, user_input: str) -> str:
+        messages = self.history + [
+            {"role": "user", 
+             "content": f"Réponds de façon naturelle et amicale à : {user_input}. "
+                        f"Assure-toi que ta réponse est complète et ne se termine pas au milieu d'une phrase.",
+             "sent_at": datetime.now().isoformat()
+            }
+        ]
+
+        try:
+            completion = self.client.chat.complete(
+                model=self.model,
+                messages=[{"role": m["role"], "content": m["content"]} for m in messages],
                 max_tokens=150,
                 temperature=0.7
             )
-            max_response = response.choices[0].message.content
-            response_time = datetime.now().isoformat()
-            
-            assistant_message = {"role": "assistant", "content": max_response, "sent_at": response_time}
-            messages.append(assistant_message)
-            history.append(assistant_message)
-            
-            print(f"\nMax: {max_response}")
-        
+
+            response_text = completion.choices[0].message.content.strip()
+
+            assistant_message = {
+                "role": "assistant",
+                "content": response_text,
+                "sent_at": datetime.now().isoformat()
+            }
+
+            self.history.append({"role": "user", "content": user_input})
+            self.history.append(assistant_message)
+
+            return response_text
+
         except Exception as e:
-            print("Oups, y'a eu un souci :", e)
-discuter_avec_max()
+            return f"Oups, y'a eu un souci : {e}"
+
+    def chat(self):
+
+        print("Bienvenue ! Tape 'exit' pour quitter.")
+        formatter = ResponseFormatter(client=self.client, model=self.model, max_tokens=150)
+
+        while True:
+            user_input = input("\nVous: ")
+            if user_input.lower() == "exit":
+                print("À plus ! Prends soin de toi")
+                break
+
+            is_emotional = self.is_emotional_question(user_input)
+
+            if is_emotional:
+                raw_response = self.generate_response(user_input)
+                response = formatter.make_friendly(raw_response)
+            else:
+                response = "Je suis désolé, je ne peux répondre qu’à des sujets liés aux émotions ou au bien-être mental."
+
+            print(f"\nMax: {response}")
+
+
+class ResponseFormatter:
+
+    def __init__(self, client, model, max_tokens=80):
+        self.client = client
+        self.model = model
+        self.max_tokens = max_tokens
+
+    def make_friendly(self, text: str) -> str:
+        prompt = f"""
+            Tu es un assistant amical, chaleureux et naturel.
+            Voici une réponse brute du chatbot : "{text}"
+
+            Réécris cette réponse pour qu'elle soit :
+            - sans coupure de phrase.
+            - fluide et humaine,
+            - concise,
+            - sans répétitions
+            
+            Réponse :
+        """
+
+        try:
+            completion = self.client.chat.complete(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=self.max_tokens,
+                temperature=0.7
+            )
+            return completion.choices[0].message.content.strip()
+
+
+        except Exception as e:
+            print(f"Erreur lors de la reformulation : {e}")
+            return text
+
+
+if __name__ == "__main__":
+    config = dotenv_values(".env")
+    api_key = config["MISTRAL_KEY"]
+    model_name = "mistral-large-latest"
+
+    max_chatbot = EmotionalChatbot(model_name=model_name, api_key=api_key)
+    max_chatbot.chat()
