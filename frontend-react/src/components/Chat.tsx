@@ -43,7 +43,23 @@ interface ApiMessage {
 }
 
 const formatTimestamp = (timestamp: number): string => {
+  // Vérifier si le timestamp est valide
+  if (!timestamp || isNaN(timestamp) || timestamp <= 0) {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+  
   const date = new Date(timestamp);
+  // Vérifier si la date est valide
+  if (isNaN(date.getTime())) {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+  
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
