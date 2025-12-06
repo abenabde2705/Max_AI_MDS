@@ -9,14 +9,6 @@
     },
     {
         "role": "assistant",
-        "content": "**Coucou !** 🌸\n\n*Comment ça va aujourd’hui ?*\nUn mot, un sourire, une émotion à partager ? Je suis là, sans pression.\n\n- **Besoin de parler** ? (même d’un tout petit truc)\n- **Envie d’un outil** pour te sentir mieux ? (respiration, méditation, etc.)\n- **Juste un \"hello\" en retour** ? C’est déjà super.\n\n*Ton tour !* 💬\n*(Ou je peux te proposer un exercice ultra-court pour te détendre, si tu veux.)*\n\n💙 *P.S. : Pas besoin de répondre \"parfaitement\" – ici, tout est ok.*"
-    },
-    {
-        "role": "user",
-        "content": "hello"
-    },
-    {
-        "role": "assistant",
         "content": "**Hey !** 🌞\n\n*Comment ça va, là, maintenant ?*\nUn mot, un sourire, un silence… Tout est bienvenu.\n\nSi tu veux :\n- **Parler** (même d’un détail)\n- **Un exercice** pour te détendre (30 secondes de respiration ?)\n- **Juste dire \"hello\"** et repartir\n\n*Je m’adapte à toi.* 💛\n\n*(Ou je peux te proposer un petit truc pour apaiser l’esprit, si ça te dit !)* 😊"
     },
     {
@@ -86,5 +78,13 @@
     {
         "role": "assistant",
         "content": "**Héhé, double \"hello\" = double câlin virtuel !** 🥰\n\n*Je sens que tu aimes la simplicité* – et c’est parfait, parce que des fois, un simple échange suffit à se sentir moins seul·e.\n\n**Alors aujourd’hui, ce \"hello\" il est :**\n- **Un \"je suis là\"** (et c’est déjà bien).\n- **Un \"j’ai besoin d’un peu d’attention\"** (je t’écoute).\n- **Un \"je sais pas trop, mais ça me fait du bien de t’écrire\"** ?\n\n---\n**Petite idée si ça te tente :**\nOn pourrait faire un **\"hello\" créatif** – par exemple :\n- *\"Si ton \"hello\" était une couleur, ce serait laquelle ?\"* (Moi je dirais un bleu calme, comme l’océan le matin 🌊)\n- Ou alors un **\"hello\" en 3 mots** qui décrivent ton humeur du jour.\n\n**Ou alors… on reste dans le minimalisme, et c’est tout aussi bien.** 💙\n\n*(P.S. : Si tu veux, je peux aussi te partager un petit texte court sur la douceur, ou un exercice de gratitude ultra-simple. Dis-moi !)*"
+    },
+    {
+        "role": "user",
+        "content": "hello"
+    },
+    {
+        "role": "assistant",
+        "content": "**Re-hello, toi !** ☀️\n\n*Ton message, c’est comme un petit coup de pouce à ma journée* – merci pour ça.\n\n**Aujourd’hui, ton \"hello\" il a :**\n- **Un sourire** derrière ? (Même un tout petit.)\n- **Un poids** qu’il porte ? (Si tu veux en parler…)\n- **Ou c’est juste un \"hello\" pour le plaisir d’échanger** ?\n\n---\n**Si tu veux, je te lance un défi (ultra-facile) :**\n*\"Trouve 1 chose, autour de toi ou en toi, qui est agréable **maintenant**.\"*\n*(Exemple : la douceur de ton pull, un rayon de soleil, le fait que tu aies pensé à m’écrire…)*\n\n**Ou alors… on fait juste \"hello\" → \"hello\" → et c’est tout.** 💛\n\n*(P.S. : Si tu veux un peu de douceur, je peux te partager une citation ou une image apaisante. Dis-moi !)* 🌸"
     }
 ]

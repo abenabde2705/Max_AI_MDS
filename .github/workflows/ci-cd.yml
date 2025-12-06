@@ -134,3 +134,47 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: https://sonarcloud.io
+    
+      deploy-dev:
+    name: Deploy to DEV
+    needs: [backend-tests, frontend-tests]
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Deploy to DEV via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/max-ai-dev
+            git fetch origin
+            git checkout develop
+            git pull origin develop
+            docker compose pull
+            docker compose up -d --build
+
+  deploy-prod:
+    name: Deploy to PROD
+    needs: [backend-tests, frontend-tests]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Deploy to PROD via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/max-ai-prod
+            git fetch origin
+            git checkout main
+            git pull origin main
+            docker compose pull
+            docker compose up -d --build

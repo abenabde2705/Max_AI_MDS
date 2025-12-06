@@ -1,7 +1,16 @@
 FROM node:20-alpine
+
+RUN apk add --no-cache g++ make python3
+
 WORKDIR /app
+
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci --legacy-peer-deps
+
 COPY . .
-EXPOSE 3000
-CMD ["npm","run","dev"]
+
+# Build TypeScript
+RUN npm run build
+
+# On exécute dist
+CMD ["node", "dist/index.js"]
