@@ -1,7 +1,8 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import Chat from '../components/Chat.jsx';
+import Chat from '../components/Chat.tsx';
 
 // Mock simple du navigate
 const mockNavigate = vi.fn();
@@ -36,9 +37,9 @@ const mockLocalStorage = {
   setItem: vi.fn(),
   removeItem: vi.fn()
 };
-Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
+Object.defineProperty(globalThis, 'localStorage', { value: mockLocalStorage });
 
-const ChatWrapper = () => (
+const ChatWrapper: React.FC = () => (
   <BrowserRouter>
     <Chat />
   </BrowserRouter>

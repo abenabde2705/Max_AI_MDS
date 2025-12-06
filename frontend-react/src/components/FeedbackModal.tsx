@@ -1,8 +1,28 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './FeedbackModal.css';
 
-const FeedbackModal = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
+interface FeedbackModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface FormData {
+  title: string;
+  description: string;
+  type: 'bug' | 'feature' | 'improvement' | 'ui_ux' | 'performance' | 'other';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  userEmail: string;
+}
+
+interface SubmitStatus {
+  type: 'success' | 'error';
+  title: string;
+  message: string;
+  details?: string;
+}
+
+const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
+  const [formData, setFormData] = useState<FormData>({
     title: '',
     description: '',
     type: 'improvement',
@@ -10,10 +30,10 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     userEmail: ''
   });
   
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus | null>(null);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -21,7 +41,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
@@ -74,10 +94,12 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error('Erreur lors de l\'envoi du feedback:', error);
       
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      
       setSubmitStatus({
         type: 'error',
         title: 'Erreur d\'envoi',
-        message: error.message,
+        message: errorMessage,
         details: 'Veuillez réessayer ou contacter le support'
       });
     } finally {

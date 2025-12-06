@@ -1,7 +1,8 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
-import AuthUser from '../components/Authentication/AuthUser.jsx';
+import AuthUser from '../components/Authentication/AuthUser.tsx';
 
 // Mock du navigate
 const mockNavigate = vi.fn();
@@ -31,7 +32,13 @@ const mockLocalStorage = {
   setItem: vi.fn(),
   removeItem: vi.fn()
 };
-Object.defineProperty(window, 'localStorage', { value: mockLocalStorage });
+Object.defineProperty(globalThis, 'localStorage', { value: mockLocalStorage });
+
+const AuthWrapper: React.FC = () => (
+  <BrowserRouter>
+    <AuthUser />
+  </BrowserRouter>
+);
 
 describe('AuthUser Component', () => {
   beforeEach(() => {
@@ -40,11 +47,7 @@ describe('AuthUser Component', () => {
   });
 
   it('renders login form by default', () => {
-    render(
-      <BrowserRouter>
-        <AuthUser />
-      </BrowserRouter>
-    );
+    render(<AuthWrapper />);
 
     expect(screen.getByText(/se connecter/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
@@ -52,11 +55,7 @@ describe('AuthUser Component', () => {
   });
 
   it('displays form elements', () => {
-    render(
-      <BrowserRouter>
-        <AuthUser />
-      </BrowserRouter>
-    );
+    render(<AuthWrapper />);
 
     const emailInput = screen.getByPlaceholderText(/email/i);
     const passwordInput = screen.getByPlaceholderText(/mot de passe/i);
@@ -68,11 +67,7 @@ describe('AuthUser Component', () => {
   });
 
   it('renders without errors', () => {
-    const { container } = render(
-      <BrowserRouter>
-        <AuthUser />
-      </BrowserRouter>
-    );
+    const { container } = render(<AuthWrapper />);
 
     expect(container.firstChild).toBeInTheDocument();
   });

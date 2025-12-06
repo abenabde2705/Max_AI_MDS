@@ -10,7 +10,8 @@ vi.mock('webidl-conversions', () => ({
 
 vi.mock('whatwg-url', () => ({
   URL: class URL {
-    constructor(url) {
+    href: string;
+    constructor(url: string) {
       this.href = url;
     }
   },
@@ -22,7 +23,7 @@ beforeAll(() => {
   // Mock des APIs qui ne sont pas disponibles dans jsdom
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,

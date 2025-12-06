@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/tests/setup.ci.js',
+    setupFiles: './src/tests/setup.ci.ts',
     pool: 'forks',
     poolOptions: {
       forks: {
