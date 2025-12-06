@@ -5,9 +5,9 @@ import '@testing-library/jest-dom';
 // Configuration globale pour les tests React
 beforeAll(() => {
   // Mock des APIs qui ne sont pas disponibles dans jsdom
-  Object.defineProperty(window, 'matchMedia', {
+  Object.defineProperty(globalThis, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -26,12 +26,12 @@ beforeAll(() => {
     removeItem: vi.fn(),
     clear: vi.fn(),
   };
-  Object.defineProperty(window, 'localStorage', {
+  Object.defineProperty(globalThis, 'localStorage', {
     value: localStorageMock
   });
 
   // Mock fetch
-  global.fetch = vi.fn();
+  globalThis.fetch = vi.fn();
 });
 
 // Nettoyer après chaque test
