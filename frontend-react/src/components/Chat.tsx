@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/ui/components/Button"
 import { Input } from "@/ui/components/Input"
 import { Icon } from "@/ui/icons"
@@ -17,6 +18,7 @@ const emotions = [
 ]
 
 export default function MaxAIChat() {
+  const navigate = useNavigate()
   const [message, setMessage] = useState("")
   const [messages, setMessages] = useState([
     {
@@ -44,9 +46,13 @@ export default function MaxAIChat() {
     <div className="max-chat">
       <aside className="max-chat__sidebar">
         <div className="max-chat__logo">
-          <div className="max-chat__logo-icon">
+          <button 
+            className="max-chat__logo-icon"
+            onClick={() => navigate("/")}
+            title="Retour à l'accueil"
+          >
             <Icon name="back" size="md" />
-          </div>
+          </button>
  <img src={LogoMax} alt="MAX Logo" className="max-chat__logo-image" />
          </div>
 

@@ -3328,6 +3328,13 @@ border-radius: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.max-chat__logo-icon:hover {
+  transform: scale(1.05);
 }
 
 .max-chat__logo-image {
@@ -3345,7 +3352,7 @@ border-radius: 30px;
   border: 1px solid transparent;
   background: transparent;
   color: rgba(255, 255, 255, 0.78);
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
