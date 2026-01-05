@@ -82,7 +82,7 @@ const Newsletter: React.FC<NewsletterProps> = ({ className }) => {
               className="newsletter-button" 
               disabled={!isValidEmail || isSubmitting}
             >
-              {isSubmitting ? 'ENVOI...' : 'Découvrir Max'}
+              {isSubmitting ? 'ENVOI...' : ' + Découvrir Max'}
             </button>
           </form>
     

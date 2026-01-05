@@ -70,7 +70,7 @@ h2 {
 }
 
 .cta-button {
-  background:  #FE7062;;
+  background:  #DAE63D;;
   color: white;
   border: none;
   padding: 1rem 2.5rem;
@@ -81,8 +81,8 @@ h2 {
 }
 
 .cta-button:hover {
-box-shadow: rgba(0, 0, 0, 0.25) 0px 4px;
-transform: translateY(-2px);
+background: #BBC600;
+  transform: translateY(-2px);
 }
 
 
@@ -111,10 +111,13 @@ button {
   padding: 0.75rem 2rem;
   /* Liquid Glass Effect */
   background: linear-gradient(
-    135deg,
+    90deg,
     rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    rgba(255, 255, 255, 0.1) 100%
+    rgba(255, 255, 255, 0.15) 2%,
+    transparent 6%,
+    transparent 94%,
+    rgba(255, 255, 255, 0.15) 98%,
+    rgba(255, 255, 255, 0.15) 100%
   );
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -143,6 +146,14 @@ button {
   font-weight: bold;
   letter-spacing: 2px;
   margin-right: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo {
+  height: 19px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-items {
@@ -199,11 +210,12 @@ button {
 }
 
 .connexion-btn {
+  text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   background: transparent;
-  color: white;
+  color: #DAE63D;
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
@@ -216,13 +228,14 @@ button {
 }
 
 .inscription-btn {
-  background: rgba(28, 83, 114, 0.5);
-  color: white !important;
+    text-decoration: none;
+  background: none;
+  color: #DAE63D !important;
   padding: 0.5rem 1.5rem;
-  border: 1px solid white;
+  border: 1px solid #DAE63D;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -231,21 +244,21 @@ button {
 
 .inscription-btn a,
 .inscription-btn span{
-  color: white;
-}
-.inscription-btn a:hover,
-.inscription-btn span:hover{
-  color: rgba(28, 83, 114, 0.5);
+  color: #DAE63D;
 }
 
+
 .inscription-btn:hover {
-  background: rgba(255, 255, 255, 0.7);
-  color: rgba(28, 83, 114, 0.5) !important;
+  opacity: 0.8;
+
+
 }
 
 .inscription-btn:hover span {
-  color: rgba(28, 83, 114, 0.5) !important;
+  opacity: 0.8;
 }
+
+
 
 .arrow {
   font-size: 1.1em;
@@ -390,19 +403,43 @@ button {
 }
 
 /* Footer Styles */
+.footer-container {
+  padding: 2rem 4rem;
+  background: transparent;
+}
+
 .footer {
-  background-color: #1D1D1B;
+  backdrop-filter: blur(10px);
   color: #fff;
-  font-family: Arial, sans-serif;
-  padding: 40px 10% 20px;
+  font-family: 'Articulat CF', Arial, sans-serif;
+  padding: 40px 60px;
   overflow: hidden;
   position: relative;
+  border-radius: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  padding: 2px;
+  background: linear-gradient(to bottom, #161A4D, transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+
 }
 
 .footer h4 {
   font-size: 18px;
   margin-bottom: 15px;
   color: #fff;
+  font-weight: 600;
 }
 
 .footer p {
@@ -451,11 +488,11 @@ button {
 }
 
 .footer-column button {
-  background-color: #222;
+  background-color: transparent;
   color: #fff;
   padding: 12px 20px;
   margin-bottom: 15px;
-  border: 1px solid #333;
+  border: none;
   border-radius: 8px;
   width: 100%;
   cursor: pointer;
@@ -466,8 +503,7 @@ button {
 }
 
 .footer-column button:hover {
-  background-color: #333;
-  border-color: #90DBF5;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .store-logo {
@@ -480,11 +516,11 @@ button {
   text-align: center;
   margin-top: 60px;
   padding-top: 20px;
-  border-top: 1px solid #333;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .footer-bottom p {
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 12px;
 }
 
@@ -608,27 +644,8 @@ button {
   padding-bottom: 8rem;
 }
 
-.gradient-bg {
-  background: linear-gradient(104.32deg, #1C5372 0%, #90DBF5 57.67%, #FFD2C7 95.58%);
-  min-height: 100vh;
-  position: relative;
-}
 
-.gradient-bg2 {
-  background: linear-gradient(104.32deg, #FFD2C7 0%, #90DBF5 57.67%, #1C5372 95.58%);
-  min-height: 100vh;
-  position: relative;
-}
 
-.gradient-bg3 {
-  background: linear-gradient(104.32deg, #90DBF5 0%, #1C5372 57.67%, #FFD2C7 95.58%);
-  min-height: 100vh;
-  position: relative;
-}
-
-.footer-container {
-  background-color: #1D1D1B;
-}
 
 /* =============================================
    CHAT COMPONENT STYLES
@@ -947,10 +964,9 @@ input:disabled, textarea:disabled {
 }
 
 .newsletter-content {
-  background: linear-gradient(180deg, rgba(36, 198, 220, 0.2) 0%, rgba(81, 74, 157, 0.2) 100%);
-border-radius: 78px;
+background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
+  border-radius: 78px;
   backdrop-filter: blur(10px);
-  border: 3px solid rgba(100, 200, 255, 0.5);
   padding: 3rem 3rem;
   display: flex;
   flex-direction: row;
@@ -958,7 +974,7 @@ border-radius: 78px;
   max-width: 1300px;
   margin: 0 auto;
   align-items: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
 .newsletter-left {
@@ -977,7 +993,7 @@ border-radius: 78px;
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
-  color: #ffffff;
+  color: #DAE63D;
   letter-spacing: 1px;
 }
 
@@ -985,7 +1001,7 @@ border-radius: 78px;
   font-size: 1.1rem;
   line-height: 1.7;
   margin: 0;
-  color: #ffffff;
+  color: #DAE63D;
 }
 
 .newsletter-form {
@@ -1018,8 +1034,8 @@ border-radius: 78px;
 }
 
 .newsletter-button {
-  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
-  color: white;
+  background: #DAE63D;
+  color: #161A4D;
   border: none;
   border-radius: 50px;
   padding: 1rem 2rem;
@@ -1028,13 +1044,11 @@ border-radius: 78px;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
 }
 
 .newsletter-button:hover {
-  background: linear-gradient(135deg, #EE5A6F 0%, #FF6B6B 100%);
+  background: #BBC600;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
 }
 
 
@@ -1050,14 +1064,14 @@ border-radius: 78px;
 
 .privacy-notice {
   font-size: 0.95rem;
-  color: #ffffff;
+  color: #DAE63D;
   margin: 0.5rem 0 0 0;
   text-align: left;
 }
 
 .privacy-link {
-  color: #ffffff;
-  text-decoration: underline;
+  color: #DAE63D;
+  text-decoration: none;
   transition: color 0.2s ease;
   font-weight: 600;
 }
@@ -1168,7 +1182,7 @@ border-radius: 78px;
 }
 
 .discovery-section h2 {
-  color: #ffffff;
+  color: #DAE63D;
   font-size: 2rem;
   margin-bottom: 1.5rem;
   
@@ -1180,7 +1194,6 @@ line-height: 30px;
 /* identical to box height, or 47% */
 text-transform: capitalize;
 
-color: #FFFFFF;
 
 
 }
@@ -1210,8 +1223,8 @@ color: #FFFFFF;
 
 .discover-btn {
   padding: 1rem 2rem;
-  background: #f87171;
-  color: white;
+  background: #DAE63D;
+  color: #161A4D;
   border: none;
   border-radius: 25px;
   font-size: 1rem;
@@ -1222,7 +1235,8 @@ color: #FFFFFF;
 }
 
 .discover-btn:hover {
-  font-size: 1.1rem;
+  background: #BBC600;
+  transition: all 0.3s ease;
 }
 
 /* Responsive Styles */
@@ -1426,23 +1440,39 @@ color: #FFFFFF;
   transition: all 0.3s ease;
   text-align: center;
   position: relative;
-
-  backdrop-filter: blur(10px);
-  border: 3px solid rgba(100, 200, 255, 0.5);
+  background: transparent;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   color: #ffffff;
-  
+}
+
+.plan-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  padding: 3px;
+  background: linear-gradient(to bottom, #161A4D, transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .plan-card.highlight {
 
 
-background: linear-gradient(360deg, #514A9D 0%, #24C6DC 100%);
-  border: 3px solid rgba(80, 200, 220, 0.8);
+background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
+  border: 3px solid transparent;
+  background-image: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%), linear-gradient(to bottom, #DAE63D, #161A4D);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 30px;
   box-shadow: 0 12px 40px rgba(80, 200, 220, 0.3);
   transform: scale(1.05);
   
 }
+
 
 .plan-card:hover {
   transform: translateY(-8px) scale(1.02);
@@ -1648,27 +1678,6 @@ background: linear-gradient(360deg, #514A9D 0%, #24C6DC 100%);
   padding-bottom: 8rem;
 }
 
-.gradient-bg {
-  background: linear-gradient(104.32deg, #1C5372 0%, #90DBF5 57.67%, #FFD2C7 95.58%);
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
-
-.gradient-bg2 {
-  background: linear-gradient(104.32deg, #a6dae7 0%, #E8F0F2 57.67%, #FFF0F0 95.58%);
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
-
-.gradient-bg3 {
-  background: linear-gradient(104.32deg, #a6dae7 0%, #E8F0F2 57.67%, #FFF0F0 95.58%);
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
-
 /* Testimonials Section */
 .testimonials-section {
   padding: 4rem 2rem;
@@ -1679,7 +1688,7 @@ background: linear-gradient(360deg, #514A9D 0%, #24C6DC 100%);
   font-family: 'TT Modernoir Trial', sans-serif;  
   margin-left: 70px;
   text-align: left;
-  color: #ffffff;
+  color: #DAE63D;
   margin-bottom: 3rem;
 
 width: 890px;
@@ -1756,8 +1765,8 @@ font-size: 24px;
 .voir-plus-btn {
   display: block;
   padding: 1rem 2rem;
-  background: #f87171;
-  color: white;
+  background: #DAE63D;
+  color: #161A4D;
   border: none;
   border-radius: 25px;
   cursor: pointer;
@@ -1770,7 +1779,8 @@ font-size: 24px;
 }
 
 .voir-plus-btn:hover {
-  font-size: 1.1rem;
+  background: #BBC600;
+  transition: all 0.3s ease;
 }
 
 /* Testimonials Responsive Styles */
@@ -2924,7 +2934,9 @@ font-size: 24px;
 .hero-subtitle {
   font-size: 1.5rem;
   color: white;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+  margin-top: 3rem;
+
   opacity: 0.9;
   /* Typewriter animation */
   overflow: hidden;
@@ -2996,11 +3008,15 @@ font-size: 24px;
 }
 
 .about-title {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  font-weight: bold;
   font-family: 'TT Modernoir Trial', sans-serif;
+  font-size: 48px;
+  letter-spacing: 1px;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+  position: relative;
+  text-transform: uppercase;
 }
+
 
 .about-description {
   max-width: 800px;
@@ -3027,16 +3043,22 @@ font-size: 24px;
 
 .feature-text h2 {
   font-family: 'TT Modernoir Trial', sans-serif;
-  font-size: 38px;
-  font-weight: bold;
-  color: #000000;
-  margin-bottom: 2rem;
-  line-height: 1.2;
+  font-size: 68px;
+  color: #DAE63D !important;
+  margin-top: 20px;
+  margin-bottom: 16px;
+    line-height: 1.2;
 }
 
 .feature-text p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
+  /* Body/Large */
+  width: 1134px;
+height: 245px;
+font-weight: 400;
+font-size: 24px;
+line-height: 40px;
+/* or 167% */
+text-align: justify;
 }
 
 /* Chat Example Styles */

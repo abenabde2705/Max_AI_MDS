@@ -16,6 +16,7 @@ const Footer: React.FC = () => {
   }, []);
 
   return (
+    <div className="footer-container">
     <footer className="footer">
       {/* Footer content */}
       <div className="footer-content">
@@ -89,6 +90,7 @@ const Footer: React.FC = () => {
         />
       )}
     </footer>
+    </div>
   );
 };
 
