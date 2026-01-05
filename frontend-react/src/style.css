@@ -406,6 +406,7 @@ button {
 .footer-container {
   padding: 2rem 4rem;
   background: transparent;
+  
 }
 
 .footer {
@@ -418,6 +419,9 @@ button {
   border-radius: 30px;
   max-width: 1400px;
   margin: 0 auto;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16),
+   0 3px 6px rgba(0,0,0,0.23),
+    0 0 5px #651E79 inset;
 }
 
 .footer::before {
@@ -464,6 +468,7 @@ button {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 40px;
+  
 }
 
 .footer-column {
@@ -1049,6 +1054,7 @@ filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 .newsletter-button:hover {
   background: #BBC600;
   transform: translateY(-2px);
+
 }
 
 
@@ -1443,6 +1449,9 @@ color: #FFFFFF;
   background: transparent;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   color: #ffffff;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16),
+   0 3px 6px rgba(0,0,0,0.23),
+    0 0 5px #651E79 inset;
 }
 
 .plan-card::before {
