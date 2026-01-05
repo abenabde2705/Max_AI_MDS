@@ -9,6 +9,11 @@ export default defineConfig(({ command, mode }) => {
   
   return {
     plugins: [react()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      },
+    },
     server: {
       watch: {
         usePolling: true,
