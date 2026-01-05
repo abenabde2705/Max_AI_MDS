@@ -4,9 +4,10 @@ import { useState } from "react"
 import { Button } from "@/ui/components/Button"
 import { Input } from "@/ui/components/Input"
 import { Icon } from "@/ui/icons"
+import { colors } from "@/ui/tokens/colors"
 import LogoPrincipal from "@/assets/img/Logo_principal.png"
 import LogoYellow from "@/assets/img/logo_yellow.png"
-
+import LogoMax from "@/assets/img/logomax.png"
 const emotions = [
   { key: "super", label: "Super", icon: "😊" },
   { key: "bien", label: "Bien", icon: "😌" },
@@ -44,10 +45,10 @@ export default function MaxAIChat() {
       <aside className="max-chat__sidebar">
         <div className="max-chat__logo">
           <div className="max-chat__logo-icon">
-            <Icon name="back" size="md" color="#d4ff00" />
+            <Icon name="back" size="md" />
           </div>
-          <span className="max-chat__logo-text">max</span>
-        </div>
+ <img src={LogoMax} alt="MAX Logo" className="max-chat__logo-image" />
+         </div>
 
         <nav className="max-chat__nav">
           <button className="max-chat__nav-button max-chat__nav-button--active">Chat IA</button>
@@ -64,22 +65,34 @@ export default function MaxAIChat() {
 
       <main className="max-chat__main">
         <header className="max-chat__header">
-          <div className="max-chat__header-left">
-            <img src={LogoYellow} alt="MAX Logo" className="max-chat__avatar-image" />
-              <p className="max-chat__plan"><span className="max-chat__plan-strong">170 messages</span> Plan Free</p>
-            </div>
-          
-          <div className="max-chat__header-actions">
-            <Button className="max-chat__action-button">
-              <Icon name="add" size="sm" />
-              Nouvelle conversation
-            </Button>
-            <Button variant="outline" className="max-chat__action-button max-chat__action-button--ghost">
-              <Icon name="historic" size="sm" />
-              Historiques
-            </Button>
-          </div>
-        </header>
+  <div className="max-chat__header-left">
+    <div className="max-chat__header-avatar">
+      <img src={LogoYellow} alt="MAX Logo" />
+    </div>
+
+    <div className="max-chat__header-info">
+      <h1 className="max-chat__title">MAX - Assistant IA</h1>
+      <p className="max-chat__plan">
+        <strong>1/10 messages</strong> <span>Plan Free</span>
+      </p>
+    </div>
+  </div>
+
+  <div className="max-chat__header-actions">
+    <Button className="max-chat__action-button">
+      <Icon name="add" size="sm" />
+      Nouvelle conversation
+    </Button>
+
+    <Button
+      variant="outline"
+      className="max-chat__action-button max-chat__action-button--ghost"
+    >
+      <Icon name="historic" size="sm" color={colors.brand.tertiary} />
+      Historique
+    </Button>
+  </div>
+</header>
 
         <div className="max-chat__messages">
           {messages.map((msg, index) => (
@@ -123,7 +136,7 @@ export default function MaxAIChat() {
               className="max-chat__input"
             />
             <Button onClick={handleSendMessage} size="icon" className="max-chat__send">
-              <Icon name="send" size="md" color="#1a1147" />
+              <Icon name="send" size="md" color={colors.brand.primary} />
             </Button>
           </div>
         </div>

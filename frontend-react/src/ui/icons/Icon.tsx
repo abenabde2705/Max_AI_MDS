@@ -8,6 +8,8 @@ const sizeMap = {
   lg: 24,
 };
 
+
+
 export const Icon = ({
   name,
   size = 'md',
