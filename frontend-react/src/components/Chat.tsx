@@ -56,7 +56,7 @@ export default function MaxAIChat() {
         </nav>
 
         <div className="max-chat__premium">
-          <Button fullWidth className="max-chat__premium-button">Passez Premium</Button>
+          <Button fullWidth className="max-chat__premium-button" variant="primary">Passez Premium</Button>
           <p className="max-chat__premium-note">Vos échanges restent confidentiels et sécurisés</p>
         </div>
       </aside>
@@ -77,7 +77,7 @@ export default function MaxAIChat() {
   </div>
 
   <div className="max-chat__header-actions">
-    <Button className="max-chat__action-button">
+    <Button className="max-chat__action-button" variant="primary">
       <Icon name="add" size="sm" />
       Nouvelle conversation
     </Button>
@@ -150,8 +150,8 @@ export default function MaxAIChat() {
                 <Icon name="close" size="md" color={colors.semantic.error} />
               </Button>
             ) : (
-              <Button onClick={handleSendMessage} size="icon" className="max-chat__send" disabled={!message.trim()}>
-                <Icon name="send" size="md" color={colors.brand.primary} />
+              <Button onClick={handleSendMessage} size="icon" className="max-chat__send" disabled={!message.trim()} variant="secondary">
+                <Icon name="send" size="md" />
               </Button>
             )}
           </div>
