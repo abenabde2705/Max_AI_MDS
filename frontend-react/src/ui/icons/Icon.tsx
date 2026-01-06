@@ -23,7 +23,6 @@ export const Icon = ({
       src={svgUrl}
       width={sizeMap[size]}
       height={sizeMap[size]}
-      style={{ filter: color !== 'currentColor' ? `invert(1) brightness(${color === '#d4ff00' ? 1.2 : 0.8})` : undefined }}
       className={className}
       alt={name}
       aria-hidden

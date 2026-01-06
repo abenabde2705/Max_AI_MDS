@@ -1,8 +1,8 @@
 import Add from './assets/add.svg';
 import Arrow from './assets/arrow.svg';
-import Back from './assets/back.svg';
+import Back from './assets/backyellow.svg';
 import Close from './assets/close.svg';
-import Historic from './assets/historic.svg';
+import Historic from './assets/historyyellow.svg';
 import Send from './assets/send.svg';
 
 import type { IconName } from './icon.types';

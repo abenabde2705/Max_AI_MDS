@@ -6,6 +6,7 @@ import { Button } from "@/ui/components/Button"
 import { Input } from "@/ui/components/Input"
 import { Icon } from "@/ui/icons"
 import { colors } from "@/ui/tokens/colors"
+import { useChat } from "@/hooks/useChat"
 import LogoPrincipal from "@/assets/img/Logo_principal.png"
 import LogoYellow from "@/assets/img/logo_yellow.png"
 import LogoMax from "@/assets/img/logomax.png"
@@ -20,26 +21,17 @@ const emotions = [
 export default function MaxAIChat() {
   const navigate = useNavigate()
   const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content: "Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd'hui ?",
-    },
-    {
-      role: "user",
-      content: "Bonjour, je suis fatigué",
-    },
-  ])
+  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse } = useChat()
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      setMessages([...messages, { role: "user", content: message }])
+      sendMessage(message)
       setMessage("")
     }
   }
 
   const handleEmotionClick = (emotion: string) => {
-    setMessages([...messages, { role: "user", content: `Je me sens ${emotion.toLowerCase()}` }])
+    sendMessage(`Je me sens ${emotion.toLowerCase()}`)
   }
 
   return (
@@ -93,8 +85,9 @@ export default function MaxAIChat() {
     <Button
       variant="outline"
       className="max-chat__action-button max-chat__action-button--ghost"
+    
     >
-      <Icon name="historic" size="sm" color={colors.brand.tertiary} />
+      <Icon name="historic" size="sm" />
       Historique
     </Button>
   </div>
@@ -117,6 +110,16 @@ export default function MaxAIChat() {
               {msg.role === "user" && <div className="max-chat__user-avatar">M</div>}
             </div>
           ))}
+          {isWaiting && (
+            <div className="max-chat__message-row">
+              <div className="max-chat__badge">
+                <img src={LogoPrincipal} alt="MAX" className="max-chat__badge-logo" />
+              </div>
+              <div className="max-chat__bubble max-chat__bubble--assistant">
+                <p className="max-chat__bubble-text">...</p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="max-chat__input-area">
@@ -137,13 +140,20 @@ export default function MaxAIChat() {
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              onKeyDown={(e) => e.key === "Enter" && !isWaiting && handleSendMessage()}
               placeholder="Partagez ce que vous ressentez..."
               className="max-chat__input"
+              disabled={isWaiting}
             />
-            <Button onClick={handleSendMessage} size="icon" className="max-chat__send">
-              <Icon name="send" size="md" color={colors.brand.primary} />
-            </Button>
+            {isWaiting ? (
+              <Button onClick={cancelResponse} size="icon" className="max-chat__send">
+                <Icon name="close" size="md" color={colors.semantic.error} />
+              </Button>
+            ) : (
+              <Button onClick={handleSendMessage} size="icon" className="max-chat__send" disabled={!message.trim()}>
+                <Icon name="send" size="md" color={colors.brand.primary} />
+              </Button>
+            )}
           </div>
         </div>
       </main>

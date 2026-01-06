@@ -1,7 +1,7 @@
 export const typography = {
   fontFamily: {
-    heading: 'Inter, sans-serif',
-    body: 'Inter, sans-serif',
+    heading: 'Ubuntu, sans-serif',
+    body: 'Ubuntu, sans-serif',
     mono: 'JetBrains Mono, monospace',
   },
 
