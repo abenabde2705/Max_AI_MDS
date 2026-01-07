@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/ui/components/Button"
 import { Input } from "@/ui/components/Input"
 import { Icon } from "@/ui/icons"
 import { colors } from "@/ui/tokens/colors"
 import { useChat } from "@/hooks/useChat"
+import { fetchUserProfile } from "@/services/chat.api"
 import ChatHistoric from "./ChatHistoric"
 import LogoPrincipal from "@/assets/img/Logo_principal.png"
 import LogoYellow from "@/assets/img/logo_yellow.png"
@@ -23,7 +24,33 @@ export default function MaxAIChat() {
   const navigate = useNavigate()
   const [message, setMessage] = useState("")
   const [isHistoricOpen, setIsHistoricOpen] = useState(false)
+  const [userInitials, setUserInitials] = useState('U')
   const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation } = useChat()
+
+  // Récupérer les initiales de l'utilisateur au chargement
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      try {
+        const response = await fetchUserProfile()
+        const user = response.data
+        const firstname = user.firstname || ''
+        const lastname = user.lastname || ''
+        
+        if (firstname && lastname) {
+          setUserInitials(`${firstname[0]}${lastname[0]}`.toUpperCase())
+        } else if (firstname) {
+          setUserInitials(firstname.substring(0, 2).toUpperCase())
+        } else if (user.username) {
+          setUserInitials(user.username.substring(0, 2).toUpperCase())
+        }
+      } catch (error) {
+        // En cas d'erreur, garder 'U' par défaut
+        console.error('Erreur lors de la récupération du profil:', error)
+      }
+    }
+    
+    loadUserInfo()
+  }, [])
 
   const handleSendMessage = () => {
     if (message.trim()) {
@@ -114,7 +141,7 @@ export default function MaxAIChat() {
                   </span>
                 )}
               </div>
-              {msg.role === "user" && <div className="max-chat__user-avatar">M</div>}
+              {msg.role === "user" && <div className="max-chat__user-avatar">{userInitials}</div>}
             </div>
           ))}
           {isWaiting && (
@@ -172,6 +199,7 @@ export default function MaxAIChat() {
         onSelectConversation={switchConversation}
         onDeleteConversation={removeConversation}
         activeConversation={activeConversation}
+        userInitials={userInitials}
       />
     </div>
   )
