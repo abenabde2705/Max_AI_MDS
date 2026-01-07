@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js';
 import conversationRoutes from './routes/conversations.js';
 import messageRoutes from './routes/messages.js';
 import feedbackRoutes from './routes/feedback.js';
+import userRoutes from './routes/users.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
 
 // Monitoring imports
@@ -149,6 +150,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/users', userRoutes);
 
 // Route de test avec métrique custom
 app.get('/api/health', (req: Request, res: Response): void => {

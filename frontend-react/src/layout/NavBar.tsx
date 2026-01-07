@@ -63,7 +63,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
         <div className="nav-left">
           <div className="logo">
             <Link style={{ textDecoration: 'none' }} to="/">
-              <h1 style={{ color: 'white', textDecoration: 'none' }}>MAX</h1>
+                <img src="/src/assets/img/hero/logomax.png" alt="MAX" className="navbar-logo" />
             </Link>
           </div>
           {/* Bouton hamburger pour mobile */}
@@ -93,7 +93,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
         </div>
         <div className="website-buttons">
           {!isLoggedIn ? (
-            <Link style={{ color: 'white', textDecoration: 'none' }} to="/auth" className="connexion-btn cta">
+            <Link  to="/auth" className="connexion-btn cta">
               Connexion
             </Link>
           ) : (
@@ -115,7 +115,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
               )}
             </div>
           )}
-          <Link style={{ textDecoration: 'none',background: 'none' }} to="/chatbot" className="inscription-btn cta">
+          <Link  to="/chatbot" className="inscription-btn cta">
             <span> Accéder au chat</span>
             <span className="arrow">→</span>
           </Link>

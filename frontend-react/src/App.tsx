@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ScrollToTop from './components/ScrollToTop';
 
 // Import des composants
@@ -16,6 +18,18 @@ import Dashboard from './components/DashboardSimple';
 const App: React.FC = () => {
   return (
     <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/chatbot" element={<Chat />} />
