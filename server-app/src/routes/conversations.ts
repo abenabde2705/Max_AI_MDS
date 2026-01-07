@@ -114,15 +114,18 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Respon
     });
 
     // Enrichir avec informations supplémentaires
-    const enrichedConversations = conversations.map(conv => ({
-      id: conv.id,
-      title: conv.title,
-      isArchived: conv.isArchived,
-      createdAt: conv.createdAt,
-      updatedAt: conv.updatedAt,
-      lastMessage: (conv as any).messages?.[0] || null,
-      messageCount: 0 // Will be populated separately if needed
-    }));
+    const enrichedConversations = conversations.map(conv => {
+      const convData: any = conv.get({ plain: true });
+      return {
+        id: convData.id,
+        title: convData.title,
+        isArchived: convData.isArchived,
+        createdAt: convData.createdAt,
+        updatedAt: convData.updatedAt,
+        lastMessage: convData.messages?.[0] || null,
+        messageCount: 0 // Will be populated separately if needed
+      };
+    });
 
     res.json(enrichedConversations);
   } catch (error: unknown) {

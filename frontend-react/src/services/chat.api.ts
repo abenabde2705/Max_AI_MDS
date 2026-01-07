@@ -3,10 +3,13 @@ import axios from 'axios';
 const API_BASE = 'http://localhost:3000/api';
 const CHAT_API = 'http://localhost:8000';
 
-export const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem('token')}`,
-  'Content-Type': 'application/json',
-});
+export const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+};
 
 export const fetchConversations = () =>
   axios.get(`${API_BASE}/conversations`, { headers: getAuthHeaders() });
@@ -29,9 +32,22 @@ export const sendUserMessage = (
     { headers: getAuthHeaders() }
   );
 
+export const sendAIMessage = (
+  conversationId: string,
+  content: string
+) =>
+  axios.post(
+    `${API_BASE}/messages`,
+    { conversation_id: conversationId, sender: 'ai', content },
+    { headers: getAuthHeaders() }
+  );
+
 export const askAI = (conversationId: string, message: string, signal?: AbortSignal) =>
   axios.post(
     `${CHAT_API}/chat`,
     { conversation_id: conversationId, message },
     { signal }
   );
+
+export const deleteConversation = (conversationId: string) =>
+  axios.delete(`${API_BASE}/conversations/${conversationId}`, { headers: getAuthHeaders() });

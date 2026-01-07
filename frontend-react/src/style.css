@@ -3429,6 +3429,14 @@ font-size: 20px;
 
 .max-chat__bubble-text { margin: 0; }
 
+.max-chat__bubble-time {
+  display: block;
+  font-size: 11px;
+  opacity: 0.6;
+  margin-top: 6px;
+  text-align: right;
+}
+
 .max-chat__user-avatar {
   width: 34px;
   height: 34px;
@@ -3596,25 +3604,58 @@ border-radius: 70px 0px 0px 70px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 16px;
+  padding: 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  cursor: pointer;
+  gap: 8px;
   transition: all 0.2s ease;
   width: 100%;
-  text-align: left;
+  position: relative;
 }
 
 .historic-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  transform: translateX(-4px);
 }
 
 .historic-item--active {
   background: rgba(218, 230, 61, 0.15);
   border-color: rgba(218, 230, 61, 0.3);
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23), 0 0 5px #651E79 inset;
+}
+
+.historic-item-button {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex: 1;
+  text-align: left;
+  color: inherit;
+}
+
+.historic-item-button:hover {
+  transform: translateX(-4px);
+}
+
+.historic-item-delete {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.historic-item-delete:hover {
+  background: rgba(255, 59, 48, 0.2);
+  transform: scale(1.1);
 }
 
 .historic-item-icon {

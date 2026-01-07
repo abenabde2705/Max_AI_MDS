@@ -23,7 +23,7 @@ export default function MaxAIChat() {
   const navigate = useNavigate()
   const [message, setMessage] = useState("")
   const [isHistoricOpen, setIsHistoricOpen] = useState(false)
-  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation } = useChat()
+  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation } = useChat()
 
   const handleSendMessage = () => {
     if (message.trim()) {
@@ -79,7 +79,7 @@ export default function MaxAIChat() {
   </div>
 
   <div className="max-chat__header-actions">
-    <Button className="max-chat__action-button" variant="primary">
+    <Button className="max-chat__action-button" variant="primary" onClick={createNewConversation}>
       <Icon name="add" size="sm" />
       Nouvelle conversation
     </Button>
@@ -108,6 +108,11 @@ export default function MaxAIChat() {
               )}
               <div className={`max-chat__bubble ${msg.role === "assistant" ? "max-chat__bubble--assistant" : "max-chat__bubble--user"}`}>
                 <p className="max-chat__bubble-text">{msg.content}</p>
+                {msg.timestamp && (
+                  <span className="max-chat__bubble-time">
+                    {new Date(msg.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
               </div>
               {msg.role === "user" && <div className="max-chat__user-avatar">M</div>}
             </div>
@@ -165,6 +170,7 @@ export default function MaxAIChat() {
         onClose={() => setIsHistoricOpen(false)}
         conversations={conversations}
         onSelectConversation={switchConversation}
+        onDeleteConversation={removeConversation}
         activeConversation={activeConversation}
       />
     </div>
