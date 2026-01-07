@@ -78,6 +78,13 @@ button {
   display: flex;
   justify-content: center;
   padding-top: 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  padding-bottom: 1rem;
 }
 
 .navbar {
@@ -1140,7 +1147,7 @@ filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 
 /* Discovery Offer Component */
 .discovery-section {
-  padding: 4rem 2rem;
+  padding: 4rem 1rem;
 }
 
 .discovery-section .content {
@@ -1172,7 +1179,7 @@ filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 font-family: 'Ubuntu';
 font-style: normal;
 font-weight: 700;
-font-size: 64px;
+font-size: 48px;
 line-height: 30px;
 /* identical to box height, or 47% */
 text-transform: capitalize;
@@ -1666,13 +1673,12 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 
 /* Testimonials Section */
 .testimonials-section {
-  padding: 4rem 2rem;
+  padding: 4rem 1rem;
 }
 
 .testimonials-section h2,
 .testimonials-title {
   font-family: 'Ubuntu', sans-serif;  
-  margin-left: 70px;
   text-align: left;
   color: #DAE63D;
   margin-bottom: 3rem;
@@ -1682,7 +1688,7 @@ height: 30px;
 left: calc(50% - 890px/2 - 145px);
 font-style: normal;
 font-weight: 700;
-font-size: 64px;
+font-size: 48px;
 line-height: 30px;
 
 
@@ -1705,7 +1711,6 @@ font-size: 24px;
   flex-direction: column;
   max-width: 1290px;
   margin: 0 auto;
-  margin-left: 75px;
   gap: 2rem;
 }
 
@@ -1771,11 +1776,12 @@ font-size: 24px;
 
 /* Testimonials Responsive Styles */
 @media (max-width: 768px) {
+  .testimonials-section {
+    padding: 4rem 1rem;
+  }
+
   .testimonials-container {
-    flex-direction: column;
     gap: 2rem;
-    margin-left: 0;
-    margin-right: 0;
   }
   
   .testimonials-button-container {
@@ -1790,8 +1796,13 @@ font-size: 24px;
 
   .testimonials-section h2,
   .testimonials-title {
-    text-align: center;
+    text-align: left;
     margin-left: 0;
+    font-size: 1.8rem;
+  }
+
+  .testimonials-section p {
+    font-size: 16px;
   }
 }
 
@@ -3026,11 +3037,10 @@ font-size: 24px;
 
 .feature-text h2 {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 38px;
-  font-weight: bold;
-  color: #000000;
-  margin-bottom: 2rem;
-  line-height: 1.2;
+  font-size: 48px;
+  color: #DAE63D;
+  margin-top: 20px;
+  margin-bottom: 16px;
 }
 
 .feature-text p {
