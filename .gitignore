@@ -11,7 +11,7 @@ yarn-error.log*
 package-lock.json
 */package-lock.json
 **/package-lock.json
-
+.vite
 # Python cache
 __pycache__/
 **/__pycache__/
