@@ -3405,7 +3405,10 @@ font-size: 20px;
 .max-chat__header-left { display: flex; align-items: center; gap: 12px; }
 
 
-.max-chat__title { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.max-chat__title { margin: 0; font-size: 36px; font-weight: 700; }/* MAX - Assistant IA */
+
+
+
 .max-chat__plan { margin: 2px 0 0; font-size: 0.9rem; color: #DAE63D; }
 .max-chat__plan-strong { font-weight: 700; margin-right: 6px; }
 
@@ -3695,6 +3698,13 @@ border-radius: 70px 0px 0px 70px;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.historic-item-initials {
+  font-size: 14px;
+  font-weight: 600;
+  color: #DAE63D;
+  text-transform: uppercase;
 }
 
 .historic-item-content {

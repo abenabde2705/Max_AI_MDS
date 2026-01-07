@@ -14,6 +14,9 @@ export const getAuthHeaders = () => {
 export const fetchConversations = () =>
   axios.get(`${API_BASE}/conversations`, { headers: getAuthHeaders() });
 
+export const fetchUserProfile = () =>
+  axios.get(`${API_BASE}/users/me`, { headers: getAuthHeaders() });
+
 export const fetchMessages = (conversationId: string) =>
   axios.get(`${API_BASE}/messages?conversation_id=${conversationId}`, {
     headers: getAuthHeaders(),

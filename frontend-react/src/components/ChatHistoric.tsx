@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import { Icon } from "@/ui/icons"
 import { colors } from "@/ui/tokens/colors"
+import { fetchUserProfile } from "@/services/chat.api"
 
 interface ChatHistoricProps {
   isOpen: boolean
@@ -22,6 +23,33 @@ export default function ChatHistoric({
 }: ChatHistoricProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [userInitials, setUserInitials] = useState('U')
+
+  // Récupérer les initiales de l'utilisateur via l'API
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      try {
+        const response = await fetchUserProfile()
+        const user = response.data
+        const firstname = user.firstname || ''
+        const lastname = user.lastname || ''
+        
+        if (firstname && lastname) {
+          setUserInitials(`${firstname[0]}${lastname[0]}`.toUpperCase())
+        } else if (firstname) {
+          setUserInitials(firstname.substring(0, 2).toUpperCase())
+        } else if (user.username) {
+          setUserInitials(user.username.substring(0, 2).toUpperCase())
+        }
+      } catch (error) {
+        // En cas d'erreur, garder 'U' par défaut
+      }
+    }
+    
+    if (isOpen) {
+      loadUserInfo()
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (isOpen) {
@@ -79,7 +107,7 @@ export default function ChatHistoric({
                     }}
                   >
                     <div className="historic-item-icon">
-                      <Icon name="chat" size="sm" color={colors.brand.tertiary} />
+                      <span className="historic-item-initials">{userInitials}</span>
                     </div>
                     <div className="historic-item-content">
                       <h3 className="historic-item-title">
