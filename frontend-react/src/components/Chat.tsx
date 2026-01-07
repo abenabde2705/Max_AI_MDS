@@ -7,6 +7,7 @@ import { Input } from "@/ui/components/Input"
 import { Icon } from "@/ui/icons"
 import { colors } from "@/ui/tokens/colors"
 import { useChat } from "@/hooks/useChat"
+import ChatHistoric from "./ChatHistoric"
 import LogoPrincipal from "@/assets/img/Logo_principal.png"
 import LogoYellow from "@/assets/img/logo_yellow.png"
 import LogoMax from "@/assets/img/logomax.png"
@@ -21,7 +22,8 @@ const emotions = [
 export default function MaxAIChat() {
   const navigate = useNavigate()
   const [message, setMessage] = useState("")
-  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse } = useChat()
+  const [isHistoricOpen, setIsHistoricOpen] = useState(false)
+  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation } = useChat()
 
   const handleSendMessage = () => {
     if (message.trim()) {
@@ -85,7 +87,7 @@ export default function MaxAIChat() {
     <Button
       variant="outline"
       className="max-chat__action-button max-chat__action-button--ghost"
-    
+      onClick={() => setIsHistoricOpen(true)}
     >
       <Icon name="historic" size="sm" />
       Historique
@@ -157,6 +159,14 @@ export default function MaxAIChat() {
           </div>
         </div>
       </main>
+
+      <ChatHistoric
+        isOpen={isHistoricOpen}
+        onClose={() => setIsHistoricOpen(false)}
+        conversations={conversations}
+        onSelectConversation={switchConversation}
+        activeConversation={activeConversation}
+      />
     </div>
   )
 }

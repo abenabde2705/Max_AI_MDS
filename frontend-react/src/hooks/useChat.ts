@@ -108,5 +108,6 @@ export function useChat() {
     sendMessage,
     switchConversation,
     cancelResponse,
+    activeConversation,
   };
 }
