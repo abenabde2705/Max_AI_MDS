@@ -23,8 +23,8 @@
 .gradient-bg2,
 .gradient-bg3 {
   /* Use the same diagonal gradient for visual unity */
-  background: linear-gradient(360deg, #514A9D 0%, #24C6DC 100%);
-}
+background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
+  }
 
 /* About section background using public image */
 .about-section--bg {
