@@ -159,8 +159,10 @@ const AuthUser: React.FC = () => {
       <div className="login-form-container">
         <form onSubmit={handleSubmit} className="login-form">
           <div className="login-form-header">
-            <h1>MAX</h1>
-            <p>{mode === 'login' ? 'Welcome Back' : 'Rejoignez Max'}</p>
+            <img src="/src/assets/img/hero/logomax.png" alt="MAX" className="login-logo-auth" />
+            <h2 className="login-welcome">Bienvenue</h2>
+            <p className="login-subtitle">Découvrez une nouvelle façon d’être accompagné au quotidien.</p>
+
           </div>
 
           {/* Message d'erreur */}
@@ -283,12 +285,12 @@ const AuthUser: React.FC = () => {
             className="login-button" 
             disabled={loading}
           >
-            {loading ? 'Chargement...' : (mode === 'login' ? 'Se connecter' : 'S\'inscrire')}
+            {loading ? 'Chargement...' : (mode === 'login' ? 'Connexion' : 'Inscription')}
           </button>
           
           <div className="toggle-mode">
             <p>
-              {mode === 'login' ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
+              {mode === 'login' ? 'Vous n avez pas encore rejoint MAX ?' : 'Si vous êtes déjà inscrit ?'}
               <button type="button" onClick={toggleMode} className="toggle-link">
                 {mode === 'login' ? 'S\'inscrire' : 'Se connecter'}
               </button>
@@ -297,7 +299,6 @@ const AuthUser: React.FC = () => {
         </form>
       </div>
       
-      <Footer />
     </div>
   );
 };

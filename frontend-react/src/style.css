@@ -842,20 +842,25 @@ button {
   margin-bottom: 16px;
 }
 
+
+
+
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 400;
+font-size: 24px;
+color: #DAE63D;
 }
 
 input, textarea {
   width: 100%;
   padding: 12px;
+  background: #FFFFFF;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: inherit;
+border-radius: 45px;
+  font-weight: 400;
+font-size: 24px;
 }
 
 textarea {
@@ -2670,7 +2675,7 @@ font-size: 24px;
    ============================================= */
 
 .login-container {
-  background: linear-gradient(104.32deg, #1C5372 0%, #90DBF5 57.67%, #FFD2C7 95.58%);
+  background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   position: relative;
   overflow: hidden;
   min-height: 100vh;
@@ -2686,30 +2691,10 @@ font-size: 24px;
   flex: 1;
 }
 
-.login-form {
-  background: rgba(255, 255, 255, 0.089);
-  backdrop-filter: blur(10px);
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  position: relative;
-}
+
 
 /* Utiliser un pseudo-élément pour créer la bordure en dégradé */
-.login-form::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 1rem;
-  padding: 1px;
-  background: linear-gradient(45deg, #12c2e9, #c471ed, #f7797d);
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
+
 
 .login-form-header {
   text-align: center;
@@ -2744,19 +2729,12 @@ font-size: 24px;
   width: 100%;
 }
 
-.form-group label {
-  display: block;
-  color: white;
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
 
 .login-input {
   width: 100%;
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.5rem;
+border-radius: 45px;
   background: rgba(255, 255, 255, 0.9);
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -2783,45 +2761,60 @@ font-size: 24px;
   display: flex;
   align-items: flex-start;
   margin: 1.5rem 0;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 1rem;
 }
 
 .login-checkbox {
-  margin-top: 0.2rem;
+  margin-top: 0.3rem;
   cursor: pointer;
   flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: #DAE63D;
 }
 
 .checkbox-group label {
-  color: white;
-  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.95rem;
   margin-bottom: 0;
   cursor: pointer;
-  line-height: 1.4;
+  line-height: 1.6;
+  font-weight: 400;
 }
 
 .checkbox-group label a {
   color: #90DBF5;
   text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .checkbox-group label a:hover {
-  opacity: 0.8;
+  color: #DAE63D;
+  opacity: 1;
 }
+/* Button */
+
+
+/* Button */
+
+
 
 .login-button {
-  width: 100%;
-  padding: 1rem;
-  background: #76bbd7;
-  color: white;
+  display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 24px;
+background: #DAE63D;
+  color: black;
   border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-  text-transform: uppercase;
+border-radius: 66px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  width: fit-content;
 }
 
 .login-button:hover:not(:disabled) {
@@ -2845,7 +2838,7 @@ font-size: 24px;
 .toggle-link {
   background: none;
   border: none;
-  color: white;
+  color: #DAE63D;
   transition: all 0.3s ease;
   text-decoration: underline;
   cursor: pointer;
@@ -3749,4 +3742,26 @@ border-radius: 70px 0px 0px 70px;
   .max-chat__header { flex-direction: column; align-items: flex-start; gap: 12px; }
   .max-chat__header-actions { width: 100%; gap: 8px; }
   .max-chat__action-button { flex: 1; min-width: 0; }
+}
+
+.login-welcome{
+font-weight: 700;
+font-size: 48px;
+line-height: 56px;
+
+color: #DAE63D;
+}
+.login-logo-auth{
+width: 471px;
+height: 140px;
+}
+.login-subtitle{
+
+font-weight: 400;
+font-size: 24px;
+align-items: center;
+text-align: center;
+
+color: #F2F5FF;
+
 }
