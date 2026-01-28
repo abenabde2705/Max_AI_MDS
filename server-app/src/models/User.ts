@@ -71,18 +71,7 @@ User.init({
     type: DataTypes.TEXT,
     allowNull: true,
     field: 'password_hash',
-    validate: {
-      len: {
-        args: [6, 255],
-        msg: 'Le mot de passe doit contenir au moins 6 caractères'
-      },
-      isValidPassword(value: string | null) {
-        // Valider seulement si un password est fourni et que ce n'est pas un compte OAuth
-        if (!value && !this.googleId && !this.facebookId && !this.isAnonymous) {
-          throw new Error('Le mot de passe est requis pour les comptes non-OAuth');
-        }
-      }
-    }
+
   },
   isAnonymous: {
     type: DataTypes.BOOLEAN,

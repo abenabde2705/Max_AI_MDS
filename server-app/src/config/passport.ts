@@ -25,14 +25,15 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
               firstName: profile.name?.givenName || profile.displayName,
               lastName: profile.name?.familyName || '',
               email: profile.emails?.[0]?.value || '',
-              // password: '', // Pas de mot de passe pour OAuth
-              // age: 0, // Age par défaut
               googleId: profile.id,
               isAnonymous: false,
               isPremium: false,
+            }, {
+              validate: false // Désactiver les validations pour OAuth
             });
           } else if (!user.googleId) {
             // Associer le compte Google à un compte existant
+            console.log("asba")
             user.googleId = profile.id;
             await user.save();
           }
@@ -72,6 +73,8 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
               facebookId: profile.id,
               isAnonymous: false,
               isPremium: false,
+            }, {
+              validate: false // Désactiver les validations pour OAuth
             });
           } else if (!user.facebookId) {
             // Associer le compte Facebook à un compte existant
