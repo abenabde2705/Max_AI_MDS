@@ -157,7 +157,7 @@ export default function ChatHistoric({
                     }}
                     title="Supprimer la conversation"
                   >
-                    <Icon name="trash" size="sm" color={colors.semantic.error} />
+                    <Icon name="trash" size="sm" color={colors.common.white} />
                   </button>
                 </div>
               ))}
