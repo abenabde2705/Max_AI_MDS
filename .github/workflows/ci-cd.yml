@@ -115,7 +115,7 @@ jobs:
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-scan-action@v3
+      uses: SonarSource/sonarcloud-scan-action@e59edc9c5be5cf8c83284d65afe0a4ccb99aedef
       continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,7 +134,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Vercel (Frontend DEV)
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@51e96c0edc22e3591e392b3b29f5a3b4fb87a89f
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -156,7 +156,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Vercel (Frontend PROD)
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@51e96c0edc22e3591e392b3b29f5a3b4fb87a89f
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
