@@ -30,19 +30,25 @@ export default function MaxAIChat() {
     const loadUserInfo = async () => {
       try {
         const response = await fetchUserProfile()
-        const user = response.data
-        const firstname = user.firstname || ''
-        const lastname = user.lastname || ''
+        const user = response.data.user || response.data
+        
+        if (!user) {
+          console.warn('Aucune donnée utilisateur reçue')
+          return
+        }
+        
+        // Utiliser camelCase avec fallback
+        const firstname = user.firstName || user.firstname || ''
+        const lastname = user.lastName || user.lastname || ''
         
         if (firstname && lastname) {
           setUserInitials(`${firstname[0]}${lastname[0]}`.toUpperCase())
         } else if (firstname) {
           setUserInitials(firstname.substring(0, 2).toUpperCase())
-        } else if (user.username) {
-          setUserInitials(user.username.substring(0, 2).toUpperCase())
+        } else if (user.email) {
+          setUserInitials(user.email.substring(0, 2).toUpperCase())
         }
       } catch (error) {
-        // En cas d'erreur, garder 'U' par défaut
         console.error('Erreur lors de la récupération du profil:', error)
       }
     }

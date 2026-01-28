@@ -4,6 +4,7 @@ export type IconName =
   | 'back'
   | 'close'
   | 'historic'
+  | 'trash'
   | 'send';
 
 export type IconSize = 'xs' | 'sm' | 'md' | 'lg';

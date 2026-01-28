@@ -8,6 +8,7 @@ import ScrollToTop from './components/ScrollToTop';
 import LandingPage from './components/LandingPage';
 import Chat from './components/Chat';
 import AuthUser from './components/Authentication/AuthUser';
+import AuthCallback from './components/Authentication/AuthCallback';
 import SuccessPage from './components/SuccessPage';
 import ConditionsUtilisation from './components/Politics/ConditionsUtilisation';
 import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite';
@@ -34,6 +35,7 @@ const App: React.FC = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/chatbot" element={<Chat />} />
         <Route path="/auth" element={<AuthUser />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/dashboard" element={<Dashboard />} />
 
         <Route path="/success" element={<SuccessPage />} />
