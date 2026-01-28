@@ -2,6 +2,7 @@ import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../../layout/NavBar';
 import Footer from '../../layout/Footer';
+import { colors, opacity } from '@/ui';
 
 interface FormData {
   firstName: string;
@@ -11,6 +12,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   acceptTerms: boolean;
+  rememberMe: boolean;
 }
 
 const AuthUser: React.FC = () => {
@@ -25,7 +27,8 @@ const AuthUser: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    acceptTerms: false
+    acceptTerms: false,
+    rememberMe: false
   });
 
   const toggleMode = (): void => {
@@ -150,6 +153,16 @@ const AuthUser: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    // Redirection vers l'endpoint OAuth Google du backend
+    window.location.href = 'http://localhost:3000/api/auth/google';
+  };
+
+  const handleFacebookLogin = () => {
+    // Redirection vers l'endpoint OAuth Facebook du backend
+    window.location.href = 'http://localhost:3000/api/auth/facebook';
   };
 
   return (
@@ -280,6 +293,32 @@ const AuthUser: React.FC = () => {
             </>
           )}
           
+          {mode === 'login' && (
+            <div className="checkbox-group" onClick={() => setForm(prev => ({ ...prev, rememberMe: !prev.rememberMe }))} style={{ cursor: 'pointer' }}>
+              <div style={{
+                width: '18px',
+                height: '18px',
+                border: '1px solid #F2F5FF',
+                borderRadius: '4px',
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: '0.3rem'
+              }}>
+                {form.rememberMe && (
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.6666 3.5L5.24992 9.91667L2.33325 7" stroke="#DAE63D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+              <label style={{ cursor: 'pointer', userSelect: 'none' }}>
+                Rester connecté(e)
+              </label>
+            </div>
+          )}
+              
           <button 
             type="submit" 
             className="login-button" 
@@ -302,7 +341,7 @@ const AuthUser: React.FC = () => {
           </div>
 
           <div className="social-login-buttons">
-            <button type="button" className="social-btn google-btn">
+            <button type="button" className="social-btn google-btn" onClick={handleGoogleLogin}>
               <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
                 <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
                 <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18L12.05 13.56c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.438 15.983 5.482 18 9.003 18z" fill="#34A853"/>
@@ -312,7 +351,7 @@ const AuthUser: React.FC = () => {
               Connexion avec Google
             </button>
 
-            <button type="button" className="social-btn facebook-btn">
+            <button type="button" className="social-btn facebook-btn" onClick={handleFacebookLogin}>
               <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
               </svg>
