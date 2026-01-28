@@ -1,12 +1,13 @@
 // Types globaux pour l'application Max AI Backend
 
 import { Request } from 'express';
+import type User from '../src/models/User.js';
 
 // Extension de l'interface Request d'Express pour inclure l'utilisateur
 declare global {
   namespace Express {
     interface Request {
-      user?: {
+      user?: User | {
         id: string;
         email: string;
         username: string;
@@ -30,6 +31,8 @@ export interface UserAttributes {
   lastName?: string;
   age?: number;
   lastLogin?: Date;
+  googleId?: string;
+  facebookId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

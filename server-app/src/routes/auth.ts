@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/roleAuth.js';
+import passport from '../config/passport.js';
 
 const router = express.Router();
 
@@ -939,5 +940,109 @@ router.post('/refresh-token', authenticateToken, async (req: AuthenticatedReques
     res.status(500).json({ message: 'Erreur serveur' });
   }
 });
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   get:
+ *     summary: Authentification via Google OAuth
+ *     tags: [Authentication]
+ *     responses:
+ *       302:
+ *         description: Redirection vers Google pour l'authentification
+ */
+router.get('/google', 
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'] 
+  })
+);
+
+/**
+ * @swagger
+ * /api/auth/google/callback:
+ *   get:
+ *     summary: Callback Google OAuth
+ *     tags: [Authentication]
+ *     responses:
+ *       302:
+ *         description: Redirection vers le dashboard avec le token
+ */
+router.get('/google/callback',
+  passport.authenticate('google', { 
+    failureRedirect: process.env.FRONTEND_URL || 'http://localhost:5173',
+    session: false 
+  }),
+  async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      if (!user) {
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=auth_failed`);
+        return;
+      }
+
+      // Générer un token JWT
+      const token = generateToken(user.id);
+
+      // Rediriger vers le frontend avec le token
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);
+    } catch (error) {
+      console.error('Erreur Google callback:', error);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=server_error`);
+    }
+  }
+);
+
+/**
+ * @swagger
+ * /api/auth/facebook:
+ *   get:
+ *     summary: Authentification via Facebook OAuth
+ *     tags: [Authentication]
+ *     responses:
+ *       302:
+ *         description: Redirection vers Facebook pour l'authentification
+ */
+router.get('/facebook',
+  passport.authenticate('facebook', { 
+    scope: ['email'] 
+  })
+);
+
+/**
+ * @swagger
+ * /api/auth/facebook/callback:
+ *   get:
+ *     summary: Callback Facebook OAuth
+ *     tags: [Authentication]
+ *     responses:
+ *       302:
+ *         description: Redirection vers le dashboard avec le token
+ */
+router.get('/facebook/callback',
+  passport.authenticate('facebook', { 
+    failureRedirect: process.env.FRONTEND_URL || 'http://localhost:5173',
+    session: false 
+  }),
+  async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+      
+      if (!user) {
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=auth_failed`);
+        return;
+      }
+
+      // Générer un token JWT
+      const token = generateToken(user.id);
+
+      // Rediriger vers le frontend avec le token
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);
+    } catch (error) {
+      console.error('Erreur Facebook callback:', error);
+      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=server_error`);
+    }
+  }
+);
 
 export default router;

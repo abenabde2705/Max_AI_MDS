@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction, Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import session from 'express-session';
+import passport from 'passport';
 import { sequelize } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import conversationRoutes from './routes/conversations.js';
@@ -9,6 +11,7 @@ import messageRoutes from './routes/messages.js';
 import feedbackRoutes from './routes/feedback.js';
 import userRoutes from './routes/users.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
+import './config/passport.js';
 
 // Monitoring imports
 import pino from 'pino';
@@ -131,6 +134,22 @@ app.use(cors({
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Session configuration for Passport
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Swagger Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
