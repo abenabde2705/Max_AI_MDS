@@ -31,15 +31,19 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
             }, {
               validate: false // Désactiver les validations pour OAuth
             });
+            
+            // Recharger l'utilisateur pour s'assurer que toutes les propriétés sont disponibles
+            await user.reload();
           } else if (!user.googleId) {
             // Associer le compte Google à un compte existant
-            console.log("asba")
             user.googleId = profile.id;
             await user.save();
+            await user.reload();
           }
-
+         
           return done(null, user);
         } catch (error) {
+          console.error('Google strategy error:', error);
           return done(error as Error, undefined);
         }
       }
@@ -76,10 +80,14 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
             }, {
               validate: false // Désactiver les validations pour OAuth
             });
+            
+            // Recharger l'utilisateur pour s'assurer que toutes les propriétés sont disponibles
+            await user.reload();
           } else if (!user.facebookId) {
             // Associer le compte Facebook à un compte existant
             user.facebookId = profile.id;
             await user.save();
+            await user.reload();
           }
 
           return done(null, user);
@@ -93,7 +101,9 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
 
 // Sérialisation de l'utilisateur
 passport.serializeUser((user: any, done) => {
-  done(null, user.id);
+  const userId = user.id || user.getDataValue?.('id') || user.dataValues?.id;
+  console.log('Serializing user - userId:', userId);
+  done(null, userId);
 });
 
 // Désérialisation de l'utilisateur

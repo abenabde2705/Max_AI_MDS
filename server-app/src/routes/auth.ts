@@ -981,8 +981,17 @@ router.get('/google/callback',
         return;
       }
 
+      // Récupérer l'ID de l'utilisateur (Sequelize peut retourner l'objet différemment)
+      const userId = user.id || user.dataValues?.id || user.get?.('id') || user.getDataValue?.('id');
+      
+      if (!userId) {
+        console.error('Impossible de récupérer l\'ID utilisateur');
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=no_user_id`);
+        return;
+      }
+
       // Générer un token JWT
-      const token = generateToken(user.id);
+      const token = generateToken(userId);
 
       // Rediriger vers le frontend avec le token
       res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);
@@ -1033,8 +1042,17 @@ router.get('/facebook/callback',
         return;
       }
 
+      // Récupérer l'ID de l'utilisateur (Sequelize peut retourner l'objet différemment)
+      const userId = user.id || user.dataValues?.id || user.get?.('id') || user.getDataValue?.('id');
+      
+      if (!userId) {
+        console.error('Impossible de récupérer l\'ID utilisateur Facebook');
+        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=no_user_id`);
+        return;
+      }
+
       // Générer un token JWT
-      const token = generateToken(user.id);
+      const token = generateToken(userId);
 
       // Rediriger vers le frontend avec le token
       res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);

@@ -19,8 +19,34 @@ const AuthCallback = () => {
       // Stocker le token
       localStorage.setItem('token', token);
       
-      // Rediriger vers le chat
-      navigate('/chatbot');
+      // Récupérer les informations de l'utilisateur
+      fetch('http://localhost:3000/api/auth/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          console.log('Response status:', res.status);
+          return res.json();
+        })
+        .then(data => {
+          console.log('User data received:', data);
+          if (data.user) {
+            // Stocker les informations utilisateur
+            const fullName = `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim();
+            console.log('Storing user data:', { fullName, email: data.user.email });
+            localStorage.setItem('userEmail', data.user.email);
+            localStorage.setItem('userName', fullName || data.user.email);
+            localStorage.setItem('userId', data.user.id);
+          }
+          // Rediriger vers le chat après avoir stocké les données
+          setTimeout(() => navigate('/chatbot'), 100);
+        })
+        .catch(error => {
+          console.error('Erreur récupération profil:', error);
+          // Rediriger quand même vers le chat
+          navigate('/chatbot');
+        });
     } else {
       navigate('/auth');
     }

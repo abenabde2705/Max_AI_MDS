@@ -28,7 +28,9 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
-      setUserEmail(localStorage.getItem('name') || 'client@example.com');
+      const userName = localStorage.getItem('userName');
+      const userEmailStored = localStorage.getItem('userEmail');
+      setUserEmail(userName || userEmailStored || 'Utilisateur');
     }
   }, []);
 
@@ -52,7 +54,9 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
 
   const logout = (): void => {
     localStorage.removeItem('token');
-    localStorage.removeItem('name');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
     setIsLoggedIn(false);
     setIsDropdownOpen(false);
   };
