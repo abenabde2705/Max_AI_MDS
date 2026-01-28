@@ -70,13 +70,7 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   margin-bottom: 12px;
 }
 
-.feature-text h2 {
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 48px;
-  color: #fff;
-  margin-top: 20px;
-  margin-bottom: 16px;
-}
+
 
 /* Responsive tweaks */
 @media (max-width: 768px) {
