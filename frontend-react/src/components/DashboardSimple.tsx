@@ -59,6 +59,7 @@ const DashboardSimple: React.FC = () => {
     localStorage.removeItem('name');
     localStorage.removeItem('userId');
     navigate('/');
+    window.location.reload();
   };
 
   const formatDate = (dateString: string): string => {

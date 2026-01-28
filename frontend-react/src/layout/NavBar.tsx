@@ -59,6 +59,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
     localStorage.removeItem('userId');
     setIsLoggedIn(false);
     setIsDropdownOpen(false);
+    window.location.reload();
   };
 
   return (

@@ -55,7 +55,7 @@ export default function ChatHistoric({
         <div className="historic-header">
           <h2>Historique des conversations</h2>
           <button className="historic-close" onClick={handleClose}>
-            <Icon name="close" size="md" color={colors.common.white} />
+            <Icon name="close" size="lg" color={colors.common.white} />
           </button>
         </div>
 

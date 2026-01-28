@@ -2,7 +2,7 @@ import Trash from './assets/trash.svg';
 import Add from './assets/add.svg';
 import Arrow from './assets/arrow.svg';
 import Back from './assets/backyellow.svg';
-import Close from './assets/close.svg';
+import Close from './assets/close_yellow.png';
 import Historic from './assets/historyyellow.svg';
 import Send from './assets/sendyellow.svg';
 

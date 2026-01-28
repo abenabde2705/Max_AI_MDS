@@ -3664,12 +3664,14 @@ border-radius: 70px 0px 0px 70px;
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
   transition: background 0.2s ease;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .historic-close:hover {
