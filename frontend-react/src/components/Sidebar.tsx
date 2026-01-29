@@ -9,6 +9,7 @@ interface SidebarProps {
 
 export default function Sidebar({ onCreateNewConversation }: SidebarProps) {
   const navigate = useNavigate()
+  const currentPath = window.location.pathname
 
   return (
     <aside className="max-chat__sidebar">
@@ -24,10 +25,30 @@ export default function Sidebar({ onCreateNewConversation }: SidebarProps) {
       </div>
 
       <nav className="max-chat__nav">
-        <button className="max-chat__nav-button max-chat__nav-button--active">Chat IA</button>
-        <button className="max-chat__nav-button">Journal</button>
-        <button className="max-chat__nav-button">Statistiques</button>
-        <button className="max-chat__nav-button">Coachs</button>
+        <button 
+          className={`max-chat__nav-button ${currentPath === "/chatbot" ? "max-chat__nav-button--active" : ""}`}
+          onClick={() => navigate("/chatbot")}
+        >
+          Chat IA
+        </button>
+        <button 
+          className={`max-chat__nav-button ${currentPath === "/journal" ? "max-chat__nav-button--active" : ""}`}
+          onClick={() => navigate("/journal")}
+        >
+          Journal
+        </button>
+        <button 
+          className={`max-chat__nav-button ${currentPath === "/statistics" ? "max-chat__nav-button--active" : ""}`}
+          onClick={() => navigate("/statistics")}
+        >
+          Statistiques
+        </button>
+        <button 
+          className={`max-chat__nav-button ${currentPath === "/coaches" ? "max-chat__nav-button--active" : ""}`}
+          onClick={() => navigate("/coaches")}
+        >
+          Coachs
+        </button>
       </nav>
 
       <div className="max-chat__premium">

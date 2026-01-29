@@ -13,6 +13,9 @@ import ConditionsUtilisation from './components/Politics/ConditionsUtilisation';
 import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite';
 import NotFound from './components/NotFound';
 import Dashboard from './components/DashboardSimple';
+import EmotionalJournal from './components/EmotionalJournal';
+import Statistics from './components/Statistics';
+import Coaches from './components/Coaches';
 
 
 const App: React.FC = () => {
@@ -33,6 +36,9 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/chatbot" element={<Chat />} />
+        <Route path="/journal" element={<EmotionalJournal />} />
+        <Route path="/statistics" element={<Statistics />} />
+        <Route path="/coaches" element={<Coaches />} />
         <Route path="/auth" element={<AuthUser />} />
         <Route path="/dashboard" element={<Dashboard />} />
 
