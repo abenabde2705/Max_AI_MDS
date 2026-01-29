@@ -1,0 +1,245 @@
+/* ============================================
+   COACHES STYLES
+   ============================================ */
+
+.coaches__container {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Recommandations Section */
+.coaches__recommendations {
+  border: 2px solid transparent;
+  background-image: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%), linear-gradient(to bottom, #DAE63D, #161A4D);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 38px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.coaches__recommendations-title {
+  color: #DAE63D;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.coaches__recommendations-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Coaches Grid */
+.coaches__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Coach Card */
+.coaches__card {
+ border: 2px solid transparent;
+  background-image: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%), linear-gradient(to bottom, #DAE63D, #161A4D);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 38px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.coaches__card:hover {
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Card Header */
+.coaches__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.coaches__coach-info {
+  flex: 1;
+}
+
+.coaches__coach-name {
+  color: #DAE63D;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  
+}
+
+.coaches__coach-specialty {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.coaches__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.coaches__rating-star {
+  color: #DAE63D;
+  font-size: 1rem;
+}
+
+.coaches__rating-value {
+  color: #DAE63D;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* Description */
+.coaches__description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+/* Details */
+.coaches__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.coaches__detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.coaches__detail-icon {
+  font-size: 1rem;
+}
+
+.coaches__detail-text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Specializations */
+.coaches__specializations {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #DAE63D;
+}
+
+.coaches__tag {
+ /* Frame 728 */
+
+/* Auto layout */
+
+padding: 3px 8px 2px;
+gap: 9px;
+
+
+background: linear-gradient(180deg, rgba(22, 26, 77, 0.2) 27.4%, rgba(212, 165, 227, 0.2) 100%);
+border-radius: 60px;
+    font-size: x-small;
+
+
+}
+
+/* Card Footer */
+.coaches__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.coaches__price {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.coaches__price-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.coaches__price-value {
+  color: #DAE63D;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.coaches__button {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .coaches__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .coaches__container {
+    padding: 1rem;
+  }
+
+  .coaches__recommendations {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .coaches__grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .coaches__card {
+    padding: 1rem;
+  }
+
+  .coaches__coach-name {
+    font-size: 1rem;
+  }
+
+  .coaches__card-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .coaches__footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .coaches__button {
+    width: 100%;
+    text-align: center;
+  }
+}
