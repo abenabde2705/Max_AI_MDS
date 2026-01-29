@@ -94,7 +94,7 @@ export default function EmotionalJournal() {
 
             <div className="max-chat__header-info">
               <h1 className="max-chat__title">Journal Émotionnel</h1>
-s            </div>
+            </div>
           </div>
 
           <div className="max-chat__header-actions">
