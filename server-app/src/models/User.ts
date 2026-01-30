@@ -18,6 +18,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public firstName?: string;
   public lastName?: string;
   public age?: number;
+  public googleId?: string;
+  public facebookId?: string;
   public lastLogin?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -67,14 +69,9 @@ User.init({
   },
   password: {
     type: DataTypes.TEXT,
-    allowNull: false,
+    allowNull: true,
     field: 'password_hash',
-    validate: {
-      len: {
-        args: [6, 255],
-        msg: 'Le mot de passe doit contenir au moins 6 caractères'
-      }
-    }
+
   },
   isAnonymous: {
     type: DataTypes.BOOLEAN,
@@ -102,15 +99,30 @@ User.init({
     type: DataTypes.INTEGER,
     allowNull: true,
     validate: {
-      min: {
-        args: [13],
-        msg: 'Vous devez avoir au moins 13 ans'
-      },
-      max: {
-        args: [120],
-        msg: 'Âge invalide'
+      isValidAge(value: number | null | undefined) {
+        // Valider seulement si une valeur est fournie
+        if (value !== null && value !== undefined) {
+          if (value < 13) {
+            throw new Error('Vous devez avoir au moins 13 ans');
+          }
+          if (value > 120) {
+            throw new Error('Âge invalide');
+          }
+        }
       }
     }
+  },
+  googleId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'google_id',
+    unique: true
+  },
+  facebookId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'facebook_id',
+    unique: true
   },
   lastLogin: {
     type: DataTypes.DATE,

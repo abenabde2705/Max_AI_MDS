@@ -55,8 +55,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
   return (
     <section id={id} className={`testimonials-section ${className}`}>
       <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
-        <h2>TÉMOIGNAGES UTILISATEURS</h2>
+        
         <div className="testimonials-container">
+          <h2>TÉMOIGNAGES UTILISATEURS</h2>
           <div className="testimonials-list">
             {testimonials.map((testimonial) => (
               <div key={testimonial.author} className="testimonial">
