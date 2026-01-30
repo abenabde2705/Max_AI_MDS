@@ -122,34 +122,34 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Déploiement DEV
-deploy-dev:
-  name: Deploy DEV to VPS
-  needs: [backend-tests, frontend-tests]
-  if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-  runs-on: ubuntu-latest
-  environment: dev
+  deploy-dev:
+    name: Deploy DEV to VPS
+    needs: [backend-tests, frontend-tests]
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: dev
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.DEV_VPS_SSH_KEY }}
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEV_VPS_SSH_KEY }}
 
-    - name: Deploy on VPS (DEV)
-      run: |
-        ssh -o StrictHostKeyChecking=no \
-        ${{ secrets.DEV_VPS_USER }}@${{ secrets.DEV_VPS_HOST }} << 'EOF'
-          set -e
-          cd ${{ secrets.DEV_VPS_PATH }}
-          git fetch origin
-          git checkout dev
-          git pull origin dev
-          docker compose down
-          docker compose up -d --build
-        EOF
+      - name: Deploy on VPS (DEV)
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.DEV_VPS_USER }}@${{ secrets.DEV_VPS_HOST }} << 'EOF'
+            set -e
+            cd ${{ secrets.DEV_VPS_PATH }}
+            git fetch origin
+            git checkout dev
+            git pull origin dev
+            docker compose down
+            docker compose up -d --build
+          EOF
 
 
   # Déploiement PROD
