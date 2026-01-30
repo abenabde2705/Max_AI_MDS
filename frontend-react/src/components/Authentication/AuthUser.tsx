@@ -15,6 +15,8 @@ interface FormData {
   rememberMe: boolean;
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const AuthUser: React.FC = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -90,7 +92,7 @@ const AuthUser: React.FC = () => {
 
     try {
       if (mode === 'login') {
-        const response = await fetch('http://localhost:3000/api/auth/login', {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -120,7 +122,7 @@ const AuthUser: React.FC = () => {
         const ageDate = new Date(ageDiffMs);
         const age = Math.abs(ageDate.getUTCFullYear() - 1970);
 
-        const response = await fetch('http://localhost:3000/api/auth/register', {
+        const response = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -157,12 +159,12 @@ const AuthUser: React.FC = () => {
 
   const handleGoogleLogin = () => {
     // Redirection vers l'endpoint OAuth Google du backend
-    window.location.href = 'http://localhost:3000/api/auth/google';
+    window.location.href = `${API_URL}/api/auth/google`;
   };
 
   const handleFacebookLogin = () => {
     // Redirection vers l'endpoint OAuth Facebook du backend
-    window.location.href = 'http://localhost:3000/api/auth/facebook';
+    window.location.href = `${API_URL}/api/auth/facebook`;
   };
 
   return (
