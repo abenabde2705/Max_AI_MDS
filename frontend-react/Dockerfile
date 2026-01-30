@@ -13,8 +13,8 @@ RUN npm install
 # Copier le code source
 COPY . .
 
-# Exposer le port 3001
-EXPOSE 3001
+# Exposer le port 5173
+EXPOSE 5173
 
 # Commande pour lancer le serveur de développement
 CMD ["npm", "run", "dev"]

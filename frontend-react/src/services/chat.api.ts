@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:3000/api';
-const CHAT_API = 'http://localhost:8000';
+const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
+const CHAT_API = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8000';
 
 export const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
