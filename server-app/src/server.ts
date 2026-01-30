@@ -124,13 +124,28 @@ const connectDB = async (): Promise<void> => {
 connectDB();
 
 // Middlewares
-app.use(cors({
-    origin: ['http://localhost:3001', 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:3001'],
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Autoriser les requêtes sans origin (Postman, curl, Prometheus)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      logger.warn(`CORS blocked origin: ${origin}`);
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     optionsSuccessStatus: 200
-}));
+  })
+);
+
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

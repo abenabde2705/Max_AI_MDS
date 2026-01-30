@@ -122,26 +122,35 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Déploiement DEV
-  deploy-dev:
-    name: Deploy to DEV
-    needs: [backend-tests, frontend-tests]
-    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment: dev
+deploy-dev:
+  name: Deploy DEV to VPS
+  needs: [backend-tests, frontend-tests]
+  if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+  runs-on: ubuntu-latest
+  environment: dev
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Deploy to Vercel (Frontend DEV)
-        uses: amondnet/vercel-action@51e96c0edc22e3591e392b3b29f5a3b4fb87a89f
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./frontend-react
-          vercel-args: '--prod'
-          alias-domains: dev.maxai.app
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.DEV_VPS_SSH_KEY }}
+
+    - name: Deploy on VPS (DEV)
+      run: |
+        ssh -o StrictHostKeyChecking=no \
+        ${{ secrets.DEV_VPS_USER }}@${{ secrets.DEV_VPS_HOST }} << 'EOF'
+          set -e
+          cd ${{ secrets.DEV_VPS_PATH }}
+          git fetch origin
+          git checkout dev
+          git pull origin dev
+          docker compose down
+          docker compose up -d --build
+        EOF
+
 
   # Déploiement PROD
   deploy-prod:
