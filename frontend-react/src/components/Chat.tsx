@@ -68,33 +68,33 @@ export default function MaxAIChat() {
   }
 
   return (
-    <div className="max-chat">
+    <div className="flex flex-col lg:flex-row h-screen bg-gradient-to-b from-[#161A4D] via-[#470059] to-[#651E79] text-white overflow-hidden p-[30px]">
       <Sidebar onCreateNewConversation={createNewConversation} />
 
-      <main className="max-chat__main">
-        <header className="max-chat__header">
-  <div className="max-chat__header-left">
-    <div className="max-chat__header-avatar">
-      <img src={LogoYellow} alt="MAX Logo" />
+      <main className="flex-1 flex flex-col backdrop-blur-[4px]">
+        <header className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-4 lg:p-6 border-b border-white/10 gap-3">
+  <div className="flex items-center gap-3">
+    <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0">
+      <img src={LogoYellow} alt="MAX Logo" className="w-full h-full object-cover" />
     </div>
 
-    <div className="max-chat__header-info">
-      <h1 className="max-chat__title">MAX - Assistant IA</h1>
-      <p className="max-chat__plan">
-        <strong>1/10 messages</strong> <span>Plan Free</span>
+    <div className="flex flex-col gap-1">
+      <h1 className="m-0 text-2xl lg:text-4xl font-bold">MAX - Assistant IA</h1>
+      <p className="mt-0.5 mb-0 text-[0.9rem] text-[#DAE63D]">
+        <strong className="font-bold mr-1.5">1/10 messages</strong> <span>Plan Free</span>
       </p>
     </div>
   </div>
 
-  <div className="max-chat__header-actions">
-    <Button className="max-chat__action-button" variant="primary" onClick={createNewConversation}>
+  <div className="flex items-center gap-2 w-full lg:w-auto">
+    <Button className="flex-1 lg:flex-initial lg:min-w-[180px] px-4 py-2.5 transition-colors duration-200" variant="primary" onClick={createNewConversation}>
       <Icon name="add" size="sm" />
       Nouvelle conversation
     </Button>
 
     <Button
       variant="outline"
-      className="max-chat__action-button max-chat__action-button--ghost"
+      className="flex-1 lg:flex-initial lg:min-w-[180px] px-4 py-2.5 transition-colors duration-200 bg-transparent border border-white/20"
       onClick={() => setIsHistoricOpen(true)}
     >
       <Icon name="historic" size="sm" />
@@ -103,71 +103,87 @@ export default function MaxAIChat() {
   </div>
 </header>
 
-        <div className="max-chat__messages">
+        <div className="flex-1 p-4 lg:p-6 overflow-y-auto flex flex-col gap-4">
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`max-chat__message-row ${msg.role === "user" ? "max-chat__message-row--user" : ""}`}
+              className={`flex items-start gap-3 ${msg.role === "user" ? "justify-end" : ""}`}
             >
               {msg.role === "assistant" && (
-                <div className="max-chat__badge">
-                  <img src={LogoPrincipal} alt="MAX" className="max-chat__badge-logo" />
+                <div className="w-[34px] h-[34px] rounded-[50%_50%_0_50%] bg-[#DAE63D] flex items-center justify-center text-[#161A4D] flex-shrink-0">
+                  <img src={LogoPrincipal} alt="MAX" className="w-5 h-5 object-contain" />
                 </div>
               )}
-              <div className={`max-chat__bubble ${msg.role === "assistant" ? "max-chat__bubble--assistant" : "max-chat__bubble--user"}`}>
-                <p className="max-chat__bubble-text">{msg.content}</p>
+              <div className={`max-w-[540px] px-[18px] py-3.5 rounded-[22px] leading-normal border ${msg.role === "assistant" ? "bg-[#DAE63D] text-[#161A4D] border-transparent" : "bg-white/[0.08] text-white border-white/20"}`}>
+                <p className="m-0">{msg.content}</p>
                 {msg.timestamp && (
-                  <span className="max-chat__bubble-time">
+                  <span className="block text-[11px] opacity-60 mt-1.5 text-right">
                     {new Date(msg.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 )}
               </div>
-              {msg.role === "user" && <div className="max-chat__user-avatar">{userInitials}</div>}
+              {msg.role === "user" && <div className="w-[34px] h-[34px] rounded-[50%_50%_50%_0] bg-[#DAE63D] text-[#161A4D] flex items-center justify-center font-bold flex-shrink-0">{userInitials}</div>}
             </div>
           ))}
           {isWaiting && (
-            <div className="max-chat__message-row">
-              <div className="max-chat__badge">
-                <img src={LogoPrincipal} alt="MAX" className="max-chat__badge-logo" />
+            <div className="flex items-start gap-3">
+              <div className="w-[34px] h-[34px] rounded-[50%_50%_0_50%] bg-[#DAE63D] flex items-center justify-center text-[#161A4D] flex-shrink-0">
+                <img src={LogoPrincipal} alt="MAX" className="w-5 h-5 object-contain" />
               </div>
-              <div className="max-chat__bubble max-chat__bubble--assistant">
-                <p className="max-chat__bubble-text">...</p>
+              <div className="max-w-[540px] px-[18px] py-3.5 rounded-[22px] leading-normal border bg-[#DAE63D] text-[#161A4D] border-transparent">
+                <p className="m-0">...</p>
               </div>
             </div>
           )}
         </div>
 
-        <div className="max-chat__input-area">
-          <div className="max-chat__emotions">
-            {emotions.map((emotion) => (
-              <button
-                key={emotion.key}
-                onClick={() => handleEmotionClick(emotion.label)}
-                className={`max-chat__emotion-button max-chat__emotion-button--${emotion.key}`}
-              >
-                <span>{emotion.icon}</span>
-                <span>{emotion.label}</span>
-              </button>
-            ))}
+        <div className="px-4 py-5 lg:px-5 lg:py-6 flex flex-col gap-3.5 border-t border-white/10">
+          <div className="flex justify-center gap-2.5 flex-wrap">
+            {emotions.map((emotion) => {
+              const bgClass = 
+                emotion.key === "super" ? "bg-[#a855f7]/15" :
+                emotion.key === "bien" ? "bg-[#f472b6]/15" :
+                emotion.key === "triste" ? "bg-[#3b82f6]/15" :
+                emotion.key === "colere" ? "bg-[#f87171]/15" :
+                emotion.key === "fatigue" ? "bg-[#6b7280]/[0.18]" :
+                "bg-white/5"
+              
+              return (
+                <button
+                  key={emotion.key}
+                  onClick={() => handleEmotionClick(emotion.label)}
+                  className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-white/20 text-white font-semibold cursor-pointer transition-all duration-200 hover:bg-white/[0.12] active:translate-y-px ${bgClass}`}
+                >
+                  <span>{emotion.icon}</span>
+                  <span>{emotion.label}</span>
+                </button>
+              )
+            })}
           </div>
 
-          <div className="max-chat__input-wrapper">
+          <div className="relative">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !isWaiting && handleSendMessage()}
               placeholder="Partagez ce que vous ressentez..."
-              className="max-chat__input"
               disabled={isWaiting}
             />
             {isWaiting ? (
-              <Button onClick={cancelResponse} size="icon" className="max-chat__send">
-                <Icon name="close" size="md" color={colors.semantic.error} />
-              </Button>
+              <button
+                onClick={cancelResponse}
+                className="absolute top-1/2 right-[10px] -translate-y-1/2 w-11 h-11 rounded-full bg-[#161A4D] hover:bg-[#1f2463] flex items-center justify-center transition-colors duration-200 border-none cursor-pointer"
+              >
+                <Icon name="close" size="md" />
+              </button>
             ) : (
-              <Button onClick={handleSendMessage} size="icon" className="max-chat__send" disabled={!message.trim()} variant="secondary">
+              <button
+                onClick={handleSendMessage}
+                disabled={!message.trim()}
+                className="absolute top-1/2 right-[10px] -translate-y-1/2 w-11 h-11 rounded-full bg-[#161A4D] hover:bg-[#1f2463] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors duration-200 border-none cursor-pointer"
+              >
                 <Icon name="send" size="md" />
-              </Button>
+              </button>
             )}
           </div>
         </div>

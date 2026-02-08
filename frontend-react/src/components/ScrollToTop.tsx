@@ -29,7 +29,7 @@ const ScrollToTop: React.FC = () => {
   return (
     <button 
       onClick={scrollToTop} 
-      className="back-to-top"
+      className="fixed bottom-8 right-8 bg-primary-yellow text-purple-dark rounded-full w-14 h-14 flex items-center justify-center cursor-pointer transition-all duration-300 z-50 shadow-card hover:bg-primary-yellow-dark hover:shadow-card-hover hover:-translate-y-1 active:scale-95 border-none"
       aria-label="Retour en haut"
     >
       <svg 

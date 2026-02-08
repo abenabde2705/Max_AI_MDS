@@ -182,3 +182,302 @@
     background: radial-gradient(circle at 50% 0%, rgb(28 83 114 / 0.3), transparent 70%);
   }
 }
+
+/* Testimonials Popup Modal */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.popup-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: popup-appear 0.3s ease-out;
+}
+
+@keyframes popup-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #1C5372;
+  color: white;
+}
+
+.popup-header h2 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  transition: background-color 0.2s;
+  border-radius: 50%;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.popup-body {
+  padding: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 400;
+  font-size: 24px;
+  color: #DAE63D;
+}
+
+.popup-body input, 
+.popup-body textarea {
+  width: 100%;
+  padding: 12px;
+  background: #FFFFFF;
+  border: 1px solid #ddd;
+  border-radius: 45px;
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.popup-body textarea {
+  resize: vertical;
+}
+
+.popup-body input:focus, 
+.popup-body textarea:focus {
+  outline: none;
+  border-color: #1C5372;
+  box-shadow: 0 0 0 2px rgba(28, 83, 114, 0.2);
+}
+
+.popup-body input:disabled, 
+.popup-body textarea:disabled {
+  background-color: #f7f7f7;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-button {
+  background-color: #1C5372;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #164259;
+}
+
+.submit-button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.error-message {
+  padding: 10px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.success-message {
+  padding: 10px;
+  background-color: #dcfce7;
+  color: #166534;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .popup-content {
+    width: 95%;
+    margin: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-row .form-group {
+    margin-bottom: 0;
+  }
+}
+
+/* Animations pour Chat Historic */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* UI Button Component Styles */
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  border-radius: 50px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.ui-button--icon {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.ui-button--primary {
+  background: #DAE63D;
+  color: #161A4D;
+}
+
+.ui-button--primary:hover {
+  background: #BBC600;
+}
+
+.ui-button--secondary {
+  background: #161A4D;
+  color: white;
+}
+
+.ui-button--secondary:hover {
+  background: #1f2463;
+}
+
+.ui-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* UI Input Component Styles */
+.ui-input {
+  width: 100%;
+  padding: 12px;
+  padding-right: 56px;
+  background: #FFFFFF;
+  border: 1px solid #ddd;
+  border-radius: 45px;
+  font-weight: 400;
+  font-size: 16px;
+  color: #000;
+}
+
+.ui-input:focus {
+  outline: none;
+  border-color: #1C5372;
+  box-shadow: 0 0 0 2px rgba(28, 83, 114, 0.2);
+}
+
+.ui-input:disabled {
+  background-color: #f7f7f7;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ui-input::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease;
+  }
+  
+  .animate-fade-out {
+    animation: fadeOut 0.3s ease;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease;
+  }
+  
+  .animate-slide-out-right {
+    animation: slideOutRight 0.3s ease;
+  }
+}

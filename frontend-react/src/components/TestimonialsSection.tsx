@@ -53,23 +53,23 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
   };
 
   return (
-    <section id={id} className={`testimonials-section ${className}`}>
+    <section id={id} className={`py-20 px-8 ${className || ''}`}>
       <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
         
-        <div className="testimonials-container">
-          <h2>TÉMOIGNAGES UTILISATEURS</h2>
-          <div className="testimonials-list">
+        <div className="max-w-[1290px] mx-auto">
+          <h2 className="text-[48px] font-bold text-[#DAE63D] mb-12 leading-[30px] text-left font-['Ubuntu',sans-serif]">TÉMOIGNAGES UTILISATEURS</h2>
+          <div className="flex flex-col gap-8 mb-4">
             {testimonials.map((testimonial) => (
-              <div key={testimonial.author} className="testimonial">
-                <p className="quote">
-                  "{testimonial.quote}" - <span className="author">{testimonial.author}</span>
+              <div key={testimonial.author} className="mb-0">
+                <p className="text-2xl text-white italic font-['Ubuntu',sans-serif]">
+                  "{testimonial.quote}" - <span className="font-semibold not-italic">{testimonial.author}</span>
                 </p>
               </div>
             ))}
           </div>
           
-          <div className="testimonials-button-container">
-            <button onClick={openPopup} className="voir-plus-btn">
+          <div className="flex justify-end w-full mt-4 pr-8">
+            <button onClick={openPopup} className="block px-8 py-4 bg-[#DAE63D] text-[#161A4D] border-none rounded-[54px] cursor-pointer text-base transition-all duration-300 shadow-[0px_4px_4px_rgba(0,0,0,0.25),0px_4px_4px_rgba(0,0,0,0.25)] hover:bg-[#BBC600] font-['Ubuntu',sans-serif]">
               Voir plus
             </button>
           </div>

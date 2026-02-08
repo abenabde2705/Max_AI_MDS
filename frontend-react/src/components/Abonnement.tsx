@@ -13,11 +13,11 @@ const Abonnement: React.FC<AbonnementProps> = ({ className }) => {
   }, []);
 
   return (
-    <div id="app" className="Abonnement" >
+    <div id="app" className="py-16 px-8 min-h-[600px]" >
       <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
-        <h1 id="title" className="title">ABONNEMENTS</h1>
+        <h1 id="title" className="text-[#DAE63D] text-[2.5rem] font-bold text-center mb-12 tracking-[3px] font-['Ubuntu',sans-serif]">ABONNEMENTS</h1>
         
-        <div className="plans-container">
+        <div className="flex flex-wrap justify-center items-stretch gap-12 max-w-[1400px] mx-auto mt-0">
           <PlanCard
             title="Plan Free"
             price="Gratuit"

@@ -12,48 +12,48 @@ export default function Sidebar({ onCreateNewConversation }: SidebarProps) {
   const currentPath = window.location.pathname
 
   return (
-    <aside className="max-chat__sidebar">
-      <div className="max-chat__logo">
+    <aside className="w-full lg:w-[260px] flex flex-row lg:flex-col gap-4 lg:gap-6 items-center lg:items-stretch p-4 lg:p-6 rounded-[50px] border border-white/25 bg-black/[0.001] shadow-[0_3px_6px_rgba(0,0,0,0.16),0_3px_6px_rgba(0,0,0,0.23),0_0_5px_#651E79_inset] relative overflow-hidden">
+      <div className="flex items-center gap-3">
         <button 
-          className="max-chat__logo-icon"
+          className="w-11 h-11 rounded-full border-2 border-[#DAE63D] flex items-center justify-center bg-transparent cursor-pointer transition-transform duration-200 hover:scale-105"
           onClick={() => navigate("/")}
           title="Retour à l'accueil"
         >
           <Icon name="back" size="md" />
         </button>
-        <img src={LogoMax} alt="MAX Logo" className="max-chat__logo-image" />
+        <img src={LogoMax} alt="MAX Logo" className="h-10 w-auto object-contain" />
       </div>
 
-      <nav className="max-chat__nav">
+      <nav className="flex flex-row lg:flex-col flex-wrap lg:flex-nowrap gap-2.5 lg:gap-3 lg:pt-8">
         <button 
-          className={`max-chat__nav-button ${currentPath === "/chatbot" ? "max-chat__nav-button--active" : ""}`}
+          className={`w-auto lg:w-[196px] h-[75px] px-4 lg:p-0 rounded-[40px] border-none bg-transparent font-black text-xl text-center cursor-pointer transition-all duration-200 ${currentPath === "/chatbot" ? "shadow-[0_3px_6px_rgba(0,0,0,0.16),0_3px_6px_rgba(0,0,0,0.23),0_0_5px_#651E79_inset] text-[#DAE63D]" : "text-white/[0.78] hover:bg-white/[0.08]"}`}
           onClick={() => navigate("/chatbot")}
         >
           Chat IA
         </button>
         <button 
-          className={`max-chat__nav-button ${currentPath === "/journal" ? "max-chat__nav-button--active" : ""}`}
+          className={`w-auto lg:w-[196px] h-[75px] px-4 lg:p-0 rounded-[40px] border-none bg-transparent font-black text-xl text-center cursor-pointer transition-all duration-200 ${currentPath === "/journal" ? "shadow-[0_3px_6px_rgba(0,0,0,0.16),0_3px_6px_rgba(0,0,0,0.23),0_0_5px_#651E79_inset] text-[#DAE63D]" : "text-white/[0.78] hover:bg-white/[0.08]"}`}
           onClick={() => navigate("/journal")}
         >
           Journal
         </button>
         <button 
-          className={`max-chat__nav-button ${currentPath === "/statistics" ? "max-chat__nav-button--active" : ""}`}
+          className={`w-auto lg:w-[196px] h-[75px] px-4 lg:p-0 rounded-[40px] border-none bg-transparent font-black text-xl text-center cursor-pointer transition-all duration-200 ${currentPath === "/statistics" ? "shadow-[0_3px_6px_rgba(0,0,0,0.16),0_3px_6px_rgba(0,0,0,0.23),0_0_5px_#651E79_inset] text-[#DAE63D]" : "text-white/[0.78] hover:bg-white/[0.08]"}`}
           onClick={() => navigate("/statistics")}
         >
           Statistiques
         </button>
         <button 
-          className={`max-chat__nav-button ${currentPath === "/coaches" ? "max-chat__nav-button--active" : ""}`}
+          className={`w-auto lg:w-[196px] h-[75px] px-4 lg:p-0 rounded-[40px] border-none bg-transparent font-black text-xl text-center cursor-pointer transition-all duration-200 ${currentPath === "/coaches" ? "shadow-[0_3px_6px_rgba(0,0,0,0.16),0_3px_6px_rgba(0,0,0,0.23),0_0_5px_#651E79_inset] text-[#DAE63D]" : "text-white/[0.78] hover:bg-white/[0.08]"}`}
           onClick={() => navigate("/coaches")}
         >
           Coachs
         </button>
       </nav>
 
-      <div className="max-chat__premium">
-        <Button fullWidth className="max-chat__premium-button" variant="primary">Passez Premium</Button>
-        <p className="max-chat__premium-note">Vos échanges restent confidentiels et sécurisés</p>
+      <div className="mt-0 lg:mt-auto">
+        <Button fullWidth className="font-bold" variant="primary">Passez Premium</Button>
+        <p className="mt-2.5 text-[0.8rem] text-white/70 text-center leading-normal">Vos échanges restent confidentiels et sécurisés</p>
       </div>
     </aside>
   )
