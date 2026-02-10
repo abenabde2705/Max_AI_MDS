@@ -30,25 +30,42 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 .about-section--bg {
   background-repeat: no-repeat;
   background-position: center center;
-  /* Change from cover to contain so the image is not zoomed/cropped */
-  background-size: 1500px 750px;
+  background-size: contain;
   position: relative;
-  /* Ensure content is readable over the image */
   color: #fff;
 }
 
-
-
 .about-section--bg > div {
-  /* make sure the inner content sits above overlay */
   position: relative;
   z-index: 1;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Typography and decorative lines for the About section to match the design */
-.about-section--bg > div {
-  padding: 0px 60px;
-  
+@media (max-width: 1024px) {
+  .about-section--bg > div {
+    padding: 50px;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section--bg > div {
+    padding: 40px 20px;
+    gap: 2rem;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-section--bg > div {
+    padding: 20px;
+    gap: 1.5rem;
+  }
 }
 
 .about-title {
@@ -61,6 +78,20 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   text-transform: uppercase;
 }
 
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 32px;
+    letter-spacing: 0.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-title {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+}
+
 
 
 .about-description p {
@@ -70,13 +101,22 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   margin-bottom: 12px;
 }
 
-
-
-/* Responsive tweaks */
-@media (max-width: 768px) {
-  .about-section--bg > div {
-    padding: 40px 20px;
-  }
-  .about-title { font-size: 26px; }
-  .feature-text h2 { font-size: 20px; }
+.feature-text p {
+  color: rgba(255,255,255,0.95);
+  line-height: 1.7;
+  font-size: 18px;
+  margin-bottom: 12px;
 }
+
+@media (max-width: 768px) {
+  .feature-text p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feature-text p {
+    font-size: 14px;
+  }
+}
+
