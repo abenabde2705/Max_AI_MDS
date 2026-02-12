@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../../layout/NavBar';
 import Footer from '../../layout/Footer';
 import { colors, opacity } from '@/ui';
+import logoImg from '../../assets/img/hero/logomax.png';
 
 interface FormData {
   firstName: string;
@@ -174,10 +175,9 @@ const AuthUser: React.FC = () => {
       <div className="login-form-container">
         <form onSubmit={handleSubmit} className="login-form">
           <div className="login-form-header">
-            <img src="/src/assets/img/hero/logomax.png" alt="MAX" className="login-logo-auth" />
+            <img src={logoImg} alt="MAX" className="login-logo-auth" />
             <h2 className="login-welcome">Bienvenue</h2>
-            <p className="login-subtitle">Découvrez une nouvelle façon d’être accompagné au quotidien.</p>
-
+            <p className="login-subtitle">Découvrez une nouvelle façon d'être accompagné au quotidien.</p>
           </div>
 
           {/* Message d'erreur */}
