@@ -394,9 +394,9 @@ router.put('/profile', authenticateToken, async (req: UpdateProfileRequest, res:
     const userId = req.user.id;
 
     const updateData: Partial<{ firstName: string; lastName: string; email: string }> = {};
-    if (firstName) updateData.firstName = firstName;
-    if (lastName) updateData.lastName = lastName;
-    if (email) updateData.email = email.toLowerCase();
+    if (firstName) {updateData.firstName = firstName;}
+    if (lastName) {updateData.lastName = lastName;}
+    if (email) {updateData.email = email.toLowerCase();}
 
     const [updatedCount] = await User.update(updateData, {
       where: { id: userId }
@@ -611,7 +611,7 @@ router.post('/create-admin', authenticateToken, requireAdmin, async (req: Reques
     });
 
     res.status(201).json({
-      message: `Utilisateur créé avec succès`,
+      message: 'Utilisateur créé avec succès',
       user: {
         id: adminUser.id,
         firstName: adminUser.firstName,

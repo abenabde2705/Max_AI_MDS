@@ -87,40 +87,40 @@ class WebhookService {
         }
 
         const slackMessage = {
-            text: `Nouveau feedback critique reçu`,
+            text: 'Nouveau feedback critique reçu',
             blocks: [
                 {
-                    type: "header",
+                    type: 'header',
                     text: {
-                        type: "plain_text",
+                        type: 'plain_text',
                         text: `🚨 Feedback ${feedbackData.severity.toUpperCase()}: ${feedbackData.title}`
                     }
                 },
                 {
-                    type: "section",
+                    type: 'section',
                     fields: [
                         {
-                            type: "mrkdwn",
+                            type: 'mrkdwn',
                             text: `*Type:*\n${feedbackData.type}`
                         },
                         {
-                            type: "mrkdwn",
+                            type: 'mrkdwn',
                             text: `*Sévérité:*\n${feedbackData.severity}`
                         },
                         {
-                            type: "mrkdwn",
+                            type: 'mrkdwn',
                             text: `*Utilisateur:*\n${feedbackData.userEmail}`
                         },
                         {
-                            type: "mrkdwn",
+                            type: 'mrkdwn',
                             text: `*Date:*\n${feedbackData.createdAt}`
                         }
                     ]
                 },
                 {
-                    type: "section",
+                    type: 'section',
                     text: {
-                        type: "mrkdwn",
+                        type: 'mrkdwn',
                         text: `*Description:*\n${feedbackData.description}`
                     }
                 }
@@ -290,7 +290,7 @@ router.post('/', authenticateToken, async (req: CreateFeedbackRequest, res: Resp
         const webhookResults = await webhookService.processWebhooks(feedbackData);
 
         // Log pour monitoring
-        console.log(`Feedback reçu:`, {
+        console.log('Feedback reçu:', {
             id: feedbackData.id,
             type,
             severity,

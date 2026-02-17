@@ -3,8 +3,8 @@ import { sequelize } from '../config/db.js';
 import { v4 as uuidv4 } from 'uuid';
 import type { RecommendationAttributes } from '../../types/global.js';
 
-// Interface pour les attributs optionnels lors de la création
-interface RecommendationCreationAttributes extends Optional<RecommendationAttributes, 'id' | 'description'> {}
+// Type pour les attributs optionnels lors de la création
+type RecommendationCreationAttributes = Optional<RecommendationAttributes, 'id' | 'createdAt' | 'updatedAt'>;
 
 // Classe du modèle Recommendation avec tous les types
 class Recommendation extends Model<RecommendationAttributes, RecommendationCreationAttributes> implements RecommendationAttributes {

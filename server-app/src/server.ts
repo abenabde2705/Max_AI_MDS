@@ -26,7 +26,7 @@ interface CustomError extends Error {
     status?: number;
 }
 
-interface MetricRequest extends Request {
+interface _MetricRequest extends Request {
     startTime?: number;
 }
 

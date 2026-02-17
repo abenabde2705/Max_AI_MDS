@@ -17,79 +17,79 @@ const Footer: React.FC = () => {
 
   return (
     <div className="footer-container">
-    <footer className="footer">
-      {/* Footer content */}
-      <div className="footer-content">
-        {/* Colonne : À propos */}
-        <div className="footer-column">
-          <h4>À propos de Max</h4>
-          <p>Votre assistant IA personnel pour une meilleure santé mentale</p>
-          <div className="social-links">
-            <a href="https://www.linkedin.com/company/maxsant%C3%A9mentale/" target="_blank" rel="noopener noreferrer">
-              <img src={LinkedInIcon} alt="LinkedIn" className="social-icon" />
-            </a>
+      <footer className="footer">
+        {/* Footer content */}
+        <div className="footer-content">
+          {/* Colonne : À propos */}
+          <div className="footer-column">
+            <h4>À propos de Max</h4>
+            <p>Votre assistant IA personnel pour une meilleure santé mentale</p>
+            <div className="social-links">
+              <a href="https://www.linkedin.com/company/maxsant%C3%A9mentale/" target="_blank" rel="noopener noreferrer">
+                <img src={LinkedInIcon} alt="LinkedIn" className="social-icon" />
+              </a>
+            </div>
+          </div>
+
+          {/* Colonne : Liens utiles */}
+          <div className="footer-column">
+            <h4>Liens utiles</h4>
+            <p>
+              <Link to="/politics/conditions-utilisation">
+              Conditions d'utilisation
+              </Link>
+            </p>
+            <p>
+              <Link to="/politics/politique-confidentialites">
+              Politique de confidentialité
+              </Link>
+            </p>
+          </div>
+
+          {/* Colonne : Contact */}
+          <div className="footer-column">
+            <h4>Contact Support</h4>
+            <p>
+              <a href="mailto:Max@outlook.com">Max@outlook.com</a>
+            </p>
+            {isLoggedIn && (
+              <button 
+                onClick={() => setIsFeedbackOpen(true)}
+                className="feedback-footer-btn"
+                title="Envoyer un feedback"
+              >
+              Envoyer un Feedback
+              </button>
+            )}
+          </div>
+
+          {/* Colonne : Téléchargement */}
+          <div className="footer-column">
+            <h4>Bientôt Disponible sur :</h4>
+            <button>
+              <img src={AppleStoreIcon} alt="Logo Apple Store" className="store-logo" />
+            Apple Store
+            </button>
+            <button>
+              <img src={PlayStoreIcon} alt="Logo Google Play" className="store-logo" />
+            Google Play
+            </button>
           </div>
         </div>
 
-        {/* Colonne : Liens utiles */}
-        <div className="footer-column">
-          <h4>Liens utiles</h4>
-          <p>
-            <Link to="/politics/conditions-utilisation">
-              Conditions d'utilisation
-            </Link>
-          </p>
-          <p>
-            <Link to="/politics/politique-confidentialites">
-              Politique de confidentialité
-            </Link>
-          </p>
+        {/* Copyright */}
+        <div className="footer-bottom">
+          <p>&copy; 2024 Max IA. Tous droits réservés.</p>
         </div>
 
-        {/* Colonne : Contact */}
-        <div className="footer-column">
-          <h4>Contact Support</h4>
-          <p>
-            <a href="mailto:Max@outlook.com">Max@outlook.com</a>
-          </p>
-          {isLoggedIn && (
-            <button 
-              onClick={() => setIsFeedbackOpen(true)}
-              className="feedback-footer-btn"
-              title="Envoyer un feedback"
-            >
-              Envoyer un Feedback
-            </button>
-          )}
-        </div>
-
-        {/* Colonne : Téléchargement */}
-        <div className="footer-column">
-          <h4>Bientôt Disponible sur :</h4>
-          <button>
-            <img src={AppleStoreIcon} alt="Logo Apple Store" className="store-logo" />
-            Apple Store
-          </button>
-          <button>
-            <img src={PlayStoreIcon} alt="Logo Google Play" className="store-logo" />
-            Google Play
-          </button>
-        </div>
-      </div>
-
-      {/* Copyright */}
-      <div className="footer-bottom">
-        <p>&copy; 2024 Max IA. Tous droits réservés.</p>
-      </div>
-
-      {/* Modal Feedback */}
-      {isLoggedIn && (
-        <FeedbackModal 
-          isOpen={isFeedbackOpen} 
-          onClose={() => setIsFeedbackOpen(false)} 
-        />
-      )}
-    </footer>
+        {/* Modal Feedback */}
+        {isLoggedIn && (
+          <FeedbackModal 
+            isOpen={isFeedbackOpen} 
+            onClose={() => setIsFeedbackOpen(false)} 
+          />
+        )}
+      </footer>
     </div>
   );
 };

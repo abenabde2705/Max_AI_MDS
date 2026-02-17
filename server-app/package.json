@@ -7,8 +7,8 @@
     "dev": "nodemon --exec tsx src/server.ts",
     "start": "node dist/server.js",
     "start:ts": "tsx src/server.ts",
-    "lint": "eslint src --fix --ext .ts,.js",
-    "lint:check": "eslint src --ext .ts,.js",
+    "lint": "eslint src --fix",
+    "lint:check": "eslint src",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
@@ -57,8 +57,6 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
     "babel-jest": "^30.2.0",
     "eslint": "^9.37.0",
     "jest": "^30.2.0",
@@ -66,6 +64,7 @@
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
     "tsx": "^4.6.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.0"
   }
 }

@@ -26,9 +26,9 @@ const DiscoveryOffer: React.FC<DiscoveryOfferProps> = ({ id, className }) => {
             Découvrez Max, votre compagnon d'écoute intelligent. Profitez d'un essai gratuit pour explorer ses fonctionnalités : écoute bienveillante, conseils personnalisés et interaction adaptée à votre style. Testez-le dès maintenant pour voir comment il peut vous aider au quotidien.
           </p>
           <div className="testimonials-button-container">
-          <Link to="/chatbot" style={{ textDecoration: 'none' }}>
-            <button className="discover-btn">Découvrir Max</button>
-          </Link>
+            <Link to="/chatbot" style={{ textDecoration: 'none' }}>
+              <button className="discover-btn">Découvrir Max</button>
+            </Link>
           </div>
         </div>
       </div>

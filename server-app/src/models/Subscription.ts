@@ -3,8 +3,8 @@ import { sequelize } from '../config/db.js';
 import { v4 as uuidv4 } from 'uuid';
 import type { SubscriptionAttributes } from '../../types/global.js';
 
-// Interface pour les attributs optionnels lors de la création
-interface SubscriptionCreationAttributes extends Optional<SubscriptionAttributes, 'id' | 'endDate'> {}
+// Type pour les attributs optionnels lors de la création
+type SubscriptionCreationAttributes = Optional<SubscriptionAttributes, 'id' | 'createdAt' | 'updatedAt'>;
 
 // Classe du modèle Subscription avec tous les types
 class Subscription extends Model<SubscriptionAttributes, SubscriptionCreationAttributes> implements SubscriptionAttributes {

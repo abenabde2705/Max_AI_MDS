@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import Sidebar from "./Sidebar"
-import LogoYellow from "@/assets/img/logo_yellow.png"
-import "./styles/Statistics.css"
+import { useState, useEffect } from 'react';
+import Sidebar from './Sidebar';
+import LogoYellow from '@/assets/img/logo_yellow.png';
+import './styles/Statistics.css';
 
 interface StatCard {
   label: string
@@ -19,40 +19,40 @@ interface EmotionStats {
   percentage: number
 }
 
-const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
-const dayEmojis = ["😊", "😌", "😊", "😢", "😌", "😊", "😐"]
+const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const dayEmojis = ['😊', '😌', '😊', '😢', '😌', '😊', '😐'];
 
 const emotionStats: EmotionStats[] = [
-  { emotion: "Joie", emoji: "😊", count: 15, percentage: 35 },
-  { emotion: "Calme", emoji: "😌", count: 12, percentage: 28 },
-  { emotion: "Anxiété", emoji: "😰", count: 8, percentage: 19 },
-  { emotion: "Tristesse", emoji: "😢", count: 5, percentage: 12 },
-  { emotion: "Colère", emoji: "😠", count: 3, percentage: 6 },
-]
+  { emotion: 'Joie', emoji: '😊', count: 15, percentage: 35 },
+  { emotion: 'Calme', emoji: '😌', count: 12, percentage: 28 },
+  { emotion: 'Anxiété', emoji: '😰', count: 8, percentage: 19 },
+  { emotion: 'Tristesse', emoji: '😢', count: 5, percentage: 12 },
+  { emotion: 'Colère', emoji: '😠', count: 3, percentage: 6 },
+];
 
 export default function Statistics() {
   const [stats] = useState<StatCard[]>([
     {
-      label: "Conversations",
-      value: "24",
-      subtext: "+3 cette semaine",
+      label: 'Conversations',
+      value: '24',
+      subtext: '+3 cette semaine',
     },
     {
-      label: "Jours suivis",
-      value: "45",
-      subtext: "Consécutifs",
+      label: 'Jours suivis',
+      value: '45',
+      subtext: 'Consécutifs',
     },
     {
-      label: "Score bien-être",
-      value: "78%",
-      subtext: "+12% ce mois",
+      label: 'Score bien-être',
+      value: '78%',
+      subtext: '+12% ce mois',
     },
     {
-      label: "Objectifs atteints",
-      value: "8/10",
-      subtext: "Ce mois",
+      label: 'Objectifs atteints',
+      value: '8/10',
+      subtext: 'Ce mois',
     },
-  ])
+  ]);
 
   return (
     <div className="max-chat">
@@ -136,5 +136,5 @@ export default function Statistics() {
         </div>
       </main>
     </div>
-  )
+  );
 }

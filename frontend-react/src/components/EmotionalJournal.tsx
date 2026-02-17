@@ -1,15 +1,15 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "@/ui/components/Button"
-import { Icon } from "@/ui/icons"
-import Sidebar from "./Sidebar"
-import LogoYellow from "@/assets/img/logo_yellow.png"
-import "./styles/EmotionalJournal.css"
+import { useState, useEffect } from 'react';
+import { Button } from '@/ui/components/Button';
+import { Icon } from '@/ui/icons';
+import Sidebar from './Sidebar';
+import LogoYellow from '@/assets/img/logo_yellow.png';
+import './styles/EmotionalJournal.css';
 
 interface JournalEntry {
   id: string
-  mood: "super" | "bien" | "moyen" | "triste" | "colere"
+  mood: 'super' | 'bien' | 'moyen' | 'triste' | 'colere'
   moodEmoji: string
   moodLabel: string
   date: string
@@ -18,68 +18,68 @@ interface JournalEntry {
 }
 
 const moodData = {
-  super: { emoji: "😊", label: "Super", color: "#FFD700" },
-  bien: { emoji: "😊", label: "Bien", color: "#FFD700" },
-  moyen: { emoji: "😐", label: "Moyen", color: "#FFA500" },
-  triste: { emoji: "😢", label: "Triste", color: "#87CEEB" },
-  colere: { emoji: "😠", label: "En colère", color: "#FF6347" },
-}
+  super: { emoji: '😊', label: 'Super', color: '#FFD700' },
+  bien: { emoji: '😊', label: 'Bien', color: '#FFD700' },
+  moyen: { emoji: '😐', label: 'Moyen', color: '#FFA500' },
+  triste: { emoji: '😢', label: 'Triste', color: '#87CEEB' },
+  colere: { emoji: '😠', label: 'En colère', color: '#FF6347' },
+};
 
 export default function EmotionalJournal() {
   const [entries, setEntries] = useState<JournalEntry[]>([
     {
-      id: "1",
-      mood: "bien",
-      moodEmoji: "😊",
-      moodLabel: "Bien",
-      date: "Lundi 13 octobre 2025",
+      id: '1',
+      mood: 'bien',
+      moodEmoji: '😊',
+      moodLabel: 'Bien',
+      date: 'Lundi 13 octobre 2025',
       description:
-        "Aujourd'hui j'ai eu une conversation importante avec mon équipe. Je me sens écouté et valorisé.",
-      tags: ["travail", "positif"],
+        'Aujourd\'hui j\'ai eu une conversation importante avec mon équipe. Je me sens écouté et valorisé.',
+      tags: ['travail', 'positif'],
     },
     {
-      id: "2",
-      mood: "moyen",
-      moodEmoji: "😐",
-      moodLabel: "Moyen",
-      date: "Dimanche 12 octobre 2025",
-      description: "Journée normale, quelques moments de stress mais rien d'insurmontable.",
-      tags: ["stress", "routine"],
+      id: '2',
+      mood: 'moyen',
+      moodEmoji: '😐',
+      moodLabel: 'Moyen',
+      date: 'Dimanche 12 octobre 2025',
+      description: 'Journée normale, quelques moments de stress mais rien d\'insurmontable.',
+      tags: ['stress', 'routine'],
     },
-  ])
+  ]);
 
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    mood: "bien",
-    description: "",
-    tags: "",
-  })
+    mood: 'bien',
+    description: '',
+    tags: '',
+  });
 
   const handleAddEntry = () => {
     if (formData.description.trim()) {
       const newEntry: JournalEntry = {
         id: Date.now().toString(),
-        mood: formData.mood as "super" | "bien" | "moyen" | "triste" | "colere",
+        mood: formData.mood as 'super' | 'bien' | 'moyen' | 'triste' | 'colere',
         moodEmoji: moodData[formData.mood as keyof typeof moodData].emoji,
         moodLabel: moodData[formData.mood as keyof typeof moodData].label,
-        date: new Date().toLocaleDateString("fr-FR", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
+        date: new Date().toLocaleDateString('fr-FR', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
         }),
         description: formData.description,
         tags: formData.tags
-          .split(",")
+          .split(',')
           .map((tag) => tag.trim())
           .filter((tag) => tag),
-      }
+      };
 
-      setEntries([newEntry, ...entries])
-      setFormData({ mood: "bien", description: "", tags: "" })
-      setShowModal(false)
+      setEntries([newEntry, ...entries]);
+      setFormData({ mood: 'bien', description: '', tags: '' });
+      setShowModal(false);
     }
-  }
+  };
 
   return (
     <div className="max-chat">
@@ -148,7 +148,7 @@ export default function EmotionalJournal() {
                   <button
                     key={key}
                     className={`emotional-journal__mood-option ${
-                      formData.mood === key ? "emotional-journal__mood-option--active" : ""
+                      formData.mood === key ? 'emotional-journal__mood-option--active' : ''
                     }`}
                     onClick={() => setFormData({ ...formData, mood: key })}
                   >
@@ -203,5 +203,5 @@ export default function EmotionalJournal() {
         </div>
       )}
     </div>
-  )
+  );
 }

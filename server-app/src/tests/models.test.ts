@@ -15,7 +15,7 @@ interface UserWithPassword extends Omit<UserData, 'is_anonymous' | 'is_premium'>
   password_hash: string;
 }
 
-interface SafeUser extends Omit<UserData, 'is_anonymous' | 'is_premium'> {}
+type SafeUser = Omit<UserData, 'is_anonymous' | 'is_premium'>;
 
 describe('User Model Logic', () => {
   describe('User Data Validation', () => {

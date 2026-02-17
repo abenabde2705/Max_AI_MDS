@@ -2,11 +2,13 @@ import js from '@eslint/js';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import tseslint from 'typescript-eslint';
 
 export default [
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       react,
       'react-hooks': reactHooks,
@@ -15,10 +17,12 @@ export default [
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'module',
+      parser: tseslint.parser,
       parserOptions: {
         ecmaFeatures: {
           jsx: true,
         },
+        project: './tsconfig.json',
       },
       globals: {
         console: 'readonly',
@@ -27,7 +31,8 @@ export default [
         navigator: 'readonly',
         localStorage: 'readonly',
         sessionStorage: 'readonly',
-        fetch: 'readonly'
+        fetch: 'readonly',
+        globalThis: 'readonly'
       }
     },
     settings: {
@@ -40,7 +45,10 @@ export default [
       'linebreak-style': ['error', 'unix'],
       'quotes': ['error', 'single'],
       'semi': ['error', 'always'],
-      'no-unused-vars': ['warn', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_' }],
+      'no-unused-vars': 'off', // Désactivé car on utilise @typescript-eslint/no-unused-vars
+      '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_' }],
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
       'no-console': ['off'],
       'no-debugger': ['error'],
       'no-undef': ['off'], // Désactiver pour les globals comme setTimeout, AbortController
@@ -54,7 +62,7 @@ export default [
     }
   },
   {
-    files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],
+    files: ['**/*.test.{js,jsx,ts,tsx}', '**/*.spec.{js,jsx,ts,tsx}'],
     languageOptions: {
       globals: {
         describe: 'readonly',
@@ -70,6 +78,18 @@ export default [
     }
   },
   {
-    ignores: ['dist/', 'node_modules/', '*.config.js']
+    ignores: [
+      'dist/',
+      'node_modules/',
+      '*.config.js',
+      '*.config.ts',
+      'coverage/',
+      'src/tests/**',
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+      'src/**/*.spec.ts',
+      'src/**/*.spec.tsx',
+      'src/vite-env.d.ts'
+    ]
   }
 ];

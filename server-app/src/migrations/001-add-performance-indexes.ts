@@ -6,7 +6,7 @@
 
 import { QueryInterface, DataTypes, Transaction } from 'sequelize';
 
-const addPerformanceIndexes = async (queryInterface: QueryInterface, Sequelize: typeof DataTypes): Promise<void> => {
+const addPerformanceIndexes = async (queryInterface: QueryInterface, _Sequelize: typeof DataTypes): Promise<void> => {
   await queryInterface.sequelize.transaction(async (transaction: Transaction) => {
     try {
       console.log('🔧 Ajout des index de performance...');
@@ -61,7 +61,7 @@ const addPerformanceIndexes = async (queryInterface: QueryInterface, Sequelize: 
   });
 };
 
-const removePerformanceIndexes = async (queryInterface: QueryInterface, Sequelize: typeof DataTypes): Promise<void> => {
+const removePerformanceIndexes = async (queryInterface: QueryInterface, _Sequelize: typeof DataTypes): Promise<void> => {
   await queryInterface.sequelize.transaction(async (transaction: Transaction) => {
     try {
       console.log('🗑️ Suppression des index de performance...');
