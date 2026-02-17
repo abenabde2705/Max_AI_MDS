@@ -16,20 +16,36 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock du useChat hook
-const mockSendMessage = vi.fn();
 const mockSwitchConversation = vi.fn();
 const mockCancelResponse = vi.fn();
 const mockCreateNewConversation = vi.fn();
 const mockRemoveConversation = vi.fn();
 
+// Use a mutable messages array that can be updated during tests
+let mockMessages: any[] = [
+  {
+    role: "assistant",
+    content: "Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd'hui ?",
+  },
+];
+
+// Mock sendMessage function that actually adds messages to the array
+const mockSendMessage = vi.fn((message: string) => {
+  mockMessages = [
+    ...mockMessages,
+    {
+      role: "user",
+      content: message,
+      timestamp: new Date().toISOString(),
+    },
+  ];
+});
+
 vi.mock('@/hooks/useChat', () => ({
   useChat: () => ({
-    messages: [
-      {
-        role: "assistant",
-        content: "Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd'hui ?",
-      },
-    ],
+    get messages() {
+      return mockMessages;
+    },
     conversations: [],
     isWaiting: false,
     sendMessage: mockSendMessage,
@@ -137,6 +153,13 @@ describe('Chat Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockLocalStorage.getItem.mockReturnValue('test-token');
+    // Reset messages array before each test
+    mockMessages = [
+      {
+        role: "assistant",
+        content: "Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd'hui ?",
+      },
+    ];
   });
 
   it('renders chat interface', () => {
@@ -242,13 +265,25 @@ describe('Chat Component', () => {
     expect(sendButton).toHaveAttribute('disabled');
   });
 
-  it('displays user initials', async () => {
-    render(<ChatWrapper />);
+  it('displays user initials after sending a message', async () => {
+    const { rerender } = render(<ChatWrapper />);
+    
+    const messageInput = screen.getByPlaceholderText(/partagez ce que vous ressentez/i);
+    const sendButtons = screen.getAllByRole('button');
+    const sendButton = sendButtons.find(btn => btn.querySelector('[data-icon="send"]'));
+
+    // Type and send a message to trigger user avatar display
+    await userEvent.type(messageInput, 'Hello');
+    await userEvent.click(sendButton!);
+    
+    // Force a re-render to reflect the updated messages array
+    rerender(<ChatWrapper />);
     
     await waitFor(() => {
       // Should display user initials from mocked profile (T and U from Test User)
       const initialsElement = document.querySelector('.max-chat__user-avatar');
       expect(initialsElement).toBeInTheDocument();
+      expect(initialsElement?.textContent).toBe('TU');
     });
   });
 
