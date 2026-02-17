@@ -25,7 +25,8 @@ const DashboardSimple: React.FC = () => {
       }
 
       try {
-        const response = await fetch('http://localhost:3000/api/auth/profile', {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const response = await fetch(`${API_URL}/api/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

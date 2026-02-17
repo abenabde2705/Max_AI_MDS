@@ -1,5 +1,4 @@
 import React from 'react';
-import ChatExample from './ChatExample';
 
 interface AboutSectionProps {
   id?: string;
@@ -10,10 +9,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, className }) => {
   // Use the public folder image as background. Spaces and special chars encoded in URL.
   const bgUrl = '/LOGO%20rose%20pale@300x.png';
   return (
-    <section id={id} className={`about-section ${className} about-section--bg`} >
-      <div data-aos="fade-up" data-aos-duration="200" data-aos-delay="100" className='about-section--bg' style={{ backgroundImage: `url(${bgUrl})` }}>
-       
-        
+    <section id={id} className={`about-section ${className} about-section--bg`} style={{ backgroundImage: `url(${bgUrl})` }}>
+      <div data-aos="fade-up" data-aos-duration="200" data-aos-delay="100">
         <div className="feature-text">
           <h2 className="about-title">QUI EST MAX ?</h2>
           <p>Je suis là pour vous écouter, vous soutenir et vous aider à avancer. Grâce à l'intelligence artificielle, je vous propose des conseils adaptés pour gérer le stress, l'anxiété ou les moments difficiles. Vos échanges restent confidentiels et sécurisés. <br /> Je ne remplace pas un professionnel, mais je suis là pour vous accompagner, sans jugement, à chaque étape.</p>
@@ -25,7 +22,6 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, className }) => {
         </div>
       </div>
     </section>
-    
   );
 };
 

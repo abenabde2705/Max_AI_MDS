@@ -54,7 +54,8 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
         throw new Error('Vous devez être connecté pour envoyer un feedback');
       }
 
-      const response = await fetch('http://localhost:3000/api/feedback', {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/feedback`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
