@@ -80,12 +80,12 @@ const removePerformanceIndexes = async (queryInterface: QueryInterface, _Sequeli
       for (const indexName of indexes) {
         try {
           await queryInterface.removeIndex('conversations', indexName, { transaction });
-        } catch (_error) {
+        } catch {
           // Ignorer si l'index n'existe pas
         }
         try {
           await queryInterface.removeIndex('messages', indexName, { transaction });
-        } catch (_error) {
+        } catch {
           // Ignorer si l'index n'existe pas
         }
       }
