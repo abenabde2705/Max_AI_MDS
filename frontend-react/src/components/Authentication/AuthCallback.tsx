@@ -20,7 +20,8 @@ const AuthCallback = () => {
       localStorage.setItem('token', token);
       
       // Récupérer les informations de l'utilisateur
-      fetch('http://localhost:3000/api/auth/profile', {
+      const API_URL = import.meta.env.VITE_API_URL;
+      fetch(`${API_URL}/api/auth/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
