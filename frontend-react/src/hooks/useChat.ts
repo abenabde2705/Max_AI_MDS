@@ -12,8 +12,8 @@ import {
 export function useChat() {
   const [messages, setMessages] = useState<any[]>([
     {
-      role: "assistant",
-      content: "Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd'hui ?",
+      role: 'assistant',
+      content: 'Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd\'hui ?',
     },
   ]);
   const [conversations, setConversations] = useState<any[]>([]);
@@ -68,8 +68,8 @@ export function useChat() {
       setActiveConversation(newConv.id);
       setMessages([
         {
-          role: "assistant",
-          content: "Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd'hui ?",
+          role: 'assistant',
+          content: 'Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd\'hui ?',
         },
       ]);
     } catch (error) {
@@ -95,8 +95,8 @@ export function useChat() {
       if (loadedMessages.length === 0) {
         setMessages([
           {
-            role: "assistant",
-            content: "Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd'hui ?",
+            role: 'assistant',
+            content: 'Bonjour, je suis là pour vous écouter et vous soutenir. Comment vous sentez-vous aujourd\'hui ?',
           },
         ]);
       } else {

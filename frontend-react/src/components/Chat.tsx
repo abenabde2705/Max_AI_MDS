@@ -1,71 +1,71 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "@/ui/components/Button"
-import { Input } from "@/ui/components/Input"
-import { Icon } from "@/ui/icons"
-import { colors } from "@/ui/tokens/colors"
-import { useChat } from "@/hooks/useChat"
-import { fetchUserProfile } from "@/services/chat.api"
-import ChatHistoric from "./ChatHistoric"
-import Sidebar from "./Sidebar"
-import LogoPrincipal from "@/assets/img/Logo_principal.png"
-import LogoYellow from "@/assets/img/logo_yellow.png"
+import { useState, useEffect } from 'react';
+import { Button } from '@/ui/components/Button';
+import { Input } from '@/ui/components/Input';
+import { Icon } from '@/ui/icons';
+import { colors } from '@/ui/tokens/colors';
+import { useChat } from '@/hooks/useChat';
+import { fetchUserProfile } from '@/services/chat.api';
+import ChatHistoric from './ChatHistoric';
+import Sidebar from './Sidebar';
+import LogoPrincipal from '@/assets/img/Logo_principal.png';
+import LogoYellow from '@/assets/img/logo_yellow.png';
 const emotions = [
-  { key: "super", label: "Super", icon: "😊" },
-  { key: "bien", label: "Bien", icon: "😌" },
-  { key: "triste", label: "Triste", icon: "😢" },
-  { key: "colere", label: "En colère", icon: "😠" },
-  { key: "fatigue", label: "Fatigué", icon: "😴" },
-]
+  { key: 'super', label: 'Super', icon: '😊' },
+  { key: 'bien', label: 'Bien', icon: '😌' },
+  { key: 'triste', label: 'Triste', icon: '😢' },
+  { key: 'colere', label: 'En colère', icon: '😠' },
+  { key: 'fatigue', label: 'Fatigué', icon: '😴' },
+];
 
 export default function MaxAIChat() {
-  const [message, setMessage] = useState("")
-  const [isHistoricOpen, setIsHistoricOpen] = useState(false)
-  const [userInitials, setUserInitials] = useState('U')
-  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation } = useChat()
+  const [message, setMessage] = useState('');
+  const [isHistoricOpen, setIsHistoricOpen] = useState(false);
+  const [userInitials, setUserInitials] = useState('U');
+  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation } = useChat();
 
   // Récupérer les initiales de l'utilisateur au chargement
   useEffect(() => {
     const loadUserInfo = async () => {
       try {
-        const response = await fetchUserProfile()
-        const user = response.data.user || response.data
+        const response = await fetchUserProfile();
+        const user = response.data.user || response.data;
         
         if (!user) {
-          console.warn('Aucune donnée utilisateur reçue')
-          return
+          console.warn('Aucune donnée utilisateur reçue');
+          return;
         }
         
         // Utiliser camelCase avec fallback
-        const firstname = user.firstName || user.firstname || ''
-        const lastname = user.lastName || user.lastname || ''
+        const firstname = user.firstName || user.firstname || '';
+        const lastname = user.lastName || user.lastname || '';
         
         if (firstname && lastname) {
-          setUserInitials(`${firstname[0]}${lastname[0]}`.toUpperCase())
+          setUserInitials(`${firstname[0]}${lastname[0]}`.toUpperCase());
         } else if (firstname) {
-          setUserInitials(firstname.substring(0, 2).toUpperCase())
+          setUserInitials(firstname.substring(0, 2).toUpperCase());
         } else if (user.email) {
-          setUserInitials(user.email.substring(0, 2).toUpperCase())
+          setUserInitials(user.email.substring(0, 2).toUpperCase());
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération du profil:', error)
+        console.error('Erreur lors de la récupération du profil:', error);
       }
-    }
+    };
     
-    loadUserInfo()
-  }, [])
+    loadUserInfo();
+  }, []);
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      sendMessage(message)
-      setMessage("")
+      sendMessage(message);
+      setMessage('');
     }
-  }
+  };
 
   const handleEmotionClick = (emotion: string) => {
-    sendMessage(`Je me sens ${emotion.toLowerCase()}`)
-  }
+    sendMessage(`Je me sens ${emotion.toLowerCase()}`);
+  };
 
   return (
     <div className="max-chat">
@@ -73,48 +73,48 @@ export default function MaxAIChat() {
 
       <main className="max-chat__main">
         <header className="max-chat__header">
-  <div className="max-chat__header-left">
-    <div className="max-chat__header-avatar">
-      <img src={LogoYellow} alt="MAX Logo" />
-    </div>
+          <div className="max-chat__header-left">
+            <div className="max-chat__header-avatar">
+              <img src={LogoYellow} alt="MAX Logo" />
+            </div>
 
-    <div className="max-chat__header-info">
-      <h1 className="max-chat__title">MAX - Assistant IA</h1>
-      <p className="max-chat__plan">
-        <strong>1/10 messages</strong> <span>Plan Free</span>
-      </p>
-    </div>
-  </div>
+            <div className="max-chat__header-info">
+              <h1 className="max-chat__title">MAX - Assistant IA</h1>
+              <p className="max-chat__plan">
+                <strong>1/10 messages</strong> <span>Plan Free</span>
+              </p>
+            </div>
+          </div>
 
-  <div className="max-chat__header-actions">
-    <Button className="max-chat__action-button" variant="primary" onClick={createNewConversation}>
-      <Icon name="add" size="sm" />
+          <div className="max-chat__header-actions">
+            <Button className="max-chat__action-button" variant="primary" onClick={createNewConversation}>
+              <Icon name="add" size="sm" />
       Nouvelle conversation
-    </Button>
+            </Button>
 
-    <Button
-      variant="outline"
-      className="max-chat__action-button max-chat__action-button--ghost"
-      onClick={() => setIsHistoricOpen(true)}
-    >
-      <Icon name="historic" size="sm" />
+            <Button
+              variant="outline"
+              className="max-chat__action-button max-chat__action-button--ghost"
+              onClick={() => setIsHistoricOpen(true)}
+            >
+              <Icon name="historic" size="sm" />
       Historique
-    </Button>
-  </div>
-</header>
+            </Button>
+          </div>
+        </header>
 
         <div className="max-chat__messages">
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`max-chat__message-row ${msg.role === "user" ? "max-chat__message-row--user" : ""}`}
+              className={`max-chat__message-row ${msg.role === 'user' ? 'max-chat__message-row--user' : ''}`}
             >
-              {msg.role === "assistant" && (
+              {msg.role === 'assistant' && (
                 <div className="max-chat__badge">
                   <img src={LogoPrincipal} alt="MAX" className="max-chat__badge-logo" />
                 </div>
               )}
-              <div className={`max-chat__bubble ${msg.role === "assistant" ? "max-chat__bubble--assistant" : "max-chat__bubble--user"}`}>
+              <div className={`max-chat__bubble ${msg.role === 'assistant' ? 'max-chat__bubble--assistant' : 'max-chat__bubble--user'}`}>
                 <p className="max-chat__bubble-text">{msg.content}</p>
                 {msg.timestamp && (
                   <span className="max-chat__bubble-time">
@@ -122,7 +122,7 @@ export default function MaxAIChat() {
                   </span>
                 )}
               </div>
-              {msg.role === "user" && <div className="max-chat__user-avatar">{userInitials}</div>}
+              {msg.role === 'user' && <div className="max-chat__user-avatar">{userInitials}</div>}
             </div>
           ))}
           {isWaiting && (
@@ -155,7 +155,7 @@ export default function MaxAIChat() {
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !isWaiting && handleSendMessage()}
+              onKeyDown={(e) => e.key === 'Enter' && !isWaiting && handleSendMessage()}
               placeholder="Partagez ce que vous ressentez..."
               className="max-chat__input"
               disabled={isWaiting}
@@ -183,5 +183,5 @@ export default function MaxAIChat() {
         userInitials={userInitials}
       />
     </div>
-  )
+  );
 }

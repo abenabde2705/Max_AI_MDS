@@ -26,7 +26,7 @@ interface CustomError extends Error {
     status?: number;
 }
 
-interface MetricRequest extends Request {
+interface _MetricRequest extends Request {
     startTime?: number;
 }
 
@@ -130,7 +130,9 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Autoriser les requêtes sans origin (Postman, curl, Prometheus)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        return callback(null, true);
+    }
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);

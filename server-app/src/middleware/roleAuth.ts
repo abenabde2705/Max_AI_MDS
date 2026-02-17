@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
  * Middleware pour vérifier les rôles d'utilisateur
  */
 
-export const requireRole = (allowedRoles: string[]) => {
+export const requireRole = (_allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     // Vérifier que l'utilisateur est authentifié
     if (!req.user) {

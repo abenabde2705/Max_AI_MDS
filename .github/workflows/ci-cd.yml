@@ -115,7 +115,7 @@ jobs:
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-scan-action@e59edc9c5be5cf8c83284d65afe0a4ccb99aedef
+      uses: sonarsource/sonarcloud-github-action@master
       continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

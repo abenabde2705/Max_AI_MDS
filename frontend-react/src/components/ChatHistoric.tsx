@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react"
-import { toast } from "react-toastify"
-import { Icon } from "@/ui/icons"
-import { colors } from "@/ui/tokens/colors"
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { Icon } from '@/ui/icons';
+import { colors } from '@/ui/tokens/colors';
 
 interface ChatHistoricProps {
   isOpen: boolean
@@ -22,36 +22,36 @@ export default function ChatHistoric({
   activeConversation,
   userInitials,
 }: ChatHistoricProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
+  const [isVisible, setIsVisible] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setIsVisible(true)
-      setTimeout(() => setIsAnimating(true), 10)
+      setIsVisible(true);
+      setTimeout(() => setIsAnimating(true), 10);
     } else {
-      setIsAnimating(false)
-      const timer = setTimeout(() => setIsVisible(false), 300)
-      return () => clearTimeout(timer)
+      setIsAnimating(false);
+      const timer = setTimeout(() => setIsVisible(false), 300);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleClose = () => {
-    onClose()
-  }
+    onClose();
+  };
 
-  if (!isVisible) return null
+  if (!isVisible) return null;
 
   return (
     <>
       {/* Overlay */}
       <div 
-        className={`historic-overlay ${isAnimating ? "" : "historic-overlay--closing"}`}
+        className={`historic-overlay ${isAnimating ? '' : 'historic-overlay--closing'}`}
         onClick={handleClose}
       ></div>
 
       {/* Side Popup */}
-      <div className={`historic-popup ${isAnimating ? "" : "historic-popup--closing"}`}>
+      <div className={`historic-popup ${isAnimating ? '' : 'historic-popup--closing'}`}>
         <div className="historic-header">
           <h2>Historique des conversations</h2>
           <button className="historic-close" onClick={handleClose}>
@@ -70,14 +70,14 @@ export default function ChatHistoric({
                 <div
                   key={conv.id}
                   className={`historic-item ${
-                    activeConversation === conv.id ? "historic-item--active" : ""
+                    activeConversation === conv.id ? 'historic-item--active' : ''
                   }`}
                 >
                   <button
                     className="historic-item-button"
                     onClick={() => {
-                      onSelectConversation(conv.id)
-                      handleClose()
+                      onSelectConversation(conv.id);
+                      handleClose();
                     }}
                   >
                     <div className="historic-item-icon">
@@ -90,15 +90,15 @@ export default function ChatHistoric({
                       <p className="historic-item-date">
                         {conv.createdAt ? (
                           <>
-                            {new Date(conv.createdAt).toLocaleDateString("fr-FR", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
+                            {new Date(conv.createdAt).toLocaleDateString('fr-FR', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
                             })}
-                            {" à "}
-                            {new Date(conv.createdAt).toLocaleTimeString("fr-FR", {
-                              hour: "2-digit",
-                              minute: "2-digit",
+                            {' à '}
+                            {new Date(conv.createdAt).toLocaleTimeString('fr-FR', {
+                              hour: '2-digit',
+                              minute: '2-digit',
                             })}
                           </>
                         ) : 'Date inconnue'}
@@ -108,11 +108,11 @@ export default function ChatHistoric({
                   <button
                     className="historic-item-delete"
                     onClick={(e) => {
-                      e.stopPropagation()
+                      e.stopPropagation();
                       const confirmDelete = () => {
-                        onDeleteConversation(conv.id)
-                        toast.success('Conversation supprimée avec succès')
-                      }
+                        onDeleteConversation(conv.id);
+                        toast.success('Conversation supprimée avec succès');
+                      };
                       
                       toast.info(
                         <div>
@@ -120,8 +120,8 @@ export default function ChatHistoric({
                           <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
                             <button
                               onClick={() => {
-                                confirmDelete()
-                                toast.dismiss()
+                                confirmDelete();
+                                toast.dismiss();
                               }}
                               style={{
                                 padding: '6px 12px',
@@ -153,7 +153,7 @@ export default function ChatHistoric({
                           autoClose: false,
                           closeButton: false,
                         }
-                      )
+                      );
                     }}
                     title="Supprimer la conversation"
                   >
@@ -166,5 +166,5 @@ export default function ChatHistoric({
         </div>
       </div>
     </>
-  )
+  );
 }

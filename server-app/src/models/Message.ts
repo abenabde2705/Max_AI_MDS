@@ -3,8 +3,8 @@ import { sequelize } from '../config/db.js';
 import { v4 as uuidv4 } from 'uuid';
 import type { MessageAttributes } from '../../types/global.js';
 
-// Interface pour les attributs optionnels lors de la création
-interface MessageCreationAttributes extends Optional<MessageAttributes, 'id' | 'createdAt' | 'updatedAt' | 'emotionDetected' | 'sentAt'> {}
+// Type pour les attributs optionnels lors de la création
+type MessageCreationAttributes = Optional<MessageAttributes, 'id' | 'createdAt' | 'updatedAt'>;
 
 // Classe du modèle Message avec tous les types
 class Message extends Model<MessageAttributes, MessageCreationAttributes> implements MessageAttributes {

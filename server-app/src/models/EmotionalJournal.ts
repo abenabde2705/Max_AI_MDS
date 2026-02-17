@@ -3,8 +3,8 @@ import { sequelize } from '../config/db.js';
 import { v4 as uuidv4 } from 'uuid';
 import type { EmotionalJournalAttributes } from '../../types/global.js';
 
-// Interface pour les attributs optionnels lors de la création
-interface EmotionalJournalCreationAttributes extends Optional<EmotionalJournalAttributes, 'id' | 'globalEmotion' | 'dateLogged'> {}
+// Type pour les attributs optionnels lors de la création
+type EmotionalJournalCreationAttributes = Optional<EmotionalJournalAttributes, 'id' | 'createdAt' | 'updatedAt'>;
 
 // Classe du modèle EmotionalJournal avec tous les types
 class EmotionalJournal extends Model<EmotionalJournalAttributes, EmotionalJournalCreationAttributes> implements EmotionalJournalAttributes {

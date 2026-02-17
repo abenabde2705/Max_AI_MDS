@@ -3,8 +3,8 @@ import { sequelize } from '../config/db.js';
 import { v4 as uuidv4 } from 'uuid';
 import type { ConversationAttributes } from '../../types/global.js';
 
-// Interface pour les attributs optionnels lors de la création
-interface ConversationCreationAttributes extends Optional<ConversationAttributes, 'id' | 'createdAt' | 'updatedAt' | 'emotionalContext'> {}
+// Type pour les attributs optionnels lors de la création
+type ConversationCreationAttributes = Optional<ConversationAttributes, 'id' | 'createdAt' | 'updatedAt' | 'emotionalContext'>;
 
 // Classe du modèle Conversation avec tous les types
 class Conversation extends Model<ConversationAttributes, ConversationCreationAttributes> implements ConversationAttributes {

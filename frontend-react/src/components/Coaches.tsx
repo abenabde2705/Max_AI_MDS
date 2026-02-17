@@ -1,10 +1,10 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Button } from "@/ui/components/Button"
-import Sidebar from "./Sidebar"
-import LogoYellow from "@/assets/img/logo_yellow.png"
-import "./styles/Coaches.css"
+import { useState } from 'react';
+import { Button } from '@/ui/components/Button';
+import Sidebar from './Sidebar';
+import LogoYellow from '@/assets/img/logo_yellow.png';
+import './styles/Coaches.css';
 
 interface Coach {
   id: string
@@ -21,51 +21,51 @@ interface Coach {
 
 const coaches: Coach[] = [
   {
-    id: "1",
-    name: "Dr. Sophie Martin",
-    specialty: "Psychologue clinicienne",
+    id: '1',
+    name: 'Dr. Sophie Martin',
+    specialty: 'Psychologue clinicienne',
     rating: 4.9,
-    description: "Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d'expérience.",
-    specializations: ["Anxiété", "Stress"],
-    location: "Paris 8ème",
-    availability: "Disponible cette semaine",
-    price: "80€/séance",
+    description: 'Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d\'expérience.',
+    specializations: ['Anxiété', 'Stress'],
+    location: 'Paris 8ème',
+    availability: 'Disponible cette semaine',
+    price: '80€/séance',
     featured: false,
   },
   {
-    id: "2",
-    name: "Dr. Sophie Martin",
-    specialty: "Psychologue clinicienne",
+    id: '2',
+    name: 'Dr. Sophie Martin',
+    specialty: 'Psychologue clinicienne',
     rating: 4.9,
-    description: "Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d'expérience.",
-    specializations: ["Anxiété", "Stress"],
-    location: "Paris 8ème",
-    availability: "Disponible cette semaine",
-    price: "80€/séance",
+    description: 'Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d\'expérience.',
+    specializations: ['Anxiété', 'Stress'],
+    location: 'Paris 8ème',
+    availability: 'Disponible cette semaine',
+    price: '80€/séance',
   },
   {
-    id: "3",
-    name: "Dr. Sophie Martin",
-    specialty: "Psychologue clinicienne",
+    id: '3',
+    name: 'Dr. Sophie Martin',
+    specialty: 'Psychologue clinicienne',
     rating: 4.9,
-    description: "Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d'expérience.",
-    specializations: ["Anxiété", "Stress"],
-    location: "Paris 8ème",
-    availability: "Disponible cette semaine",
-    price: "80€/séance",
+    description: 'Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d\'expérience.',
+    specializations: ['Anxiété', 'Stress'],
+    location: 'Paris 8ème',
+    availability: 'Disponible cette semaine',
+    price: '80€/séance',
   },
   {
-    id: "4",
-    name: "Dr. Sophie Martin",
-    specialty: "Psychologue clinicienne",
+    id: '4',
+    name: 'Dr. Sophie Martin',
+    specialty: 'Psychologue clinicienne',
     rating: 4.9,
-    description: "Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d'expérience.",
-    specializations: ["Anxiété", "Stress"],
-    location: "Paris 8ème",
-    availability: "Disponible cette semaine",
-    price: "80€/séance",
+    description: 'Spécialisée en thérapie cognitive-comportementale et gestion du stress. 15 ans d\'expérience.',
+    specializations: ['Anxiété', 'Stress'],
+    location: 'Paris 8ème',
+    availability: 'Disponible cette semaine',
+    price: '80€/séance',
   },
-]
+];
 
 export default function Coaches() {
   return (
@@ -102,14 +102,14 @@ export default function Coaches() {
             {coaches.map((coach) => (
               <div
                 key={coach.id}
-                className={`coaches__card ${coach.featured ? "coaches__card--featured" : ""}`}
+                className={`coaches__card ${coach.featured ? 'coaches__card--featured' : ''}`}
               >
                 <div className="coaches__card-header">
                   <div className="coaches__coach-info">
                     <h3 className="coaches__coach-name">{coach.name}</h3>
                     <p className="coaches__coach-specialty">{coach.specialty} 
-                         <span className="coaches__rating-star"> ★</span>
-                    <span className="coaches__rating-value">{coach.rating}</span>
+                      <span className="coaches__rating-star"> ★</span>
+                      <span className="coaches__rating-value">{coach.rating}</span>
                     </p>
                     
                   </div>
@@ -151,5 +151,5 @@ export default function Coaches() {
         </div>
       </main>
     </div>
-  )
+  );
 }
