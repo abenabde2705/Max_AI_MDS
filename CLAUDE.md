@@ -51,7 +51,7 @@ npm run type-check    # TypeScript type validation only
 ### Chat API (`chat_api/`)
 ```bash
 pip install -r requirements.txt
-uvicorn mistral_test:app --reload --host 0.0.0.0 --port 8000
+uvicorn qwen_api:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### Load Testing (`k6/`)
@@ -75,7 +75,7 @@ Browser → frontend-react (React/Vite)
                ↓ REST
           server-app (Express) → PostgreSQL
                ↓ also handles auth via Firebase + Passport (Google/Facebook OAuth)
-          chat_api (FastAPI) → Ollama (local) or Mistral AI (cloud)
+          chat_api (FastAPI) → Ollama (qwen2:3b on VPS)
 ```
 
 The frontend uses **Firebase** for authentication and Firestore for some real-time data. The backend uses **Passport.js** for OAuth and **JWT** for API authentication. These are two separate auth mechanisms that coexist.
@@ -97,9 +97,9 @@ Database schema changes should go through migration files in `src/migrations/`, 
 - Styling: Tailwind CSS v4
 - Key custom hook: `src/hooks/useChat.ts` (manages conversation state)
 
-### Chat API (`chat_api/mistral_test.py`)
+### Chat API (`chat_api/qwen_api.py`)
 - `EmotionalChatbot` class holds per-session conversation history
-- Default model: `Qwen2:7b` via Ollama; falls back to Mistral API
+- Model: `qwen2:3b` via Ollama running on the VPS
 - Detects user language and responds in kind
 - Health check at `GET /health` verifies Ollama connectivity
 
@@ -124,7 +124,6 @@ Each service needs its own `.env`. Key variables:
 **Backend** (`server-app/.env`):
 - `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_PORT`
 - `JWT_SECRET`, `JWT_EXPIRES_IN`
-- `MISTRAL_API_KEY`
 - `ALLOWED_ORIGINS` (comma-separated, controls CORS)
 
 **Frontend** (`frontend-react/.env`):
@@ -132,7 +131,7 @@ Each service needs its own `.env`. Key variables:
 - `VITE_API_URL`
 
 **Chat API** (`chat_api/.env`):
-- `MISTRAL_KEY`
+- `OLLAMA_HOST` (défaut : `http://localhost:11434`)
 
 ---
 

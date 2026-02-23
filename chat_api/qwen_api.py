@@ -1,26 +1,18 @@
-"""
-# Dans le .env
-MISTRAL_KEY=xxxxxxxx
-"""
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
-import json
+import ollama
 from datetime import datetime
-from mistralai import Mistral
 from dotenv import dotenv_values
-import sys
+
 
 class EmotionalChatbot:
-    def __init__(self, model_name, api_key):
-        # Initialisation du client Mistral
-        self.client = Mistral(api_key=api_key)
+    def __init__(self, model_name: str, ollama_host: str = "http://localhost:11434"):
+        self.client = ollama.Client(host=ollama_host)
         self.model = model_name
         self.history = []
 
-        # Règles du compagnon émotionnel
         self.chatbot_rules = [
             "Utilises la langue avec lequelle l'utilisateur te parle systématiquement",
             "Fais des réponses courtes, pas plus d'une phrase, naturelle et amicale.",
@@ -43,17 +35,14 @@ class EmotionalChatbot:
         self.history.append(self.system_message)
 
     def is_emotional_question(self, user_input: str) -> bool:
-        """
-        Utilise Mistral pour classifier le message
-        """
         prompt = f"""
-            Tu es un classificateur de messages. 
+            Tu es un classificateur de messages.
             Ta tâche est de dire si le message d'un utilisateur fait partie d'une conversation émotionnelle ou sociale bienveillante.
 
             Répond uniquement par 'oui' ou 'non'.
 
             Considère comme 'non' si le message :
-            - parle de technologie, d’informatique, de mathématiques, ou d’autres sujets techniques
+            - parle de technologie, d'informatique, de mathématiques, ou d'autres sujets techniques
 
             Sinon considère comme 'oui'.
 
@@ -62,17 +51,15 @@ class EmotionalChatbot:
         """
 
         try:
-            completion = self.client.chat.complete(
+            response = self.client.chat(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": "Tu es un classificateur 'oui' ou 'non'."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.0,
-                max_tokens=5
+                options={"temperature": 0.0, "num_predict": 5}
             )
-
-            response_text = completion.choices[0].message.content.strip().lower()
+            response_text = response['message']['content'].strip().lower()
             return "oui" in response_text
 
         except Exception as e:
@@ -81,31 +68,28 @@ class EmotionalChatbot:
 
     def generate_response(self, user_input: str) -> str:
         messages = self.history + [
-            {"role": "user", 
-             "content": f"Réponds de façon naturelle et amicale à : {user_input}. "
-                        f"Assure-toi que ta réponse est complète et ne se termine pas au milieu d'une phrase.",
-             "sent_at": datetime.now().isoformat()
+            {
+                "role": "user",
+                "content": f"Réponds de façon naturelle et amicale à : {user_input}. "
+                           f"Assure-toi que ta réponse est complète et ne se termine pas au milieu d'une phrase.",
+                "sent_at": datetime.now().isoformat()
             }
         ]
 
         try:
-            completion = self.client.chat.complete(
+            response = self.client.chat(
                 model=self.model,
                 messages=[{"role": m["role"], "content": m["content"]} for m in messages],
-                max_tokens=150,
-                temperature=0.7
+                options={"temperature": 0.7, "num_predict": 150}
             )
+            response_text = response['message']['content'].strip()
 
-            response_text = completion.choices[0].message.content.strip()
-
-            assistant_message = {
+            self.history.append({"role": "user", "content": user_input})
+            self.history.append({
                 "role": "assistant",
                 "content": response_text,
                 "sent_at": datetime.now().isoformat()
-            }
-
-            self.history.append({"role": "user", "content": user_input})
-            self.history.append(assistant_message)
+            })
 
             return response_text
 
@@ -113,7 +97,6 @@ class EmotionalChatbot:
             return f"Oups, y'a eu un souci : {e}"
 
     def chat(self):
-
         print("Bienvenue ! Tape 'exit' pour quitter.")
         formatter = ResponseFormatter(client=self.client, model=self.model, max_tokens=150)
 
@@ -129,14 +112,14 @@ class EmotionalChatbot:
                 raw_response = self.generate_response(user_input)
                 response = formatter.make_friendly(raw_response)
             else:
-                response = "Je suis désolé, je ne peux répondre qu’à des sujets liés aux émotions ou au bien-être mental."
+                response = "Je suis désolé, je ne peux répondre qu'à des sujets liés aux émotions ou au bien-être mental."
 
             print(f"\nMax: {response}")
 
 
 class ResponseFormatter:
 
-    def __init__(self, client, model, max_tokens=80):
+    def __init__(self, client, model: str, max_tokens: int = 80):
         self.client = client
         self.model = model
         self.max_tokens = max_tokens
@@ -151,19 +134,17 @@ class ResponseFormatter:
             - fluide et humaine,
             - concise,
             - sans répétitions
-            
+
             Réponse :
         """
 
         try:
-            completion = self.client.chat.complete(
+            response = self.client.chat(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=self.max_tokens,
-                temperature=0.7
+                options={"temperature": 0.7, "num_predict": self.max_tokens}
             )
-            return completion.choices[0].message.content.strip()
-
+            return response['message']['content'].strip()
 
         except Exception as e:
             print(f"Erreur lors de la reformulation : {e}")
@@ -172,59 +153,54 @@ class ResponseFormatter:
 
 if __name__ == "__main__":
     config = dotenv_values(".env")
-    api_key = config["MISTRAL_KEY"]
-    model_name = "mistral-large-latest"
+    ollama_host = config.get("OLLAMA_HOST", "http://localhost:11434")
+    model_name = "qwen2:3b"
 
-    max_chatbot = EmotionalChatbot(model_name=model_name, api_key=api_key)
+    max_chatbot = EmotionalChatbot(model_name=model_name, ollama_host=ollama_host)
     max_chatbot.chat()
+
 
 # Configuration FastAPI pour l'API web
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"], 
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 class Message(BaseModel):
     message: str
     session_id: str = "default"
 
+
 # Instance globale du chatbot
-api_key = os.getenv("MISTRAL_KEY")
-if not api_key:
-    # Fallback vers dotenv pour le développement
+ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+chatbot_instance = EmotionalChatbot(model_name="qwen2:3b", ollama_host=ollama_host)
+
+
+@app.get("/health")
+async def health():
     try:
-        config = dotenv_values(".env")
-        api_key = config.get("MISTRAL_KEY")
-    except:
-        pass
+        chatbot_instance.client.list()
+        return {"status": "ok", "model": chatbot_instance.model}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Ollama non disponible : {e}")
 
-if not api_key:
-    raise ValueError("MISTRAL_KEY doit être défini dans les variables d'environnement")
-
-chatbot_instance = EmotionalChatbot(model_name="mistral-large-latest", api_key=api_key)
 
 @app.post("/chat")
 async def chat_with_max(data: Message):
     try:
         user_input = data.message
-        
-        # Vérifier si c'est une question émotionnelle
+
         if chatbot_instance.is_emotional_question(user_input):
             response = chatbot_instance.generate_response(user_input)
             return {"response": response}
         else:
             return {"response": "Je suis là pour t'accompagner émotionnellement. Pour des questions techniques, je te conseille de consulter des ressources spécialisées."}
-    
+
     except Exception as e:
-        error_message = str(e)
-        if "429" in error_message or "quota" in error_message.lower() or "capacity" in error_message.lower():
-            raise HTTPException(
-                status_code=429, 
-                detail="API de chat temporairement indisponible (quota atteint). Veuillez réessayer plus tard."
-            )
-        raise HTTPException(status_code=500, detail=f"Erreur du service de chat: {error_message}")
+        raise HTTPException(status_code=500, detail=f"Erreur du service de chat: {str(e)}")
