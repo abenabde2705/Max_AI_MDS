@@ -1,15 +1,29 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
-import ollama
+import httpx
 from datetime import datetime
 from dotenv import dotenv_values
 
+OLLAMA_CHAT_URL = os.getenv("OLLAMA_HOST", "http://ollama:11434/api/chat")
+API_KEY = os.getenv("API_KEY")
+
+
+def _ollama_call(messages: list, options: dict) -> str:
+    with httpx.Client(timeout=60.0) as client:
+        r = client.post(OLLAMA_CHAT_URL, json={
+            "model": "qwen2:3b",
+            "messages": messages,
+            "stream": False,
+            "options": options,
+        })
+        r.raise_for_status()
+        return r.json()["message"]["content"].strip()
+
 
 class EmotionalChatbot:
-    def __init__(self, model_name: str, ollama_host: str = "http://localhost:11434"):
-        self.client = ollama.Client(host=ollama_host)
+    def __init__(self, model_name: str):
         self.model = model_name
         self.history = []
 
@@ -27,12 +41,10 @@ class EmotionalChatbot:
             "Ne force jamais l'utilisateur à parler, adapte-toi à son rythme."
         ]
 
-        self.system_message = {
+        self.history.append({
             "role": "system",
             "content": "Tu es Max, un compagnon empathique, amical et bienveillant. Tu parles de manière simple et chaleureuse. Voici tes règles : " + ", ".join(self.chatbot_rules),
-            "sent_at": datetime.now().isoformat()
-        }
-        self.history.append(self.system_message)
+        })
 
     def is_emotional_question(self, user_input: str) -> bool:
         prompt = f"""
@@ -49,78 +61,39 @@ class EmotionalChatbot:
             Message : "{user_input}"
             Réponse :
         """
-
         try:
-            response = self.client.chat(
-                model=self.model,
+            text = _ollama_call(
                 messages=[
                     {"role": "system", "content": "Tu es un classificateur 'oui' ou 'non'."},
-                    {"role": "user", "content": prompt}
+                    {"role": "user", "content": prompt},
                 ],
-                options={"temperature": 0.0, "num_predict": 5}
+                options={"temperature": 0.0, "num_predict": 5},
             )
-            response_text = response['message']['content'].strip().lower()
-            return "oui" in response_text
-
+            return "oui" in text.lower()
         except Exception as e:
             print(f"Erreur lors de la classification : {e}")
             return False
 
     def generate_response(self, user_input: str) -> str:
-        messages = self.history + [
-            {
-                "role": "user",
-                "content": f"Réponds de façon naturelle et amicale à : {user_input}. "
-                           f"Assure-toi que ta réponse est complète et ne se termine pas au milieu d'une phrase.",
-                "sent_at": datetime.now().isoformat()
-            }
-        ]
+        messages = [{"role": m["role"], "content": m["content"]} for m in self.history]
+        messages.append({
+            "role": "user",
+            "content": f"Réponds de façon naturelle et amicale à : {user_input}. "
+                       f"Assure-toi que ta réponse est complète et ne se termine pas au milieu d'une phrase.",
+        })
 
         try:
-            response = self.client.chat(
-                model=self.model,
-                messages=[{"role": m["role"], "content": m["content"]} for m in messages],
-                options={"temperature": 0.7, "num_predict": 150}
-            )
-            response_text = response['message']['content'].strip()
-
+            response_text = _ollama_call(messages=messages, options={"temperature": 0.7, "num_predict": 80})
             self.history.append({"role": "user", "content": user_input})
-            self.history.append({
-                "role": "assistant",
-                "content": response_text,
-                "sent_at": datetime.now().isoformat()
-            })
-
+            self.history.append({"role": "assistant", "content": response_text})
             return response_text
-
         except Exception as e:
             return f"Oups, y'a eu un souci : {e}"
-
-    def chat(self):
-        print("Bienvenue ! Tape 'exit' pour quitter.")
-        formatter = ResponseFormatter(client=self.client, model=self.model, max_tokens=150)
-
-        while True:
-            user_input = input("\nVous: ")
-            if user_input.lower() == "exit":
-                print("À plus ! Prends soin de toi")
-                break
-
-            is_emotional = self.is_emotional_question(user_input)
-
-            if is_emotional:
-                raw_response = self.generate_response(user_input)
-                response = formatter.make_friendly(raw_response)
-            else:
-                response = "Je suis désolé, je ne peux répondre qu'à des sujets liés aux émotions ou au bien-être mental."
-
-            print(f"\nMax: {response}")
 
 
 class ResponseFormatter:
 
-    def __init__(self, client, model: str, max_tokens: int = 80):
-        self.client = client
+    def __init__(self, model: str, max_tokens: int = 80):
         self.model = model
         self.max_tokens = max_tokens
 
@@ -137,15 +110,11 @@ class ResponseFormatter:
 
             Réponse :
         """
-
         try:
-            response = self.client.chat(
-                model=self.model,
+            return _ollama_call(
                 messages=[{"role": "user", "content": prompt}],
-                options={"temperature": 0.7, "num_predict": self.max_tokens}
+                options={"temperature": 0.7, "num_predict": self.max_tokens},
             )
-            return response['message']['content'].strip()
-
         except Exception as e:
             print(f"Erreur lors de la reformulation : {e}")
             return text
@@ -153,14 +122,27 @@ class ResponseFormatter:
 
 if __name__ == "__main__":
     config = dotenv_values(".env")
-    ollama_host = config.get("OLLAMA_HOST", "http://localhost:11434")
-    model_name = "qwen2:3b"
+    if config.get("OLLAMA_HOST"):
+        os.environ["OLLAMA_HOST"] = config["OLLAMA_HOST"]
 
-    max_chatbot = EmotionalChatbot(model_name=model_name, ollama_host=ollama_host)
-    max_chatbot.chat()
+    max_chatbot = EmotionalChatbot(model_name="qwen2:3b")
+    formatter = ResponseFormatter(model="qwen2:3b")
+
+    print("Bienvenue ! Tape 'exit' pour quitter.")
+    while True:
+        user_input = input("\nVous: ")
+        if user_input.lower() == "exit":
+            print("À plus ! Prends soin de toi")
+            break
+
+        if max_chatbot.is_emotional_question(user_input):
+            raw = max_chatbot.generate_response(user_input)
+            print(f"\nMax: {formatter.make_friendly(raw)}")
+        else:
+            print("\nMax: Je suis désolé, je ne peux répondre qu'à des sujets liés aux émotions ou au bien-être mental.")
 
 
-# Configuration FastAPI pour l'API web
+# Configuration FastAPI
 app = FastAPI()
 
 app.add_middleware(
@@ -177,30 +159,34 @@ class Message(BaseModel):
     session_id: str = "default"
 
 
-# Instance globale du chatbot
-ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-chatbot_instance = EmotionalChatbot(model_name="qwen2:3b", ollama_host=ollama_host)
+chatbot_instance = EmotionalChatbot(model_name="qwen2:3b")
 
 
 @app.get("/health")
 async def health():
     try:
-        chatbot_instance.client.list()
-        return {"status": "ok", "model": chatbot_instance.model}
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            r = await client.post(OLLAMA_CHAT_URL, json={
+                "model": "qwen2:3b",
+                "messages": [{"role": "user", "content": "hi"}],
+                "stream": False,
+                "options": {"num_predict": 1},
+            })
+            r.raise_for_status()
+        return {"status": "ok", "model": "qwen2:3b"}
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Ollama non disponible : {e}")
 
 
 @app.post("/chat")
-async def chat_with_max(data: Message):
+async def chat_with_max(data: Message, x_api_key: str = Header(None)):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     try:
         user_input = data.message
-
         if chatbot_instance.is_emotional_question(user_input):
             response = chatbot_instance.generate_response(user_input)
             return {"response": response}
-        else:
-            return {"response": "Je suis là pour t'accompagner émotionnellement. Pour des questions techniques, je te conseille de consulter des ressources spécialisées."}
-
+        return {"response": "Je suis là pour t'accompagner émotionnellement. Pour des questions techniques, je te conseille de consulter des ressources spécialisées."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur du service de chat: {str(e)}")
