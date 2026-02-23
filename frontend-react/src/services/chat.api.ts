@@ -49,7 +49,10 @@ export const askAI = (conversationId: string, message: string, signal?: AbortSig
   axios.post(
     `${CHAT_API}/chat`,
     { conversation_id: conversationId, message },
-    { signal }
+    {
+      signal,
+      headers: { 'x-api-key': import.meta.env.VITE_CHAT_API_KEY ?? '' },
+    }
   );
 
 export const deleteConversation = (conversationId: string) =>

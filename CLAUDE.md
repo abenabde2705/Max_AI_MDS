@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 |---|---|---|
 | `frontend-react` | React 18 + Vite + TypeScript | 5173 |
 | `server-app` | Express + TypeScript + Sequelize | 3000 |
-| `chat_api` | Python FastAPI + Mistral AI / Ollama | 8000 |
+| `chat_api` | Python FastAPI + Ollama (qwen2:3b) | 8000 |
 
 Supporting infrastructure: PostgreSQL 15, pgAdmin (5050), Prometheus (9090), Grafana (3002).
 
@@ -99,9 +99,11 @@ Database schema changes should go through migration files in `src/migrations/`, 
 
 ### Chat API (`chat_api/qwen_api.py`)
 - `EmotionalChatbot` class holds per-session conversation history
-- Model: `qwen2:3b` via Ollama running on the VPS
+- Model: `qwen2:3b` via Ollama running on the VPS at `OLLAMA_HOST`
+- Uses `httpx` directly (not the `ollama` Python library) — `OLLAMA_HOST` must be the full endpoint URL including path (e.g. `.../api/chat`)
+- `POST /chat` requires `x-api-key` header matching `API_KEY`
 - Detects user language and responds in kind
-- Health check at `GET /health` verifies Ollama connectivity
+- `GET /health` makes a live test call to Ollama to verify connectivity
 
 ---
 
@@ -130,8 +132,9 @@ Each service needs its own `.env`. Key variables:
 - `VITE_FIREBASE_*` (11 Firebase config variables)
 - `VITE_API_URL`
 
-**Chat API** (`chat_api/.env`):
-- `OLLAMA_HOST` (défaut : `http://localhost:11434`)
+**Chat API** (root `.env`, read via `env_file: ./.env` in docker-compose):
+- `OLLAMA_HOST` — full endpoint URL, e.g. `http://ollama:11434/api/chat` or `https://chat.dev.maxai-mds.fr/chat`
+- `API_KEY` — required; sent as `x-api-key` header on all `POST /chat` requests
 
 ---
 
@@ -139,7 +142,7 @@ Each service needs its own `.env`. Key variables:
 
 - **TypeScript strictness**: Frontend uses `strict: true`; backend does not — less strict typing is intentional.
 - **Sequelize sync**: `alter: false` in production — schema must be updated via migrations.
-- **Ollama**: The chat API expects a running Ollama instance on startup; it logs a warning but won't crash if unavailable.
+- **Ollama**: Runs on the VPS (not locally). `OLLAMA_HOST` must be a full URL with path (e.g. `http://ollama:11434/api/chat`). The `ollama` Python library is **not** used — raw `httpx` POSTs are made instead, so path-suffixed URLs work correctly.
 - **Grafana default credentials**: `admin` / `admin123` (local dev only).
 - **Monorepo**: Each service (`frontend-react`, `server-app`, `chat_api`) manages its own `node_modules` / virtualenv. The root `package.json` only contains scripts for data generation/benchmarking.
 - **SonarCloud**: Project key `abenabde2705_Max_AI_MDS`, org `abenabde2705`. Coverage is uploaded from Jest (backend priority).

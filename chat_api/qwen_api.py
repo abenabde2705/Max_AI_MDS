@@ -72,7 +72,7 @@ class EmotionalChatbot:
             return "oui" in text.lower()
         except Exception as e:
             print(f"Erreur lors de la classification : {e}")
-            return False
+            return True
 
     def generate_response(self, user_input: str) -> str:
         messages = [{"role": m["role"], "content": m["content"]} for m in self.history]
