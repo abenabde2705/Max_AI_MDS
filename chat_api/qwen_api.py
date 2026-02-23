@@ -5,8 +5,8 @@ import os
 import httpx
 from datetime import datetime
 from dotenv import dotenv_values
-
-OLLAMA_URL = os.getenv("OLLAMA_HOST", "http://ollama:11434/api/generate")
+OLLAMA_BASE = os.getenv("OLLAMA_HOST", "http://ollama:11434")
+OLLAMA_URL = f"{OLLAMA_BASE}/api/generate"
 MODEL_NAME = "qwen2.5:3b"
 API_KEY = os.getenv("API_KEY")
 
