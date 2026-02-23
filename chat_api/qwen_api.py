@@ -59,20 +59,17 @@ class EmotionalChatbot:
 
             Message : "{user_input}"
             Réponse :
-        """
-        try:
-            text = _ollama_call(
-                messages=[
-                    {"role": "system", "content": "Tu es un classificateur 'oui' ou 'non'."},
-                    {"role": "user", "content": prompt},
-                ],
-                options={"temperature": 0.0, "num_predict": 5},
-            )
-            return "oui" in text.lower()
-        except Exception as e:
-            print(f"Erreur lors de la classification : {e}")
-            return True
+            """
 
+            try:
+                text = _ollama_call(
+                    prompt=prompt,
+                    options={"temperature": 0.0, "num_predict": 5},
+                )
+                return "oui" in text.lower()
+            except Exception as e:
+                print(f"Erreur lors de la classification : {e}")
+                return True
     def generate_response(self, user_input: str) -> str:
         try:
             prompt = (
@@ -113,10 +110,10 @@ class ResponseFormatter:
             Réponse :
         """
         try:
-            return _ollama_call(
-                messages=[{"role": "user", "content": prompt}],
-                options={"temperature": 0.7, "num_predict": self.max_tokens},
-            )
+          return _ollama_call(
+            prompt=prompt,
+            options={"temperature": 0.7, "num_predict": self.max_tokens},
+        )
         except Exception as e:
             print(f"Erreur lors de la reformulation : {e}")
             return text
@@ -127,8 +124,8 @@ if __name__ == "__main__":
     if config.get("OLLAMA_HOST"):
         os.environ["OLLAMA_HOST"] = config["OLLAMA_HOST"]
 
-    max_chatbot = EmotionalChatbot(model_name="qwen2:3b")
-    formatter = ResponseFormatter(model="qwen2:3b")
+    max_chatbot = EmotionalChatbot(model_name="qwen2.5:3b")
+    formatter = ResponseFormatter(model="qwen2.5:3b")
 
     print("Bienvenue ! Tape 'exit' pour quitter.")
     while True:
@@ -161,7 +158,7 @@ class Message(BaseModel):
     session_id: str = "default"
 
 
-chatbot_instance = EmotionalChatbot(model_name="qwen2:3b")
+chatbot_instance = EmotionalChatbot(model_name="qwen2.5:3b")
 
 
 @app.get("/health")
