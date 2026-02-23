@@ -1,53 +1,44 @@
-
 services:
   postgres:
     image: postgres:15
     container_name: maxai-postgres
-    ports: [ "5432:5432" ]
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: maxai
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: password
+     POSTGRES_DB: maxai
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+     - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: maxai-pgadmin
-    ports: [ "5050:80" ]
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    depends_on:
-      - postgres
-
+     test: ["CMD-SHELL", "pg_isready -U postgres"]
+     interval: 10s
+     timeout: 5s
+     retries: 5
+    networks:
+     - web
+     - default
   backend:
     build: ./server-app
     container_name: maxai-backend
     env_file: ./.env
-    ports: [ "3000:3000" ]
     depends_on:
       postgres:
         condition: service_healthy
     command: node dist/server.js
     environment:
       - DB_HOST=postgres
+    networks:
+      - web
+      - default
 
   web:
     build: ./frontend-react
     container_name: maxai-frontend-react
     env_file: ./.env
-    ports: [ "5173:5173" ]
-    volumes:
-      - ./frontend-react:/app
-      - /app/node_modules
     command: npm run dev -- --host
     depends_on: [ backend ]
+    networks:
+      - web
+      - default
 
   # Profil "local-ai" : uniquement si tu veux tester chat_api/ollama en local
   # En dev normal, ces services tournent sur le VPS → ne pas les démarrer ici
@@ -58,6 +49,8 @@ services:
     restart: always
     volumes:
       - ollama_data:/root/.ollama
+    networks:
+      - default
 
   chat_api:
     profiles: [ "local-ai" ]
@@ -65,17 +58,20 @@ services:
       context: ./chat_api
     container_name: maxai-chat-api
     env_file: ./.env
-    ports:
-      - "8000:8000"
     restart: always
-    volumes:
-      - ./chat_api:/app
     environment:
       - OLLAMA_HOST=http://ollama:11434/api/generate
       - API_KEY=${API_KEY}
     depends_on:
       - ollama
+    networks:
+      - web
+      - default
 
 volumes:
   postgres_data:
   ollama_data:
+
+networks:
+  web:
+    external: true
