@@ -227,6 +227,17 @@ button {
   gap: 1rem;
 }
 
+.desktop-only {
+  display: flex;
+}
+
+.mobile-buttons {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
 .connexion-btn {
   text-decoration: none;
   display: flex;
@@ -323,6 +334,57 @@ button {
   text-decoration: underline;
 }
 
+.user-menu-mobile {
+  position: relative;
+  width: 100%;
+}
+
+.user-icon-mobile {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #DAE63D;
+  line-height: inherit;
+  width: 100%;
+  padding: 0.7rem 1.5rem;
+}
+
+.dropdown-mobile {
+  position: relative;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1c5372;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 20;
+}
+
+.dropdown-mobile p {
+  margin: 0;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.dropdown-mobile button {
+  background: none;
+  border: none;
+  color: #1c5372;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0;
+}
+
+.dropdown-mobile button:hover {
+  text-decoration: underline;
+}
+
 /* Mobile Menu Styles - par défaut sur desktop, les nav-items s'affichent normalement */
 .nav-items.mobile-menu {
   display: flex;
@@ -337,6 +399,30 @@ button {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-buttons {
+    display: flex;
+  }
+
+  .mobile-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1.5rem !important;
+    margin: 0.5rem 0;
+  }
+
+  .mobile-btn.connexion-btn {
+    color: #DAE63D;
+  }
+
+  .mobile-btn.inscription-btn {
+    border: 1px solid #DAE63D;
+    color: #DAE63D;
+  }
+
   .website-buttons {
     display: flex; /* Rendre les boutons visibles */
     flex-direction: column; /* Empiler les boutons verticalement */
@@ -370,7 +456,7 @@ button {
         align-items: center;
         flex-direction: column;
         gap: 1rem;
-        background: rgba(28, 83, 114, 0.9);
+        background: rgb(3 14 28 / 90%);
         position: absolute;
         top: 120%;
         left: 0;
@@ -494,7 +580,7 @@ button {
 
 @media (max-width: 480px) {
   .footer h4 {
-    font-size: 14px;
+    font-size: 18px;
     margin-bottom: 10px;
   }
 }
@@ -1431,6 +1517,7 @@ color: #FFFFFF;
   }
 
   .discovery-section p {
+    margin-top: 0px;
     font-size: 15px;
   }
 
