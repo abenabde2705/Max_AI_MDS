@@ -6,21 +6,20 @@ import httpx
 from datetime import datetime
 from dotenv import dotenv_values
 
-OLLAMA_CHAT_URL = os.getenv("OLLAMA_HOST", "http://ollama:11434/api/chat")
+OLLAMA_URL = os.getenv("OLLAMA_HOST", "http://ollama:11434/api/generate")
+MODEL_NAME = "qwen2.5:3b"
 API_KEY = os.getenv("API_KEY")
 
-
-def _ollama_call(messages: list, options: dict) -> str:
+def _ollama_call(prompt: str, options: dict) -> str:
     with httpx.Client(timeout=60.0) as client:
-        r = client.post(OLLAMA_CHAT_URL, json={
-            "model": "qwen2:3b",
-            "messages": messages,
+        r = client.post(OLLAMA_URL, json={
+            "model": MODEL_NAME,
+            "prompt": prompt,
             "stream": False,
             "options": options,
         })
         r.raise_for_status()
-        return r.json()["message"]["content"].strip()
-
+        return r.json()["response"].strip()
 
 class EmotionalChatbot:
     def __init__(self, model_name: str):
@@ -75,22 +74,25 @@ class EmotionalChatbot:
             return True
 
     def generate_response(self, user_input: str) -> str:
-        messages = [{"role": m["role"], "content": m["content"]} for m in self.history]
-        messages.append({
-            "role": "user",
-            "content": f"Réponds de façon naturelle et amicale à : {user_input}. "
-                       f"Assure-toi que ta réponse est complète et ne se termine pas au milieu d'une phrase.",
-        })
-
         try:
-            response_text = _ollama_call(messages=messages, options={"temperature": 0.7, "num_predict": 80})
+            prompt = (
+                f"{self.history[0]['content']}\n\n"
+                f"Utilisateur: {user_input}\n"
+                f"Assistant:"
+            )
+
+            response_text = _ollama_call(
+                prompt=prompt,
+                options={"temperature": 0.7, "num_predict": 80}
+            )
+
             self.history.append({"role": "user", "content": user_input})
             self.history.append({"role": "assistant", "content": response_text})
+
             return response_text
+
         except Exception as e:
             return f"Oups, y'a eu un souci : {e}"
-
-
 class ResponseFormatter:
 
     def __init__(self, model: str, max_tokens: int = 80):
@@ -166,17 +168,15 @@ chatbot_instance = EmotionalChatbot(model_name="qwen2:3b")
 async def health():
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
-            r = await client.post(OLLAMA_CHAT_URL, json={
-                "model": "qwen2:3b",
-                "messages": [{"role": "user", "content": "hi"}],
+            r = await client.post(OLLAMA_URL, json={
+                "model": MODEL_NAME,
+                "prompt": "Hi",
                 "stream": False,
-                "options": {"num_predict": 1},
             })
             r.raise_for_status()
-        return {"status": "ok", "model": "qwen2:3b"}
+        return {"status": "ok", "model": MODEL_NAME}
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Ollama non disponible : {e}")
-
 
 @app.post("/chat")
 async def chat_with_max(data: Message, x_api_key: str = Header(None)):
