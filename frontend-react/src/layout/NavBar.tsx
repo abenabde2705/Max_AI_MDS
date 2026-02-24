@@ -94,9 +94,39 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
                 {item.text}
               </a>
             ))}
+            {/* Boutons Connexion et Chat dans le menu burger */}
+            <div className="mobile-buttons">
+              {!isLoggedIn ? (
+                <Link  to="/auth" className="connexion-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
+                  Connexion
+                </Link>
+              ) : (
+                <div className="user-menu-mobile">
+                  <button 
+                    className="user-icon-mobile" 
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    {getInitials}
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="dropdown-mobile">
+                      <p>{userEmail}</p>
+                      <Link to="/dashboard" style={{ textDecoration: 'none', color: '#1c5372', padding: '0.5rem 1rem', display: 'block', width: '100%' }} onClick={() => setIsMenuOpen(false)}>
+                        Tableau de bord
+                      </Link>
+                      <button onClick={() => { logout(); setIsMenuOpen(false); }}>Déconnexion</button>
+                    </div>
+                  )}
+                </div>
+              )}
+              <Link  to="/chatbot" className="inscription-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
+                <span>Accéder au chat</span>
+                <span className="arrow">→</span>
+              </Link>
+            </div>
           </div>
         </div>
-        <div className="website-buttons">
+        <div className="website-buttons desktop-only">
           {!isLoggedIn ? (
             <Link  to="/auth" className="connexion-btn cta">
               Connexion
