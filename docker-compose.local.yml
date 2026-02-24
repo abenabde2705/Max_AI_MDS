@@ -45,6 +45,7 @@ services:
   # Profil "local-ai" : uniquement si tu veux tester chat_api/ollama en local
   # En dev normal, ces services tournent sur le VPS → ne pas les démarrer ici
   ollama:
+    profiles: [ "local-ai" ]
     image: ollama/ollama
     container_name: maxai-ollama
     restart: always
@@ -54,6 +55,7 @@ services:
       - default
 
   chat_api:
+    profiles: [ "local-ai" ]
     build:
       context: ./chat_api
     container_name: maxai-chat-api
