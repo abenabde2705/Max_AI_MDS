@@ -141,7 +141,7 @@ jobs:
       - name: Deploy on VPS (DEV)
         run: |
           ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.DEV_VPS_USER }}@${{ secrets.DEV_VPS_HOST }} << 'EOF'
+          ${{ secrets.DEV_VPS_USER }}@${{ secrets.DEV_VPS_HOST }} "
             set -e
             cd ${{ secrets.DEV_VPS_PATH }}
             git fetch origin
@@ -149,7 +149,7 @@ jobs:
             git pull origin dev
             docker compose down
             docker compose up -d --build
-          EOF
+          "
 
 
   # Déploiement PROD
