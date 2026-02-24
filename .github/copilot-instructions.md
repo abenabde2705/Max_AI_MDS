@@ -2,7 +2,7 @@
 
 ## 📋 Contexte du Projet
 
-**Max AI MDS** est une application web full-stack avec un système de chat intelligent alimenté par l'IA Mistral.
+**Max AI MDS** est une application web full-stack avec un système de chat intelligent alimenté par Ollama (qwen2:3b) hébergé sur le VPS.
 
 ## 🏗️ Architecture du Projet
 
@@ -12,7 +12,7 @@ Le projet utilise **Docker Compose** avec 4 services principaux :
 1. **PostgreSQL** (port 5432) - Base de données principale
 2. **Backend Node.js** (port 3000) - API REST avec Express
 3. **Frontend React** (port 5173) - Interface utilisateur avec Vite
-4. **Chat API Python** (port 8000) - Service d'IA avec Mistral
+4. **Chat API Python** (port 8000) - Service d'IA avec Ollama (qwen2:3b)
 
 ### Organisation des Dossiers
 
@@ -37,8 +37,8 @@ Max_AI_MDS/
 │   │   └── tests/       # Tests Vitest
 │   └── package.json
 │
-├── chat_api/            # API Python pour Mistral AI
-│   ├── mistral_test.py
+├── chat_api/            # API Python pour Ollama (qwen2:3b)
+│   ├── qwen_api.py
 │   └── requirements.txt
 │
 ├── monitoring/          # Prometheus + Grafana
@@ -86,9 +86,9 @@ Max_AI_MDS/
 
 ### Chat API (chat_api/)
 - **Langage:** Python
-- **IA:** Mistral AI API
-- **Framework web:** (à déterminer - possiblement FastAPI/Flask)
-- **Dépendances:** OpenCV, Discord.py, PyAutoGUI, pytesseract
+- **IA:** Ollama — modèle `qwen2:3b` hébergé sur le VPS
+- **Framework web:** FastAPI
+- **Dépendances:** fastapi, uvicorn, ollama, pydantic, python-dotenv
 
 ### Base de Données
 - **SGBD:** PostgreSQL 15
@@ -195,7 +195,7 @@ PORT=3000
 
 ### Chat API
 ```
-MISTRAL_KEY=P896w2DBvu1lvS5eeF8yn0Paz1TWMBKH
+OLLAMA_HOST=http://localhost:11434
 ```
 
 ## 🎯 Objectifs du Projet
