@@ -49,7 +49,10 @@ services:
     command: npm run dev -- --host
     depends_on: [ backend ]
 
+  # Profil "local-ai" : uniquement si tu veux tester chat_api/ollama en local
+  # En dev normal, ces services tournent sur le VPS → ne pas les démarrer ici
   ollama:
+    profiles: [ "local-ai" ]
     image: ollama/ollama
     container_name: maxai-ollama
     restart: always
@@ -57,6 +60,7 @@ services:
       - ollama_data:/root/.ollama
 
   chat_api:
+    profiles: [ "local-ai" ]
     build:
       context: ./chat_api
     container_name: maxai-chat-api
@@ -67,7 +71,8 @@ services:
     volumes:
       - ./chat_api:/app
     environment:
-      - OLLAMA_HOST=http://ollama:11434/api/chat
+      - OLLAMA_HOST=http://ollama:11434/api/generate
+      - API_KEY=${API_KEY}
     depends_on:
       - ollama
 

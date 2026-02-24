@@ -144,9 +144,12 @@ if __name__ == "__main__":
 # Configuration FastAPI
 app = FastAPI()
 
+_raw = os.getenv("ALLOWED_CHAT_ORIGINS", "")
+ALLOWED_ORIGINS = [o.strip() for o in _raw.split(",") if o.strip()] or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -181,9 +184,7 @@ async def chat_with_max(data: Message, x_api_key: str = Header(None)):
         raise HTTPException(status_code=401, detail="Unauthorized")
     try:
         user_input = data.message
-        if chatbot_instance.is_emotional_question(user_input):
-            response = chatbot_instance.generate_response(user_input)
-            return {"response": response}
-        return {"response": "Je suis là pour t'accompagner émotionnellement. Pour des questions techniques, je te conseille de consulter des ressources spécialisées."}
+        response = chatbot_instance.generate_response(user_input)
+        return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur du service de chat: {str(e)}")
