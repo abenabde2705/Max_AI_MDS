@@ -26,6 +26,8 @@ services:
     command: node dist/server.js
     environment:
       - DB_HOST=postgres
+    ports:
+      - "3000:3000"
     networks:
       - web
       - default
