@@ -6,20 +6,20 @@ import httpx
 from datetime import datetime
 from dotenv import dotenv_values
 OLLAMA_BASE = os.getenv("OLLAMA_HOST", "http://ollama:11434")
-OLLAMA_URL = f"{OLLAMA_BASE}/api/generate"
+OLLAMA_URL = f"{OLLAMA_BASE}/api/chat"
 MODEL_NAME = "qwen2.5:3b"
 API_KEY = os.getenv("API_KEY")
 
-def _ollama_call(prompt: str, options: dict) -> str:
+def _ollama_call(messages: list, options: dict) -> str:
     with httpx.Client(timeout=60.0) as client:
         r = client.post(OLLAMA_URL, json={
             "model": MODEL_NAME,
-            "prompt": prompt,
+            "messages": messages,
             "stream": False,
             "options": options,
         })
         r.raise_for_status()
-        return r.json()["response"].strip()
+        return r.json()["message"]["content"].strip()
 
 class EmotionalChatbot:
     def __init__(self, model_name: str):
@@ -46,49 +46,27 @@ class EmotionalChatbot:
         })
 
     def is_emotional_question(self, user_input: str) -> bool:
-        prompt = f"""
-            Tu es un classificateur de messages.
-            Ta tâche est de dire si le message d'un utilisateur fait partie d'une conversation émotionnelle ou sociale bienveillante.
-
-            Répond uniquement par 'oui' ou 'non'.
-
-            Considère comme 'non' si le message :
-            - parle de technologie, d'informatique, de mathématiques, ou d'autres sujets techniques
-
-            Sinon considère comme 'oui'.
-
-            Message : "{user_input}"
-            Réponse :
-        """
-
+        messages = [
+            {"role": "system", "content": "Tu es un classificateur. Réponds uniquement par 'oui' ou 'non'."},
+            {"role": "user", "content": f"Ce message parle-t-il d'émotions ou de bien-être mental ?\nMessage : \"{user_input}\""}
+        ]
         try:
-            text = _ollama_call(
-                prompt=prompt,
-                options={"temperature": 0.0, "num_predict": 5},
-            )
+            text = _ollama_call(messages=messages, options={"temperature": 0.0, "num_predict": 5})
             return "oui" in text.lower()
         except Exception as e:
             print(f"Erreur lors de la classification : {e}")
             return True
     def generate_response(self, user_input: str) -> str:
+        self.history.append({"role": "user", "content": user_input})
         try:
-            prompt = (
-                f"{self.history[0]['content']}\n\n"
-                f"Utilisateur: {user_input}\n"
-                f"Assistant:"
-            )
-
             response_text = _ollama_call(
-                prompt=prompt,
+                messages=self.history,
                 options={"temperature": 0.7, "num_predict": 80}
             )
-
-            self.history.append({"role": "user", "content": user_input})
             self.history.append({"role": "assistant", "content": response_text})
-
             return response_text
-
         except Exception as e:
+            self.history.pop()  # annuler l'ajout du message user si erreur
             return f"Oups, y'a eu un souci : {e}"
 class ResponseFormatter:
 
@@ -97,23 +75,12 @@ class ResponseFormatter:
         self.max_tokens = max_tokens
 
     def make_friendly(self, text: str) -> str:
-        prompt = f"""
-            Tu es un assistant amical, chaleureux et naturel.
-            Voici une réponse brute du chatbot : "{text}"
-
-            Réécris cette réponse pour qu'elle soit :
-            - sans coupure de phrase.
-            - fluide et humaine,
-            - concise,
-            - sans répétitions
-
-            Réponse :
-        """
+        messages = [
+            {"role": "system", "content": "Tu es un assistant amical, chaleureux et naturel."},
+            {"role": "user", "content": f"Réécris cette réponse pour qu'elle soit fluide et humaine, concise, sans répétitions, sans coupure de phrase :\n\"{text}\""}
+        ]
         try:
-          return _ollama_call(
-            prompt=prompt,
-            options={"temperature": 0.7, "num_predict": self.max_tokens},
-        )
+            return _ollama_call(messages=messages, options={"temperature": 0.7, "num_predict": self.max_tokens})
         except Exception as e:
             print(f"Erreur lors de la reformulation : {e}")
             return text
@@ -170,7 +137,7 @@ async def health():
         async with httpx.AsyncClient(timeout=10.0) as client:
             r = await client.post(OLLAMA_URL, json={
                 "model": MODEL_NAME,
-                "prompt": "Hi",
+                "messages": [{"role": "user", "content": "Hi"}],
                 "stream": False,
             })
             r.raise_for_status()
