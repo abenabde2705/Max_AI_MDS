@@ -132,7 +132,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - name: Debug secrets
+        run: |
+          echo "User is set: ${{ secrets.DEV_VPS_USER != '' }}"
+          echo "Host is set: ${{ secrets.DEV_VPS_HOST != '' }}"
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
