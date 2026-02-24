@@ -59,17 +59,17 @@ class EmotionalChatbot:
 
             Message : "{user_input}"
             Réponse :
-            """
+        """
 
-            try:
-                text = _ollama_call(
-                    prompt=prompt,
-                    options={"temperature": 0.0, "num_predict": 5},
-                )
-                return "oui" in text.lower()
-            except Exception as e:
-                print(f"Erreur lors de la classification : {e}")
-                return True
+        try:
+            text = _ollama_call(
+                prompt=prompt,
+                options={"temperature": 0.0, "num_predict": 5},
+            )
+            return "oui" in text.lower()
+        except Exception as e:
+            print(f"Erreur lors de la classification : {e}")
+            return True
     def generate_response(self, user_input: str) -> str:
         try:
             prompt = (
