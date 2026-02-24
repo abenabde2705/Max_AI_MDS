@@ -39,6 +39,8 @@ services:
     networks:
       - web
       - default
+    ports:
+      - "5173:5173"
 
   # Profil "local-ai" : uniquement si tu veux tester chat_api/ollama en local
   # En dev normal, ces services tournent sur le VPS → ne pas les démarrer ici
