@@ -9,8 +9,8 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-# Build TypeScript
-RUN npm run build
+# Build TypeScript (force full rebuild — tsconfig.tsbuildinfo can cause incremental skips)
+RUN rm -f tsconfig.tsbuildinfo && npm run build
 
 # On exécute dist
 CMD ["node", "dist/index.js"]
