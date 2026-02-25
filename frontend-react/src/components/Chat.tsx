@@ -33,8 +33,8 @@ export default function MaxAIChat() {
   const planClass = messageLimitReached
     ? 'max-chat__plan--danger'
     : isApproachingLimit
-    ? 'max-chat__plan--warning'
-    : '';
+      ? 'max-chat__plan--warning'
+      : '';
 
   // Récupérer les initiales de l'utilisateur au chargement
   useEffect(() => {
