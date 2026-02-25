@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import Message from '../models/Message.js';
 import Conversation from '../models/Conversation.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, checkMessageLimit } from '../middleware/auth.js';
 import { Op } from 'sequelize';
 
 const router = express.Router();
@@ -35,7 +35,7 @@ interface GetMessagesRequest extends AuthenticatedRequest {
 }
 
 // POST /api/messages - Envoyer un message dans une conversation
-router.post('/', authenticateToken, async (req: CreateMessageRequest, res: Response): Promise<void> => {
+router.post('/', authenticateToken, checkMessageLimit, async (req: CreateMessageRequest, res: Response): Promise<void> => {
   try {
     if (!req.user) {
       res.status(401).json({ message: 'Utilisateur non authentifié' });

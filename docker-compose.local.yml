@@ -26,6 +26,7 @@ services:
     command: node dist/server.js
     environment:
       - DB_HOST=postgres
+      - CHAT_API_URL=http://chat_api:8000
     ports:
       - "3000:3000"
     networks:
@@ -67,8 +68,8 @@ services:
       - OLLAMA_HOST=http://ollama:11434
     depends_on:
       - ollama
+    # Réseau interne uniquement — accessible par backend, pas par Traefik
     networks:
-      - web
       - default
 
 volumes:

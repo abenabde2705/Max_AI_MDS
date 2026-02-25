@@ -1,6 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { Op } from 'sequelize';
 import User from '../models/User.js';
+import Message from '../models/Message.js';
+import Conversation from '../models/Conversation.js';
+import Subscription from '../models/Subscription.js';
+
+const FREE_MESSAGE_LIMIT = 10;
 
 interface JWTPayload {
     id: string;
@@ -161,6 +167,74 @@ export const requirePremium = (req: Request, res: Response, next: NextFunction):
     }
 
     next();
+};
+
+// Middleware pour vérifier la limite de messages du plan gratuit
+export const checkMessageLimit = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    // Ce middleware ne s'applique qu'aux messages envoyés par l'utilisateur.
+    // On skip uniquement si sender est explicitement 'ai'.
+    // Si sender est absent (ex: /api/chat), on applique le check.
+    if (req.body.sender === 'ai') {
+        next();
+        return;
+    }
+
+    if (!req.user) {
+        res.status(401).json({ success: false, message: 'Authentification requise' });
+        return;
+    }
+
+    // Les utilisateurs premium ne sont pas limités
+    if (req.user.is_premium) {
+        next();
+        return;
+    }
+
+    try {
+        // Vérifier si l'utilisateur a un abonnement actif
+        const activeSubscription = await Subscription.findOne({
+            where: {
+                userId: req.user.id,
+                status: 'active'
+            }
+        });
+
+        if (activeSubscription) {
+            next();
+            return;
+        }
+
+        // Compter les messages utilisateur sur toutes ses conversations
+        const conversations = await Conversation.findAll({
+            where: { userId: req.user.id },
+            attributes: ['id']
+        });
+
+        const conversationIds = conversations.map(c => c.getDataValue('id'));
+
+        const messageCount = conversationIds.length === 0 ? 0 : await Message.count({
+            where: {
+                conversationId: { [Op.in]: conversationIds },
+                sender: 'user'
+            }
+        });
+
+        if (messageCount >= FREE_MESSAGE_LIMIT) {
+            res.status(403).json({
+                success: false,
+                error: 'MESSAGE_LIMIT_REACHED',
+                message: `Vous avez atteint la limite de ${FREE_MESSAGE_LIMIT} messages du plan gratuit. Passez au plan Premium pour continuer.`,
+                used: messageCount,
+                limit: FREE_MESSAGE_LIMIT
+            });
+            return;
+        }
+
+        next();
+    } catch (error: unknown) {
+        console.error('Erreur lors de la vérification de la limite de messages:', error);
+        res.status(500).json({ success: false, message: 'Erreur interne du serveur' });
+    }
 };
 
 // Middleware pour vérifier que l'utilisateur peut accéder à ses propres ressources

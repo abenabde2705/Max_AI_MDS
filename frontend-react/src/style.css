@@ -3797,8 +3797,17 @@ font-size: 20px;
 
 .max-chat__title { margin: 0; font-size: 36px; font-weight: 700; }/* MAX - Assistant IA */
 
-.max-chat__plan { margin: 2px 0 0; font-size: 0.9rem; color: #DAE63D; }
+.max-chat__plan { margin: 2px 0 0; font-size: 0.9rem; color: #DAE63D; display: flex; flex-direction: column; gap: 5px; }
+.max-chat__plan-text { margin: 0; }
 .max-chat__plan-strong { font-weight: 700; margin-right: 6px; }
+.max-chat__plan--warning { color: #F1C40F; }
+.max-chat__plan--danger { color: #E74C3C; }
+
+/* Progress bar */
+.max-chat__plan-bar { width: 130px; height: 3px; background: rgba(255, 255, 255, 0.18); border-radius: 2px; overflow: hidden; }
+.max-chat__plan-bar-fill { height: 100%; background: #DAE63D; border-radius: 2px; transition: width 0.4s ease; }
+.max-chat__plan--warning .max-chat__plan-bar-fill { background: #F1C40F; }
+.max-chat__plan--danger .max-chat__plan-bar-fill { background: #E74C3C; }
 
 .max-chat__header-actions { display: flex; align-items: center; gap: 10px; }
 .max-chat__action-button { min-width: 180px; transition: background 0.2s ease; }
@@ -4801,4 +4810,83 @@ color: #F2F5FF;
   .profile-header__title {
     font-size: 1.5rem;
   }
+}
+
+/* =============================================
+   Message Limit UI
+   ============================================= */
+
+/* Bannière d'avertissement approche de limite */
+.max-chat__limit-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 24px;
+  padding: 10px 16px;
+  background: rgba(241, 196, 15, 0.12);
+  border-left: 3px solid #F1C40F;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.88);
+  animation: limitWarningSlide 0.3s ease;
+}
+
+.max-chat__limit-warning-icon { font-size: 1rem; flex-shrink: 0; }
+.max-chat__limit-warning strong { color: #F1C40F; font-weight: 700; }
+
+@keyframes limitWarningSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mur de limite (remplace la zone de saisie) */
+.max-chat__limit-wall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 28px 24px;
+  background: rgba(22, 26, 77, 0.55);
+  border: 1px solid rgba(218, 230, 61, 0.25);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  animation: limitWallFadeIn 0.35s ease;
+}
+
+@keyframes limitWallFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.max-chat__limit-wall-icon { font-size: 2.2rem; line-height: 1; }
+
+.max-chat__limit-wall-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.max-chat__limit-wall-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.55;
+  max-width: 340px;
+}
+
+.max-chat__limit-wall-text strong { color: #ffffff; }
+
+.max-chat__limit-wall-button {
+  margin-top: 4px;
+  min-width: 220px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 480px) {
+  .max-chat__limit-warning { margin: 0 12px; }
+  .max-chat__limit-wall { padding: 20px 16px; }
+  .max-chat__limit-wall-button { min-width: 100%; }
 }

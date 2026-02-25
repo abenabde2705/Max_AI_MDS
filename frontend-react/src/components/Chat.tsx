@@ -23,7 +23,18 @@ export default function MaxAIChat() {
   const [message, setMessage] = useState('');
   const [isHistoricOpen, setIsHistoricOpen] = useState(false);
   const [userInitials, setUserInitials] = useState('U');
-  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation } = useChat();
+  const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation, messageLimitReached, messageCount } = useChat();
+
+  const isApproachingLimit = !messageCount?.is_premium && messageCount?.limit !== null && messageCount !== null && messageCount.used >= 7 && !messageLimitReached;
+  const planLabel = messageCount?.is_premium ? 'Plan Premium' : 'Plan Free';
+  const usageText = messageCount
+    ? `${messageCount.used}/${messageCount.limit ?? '∞'} messages`
+    : '— messages';
+  const planClass = messageLimitReached
+    ? 'max-chat__plan--danger'
+    : isApproachingLimit
+    ? 'max-chat__plan--warning'
+    : '';
 
   // Récupérer les initiales de l'utilisateur au chargement
   useEffect(() => {
@@ -80,9 +91,19 @@ export default function MaxAIChat() {
 
             <div className="max-chat__header-info">
               <h1 className="max-chat__title">MAX - Assistant IA</h1>
-              <p className="max-chat__plan">
-                <strong>1/10 messages</strong> <span>Plan Free</span>
-              </p>
+              <div className={`max-chat__plan ${planClass}`}>
+                <p className="max-chat__plan-text">
+                  <strong>{usageText}</strong> <span>{planLabel}</span>
+                </p>
+                {!messageCount?.is_premium && messageCount?.limit !== null && messageCount !== null && (
+                  <div className="max-chat__plan-bar">
+                    <div
+                      className="max-chat__plan-bar-fill"
+                      style={{ width: `${Math.min(100, (messageCount.used / (messageCount.limit ?? 10)) * 100)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -102,6 +123,17 @@ export default function MaxAIChat() {
             </Button>
           </div>
         </header>
+
+        {isApproachingLimit && (
+          <div className="max-chat__limit-warning">
+            <span className="max-chat__limit-warning-icon">⚠️</span>
+            <span>
+              Il vous reste{' '}
+              <strong>{(messageCount!.limit! - messageCount!.used)} message{messageCount!.limit! - messageCount!.used > 1 ? 's' : ''}</strong>{' '}
+              sur votre plan gratuit.
+            </span>
+          </div>
+        )}
 
         <div className="max-chat__messages">
           {messages.map((msg, index) => (
@@ -138,38 +170,54 @@ export default function MaxAIChat() {
         </div>
 
         <div className="max-chat__input-area">
-          <div className="max-chat__emotions">
-            {emotions.map((emotion) => (
-              <button
-                key={emotion.key}
-                onClick={() => handleEmotionClick(emotion.label)}
-                className={`max-chat__emotion-button max-chat__emotion-button--${emotion.key}`}
-              >
-                <span>{emotion.icon}</span>
-                <span>{emotion.label}</span>
-              </button>
-            ))}
-          </div>
+          {messageLimitReached ? (
+            <div className="max-chat__limit-wall">
+              <span className="max-chat__limit-wall-icon">🔒</span>
+              <h3 className="max-chat__limit-wall-title">Limite de messages atteinte</h3>
+              <p className="max-chat__limit-wall-text">
+                Vous avez utilisé vos <strong>10 messages</strong> du plan gratuit.
+                Passez au plan Premium pour continuer à discuter avec MAX sans limite.
+              </p>
+              <Button variant="primary" className="max-chat__limit-wall-button">
+                ✨ Passer au Premium
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="max-chat__emotions">
+                {emotions.map((emotion) => (
+                  <button
+                    key={emotion.key}
+                    onClick={() => handleEmotionClick(emotion.label)}
+                    className={`max-chat__emotion-button max-chat__emotion-button--${emotion.key}`}
+                  >
+                    <span>{emotion.icon}</span>
+                    <span>{emotion.label}</span>
+                  </button>
+                ))}
+              </div>
 
-          <div className="max-chat__input-wrapper">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !isWaiting && handleSendMessage()}
-              placeholder="Partagez ce que vous ressentez..."
-              className="max-chat__input"
-              disabled={isWaiting}
-            />
-            {isWaiting ? (
-              <Button onClick={cancelResponse} size="icon" className="max-chat__send">
-                <Icon name="close" size="md" color={colors.semantic.error} />
-              </Button>
-            ) : (
-              <Button onClick={handleSendMessage} size="icon" className="max-chat__send" disabled={!message.trim()} variant="secondary">
-                <Icon name="send" size="md" />
-              </Button>
-            )}
-          </div>
+              <div className="max-chat__input-wrapper">
+                <Input
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !isWaiting && handleSendMessage()}
+                  placeholder="Partagez ce que vous ressentez..."
+                  className="max-chat__input"
+                  disabled={isWaiting}
+                />
+                {isWaiting ? (
+                  <Button onClick={cancelResponse} size="icon" className="max-chat__send">
+                    <Icon name="close" size="md" color={colors.semantic.error} />
+                  </Button>
+                ) : (
+                  <Button onClick={handleSendMessage} size="icon" className="max-chat__send" disabled={!message.trim()} variant="secondary">
+                    <Icon name="send" size="md" />
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </main>
 

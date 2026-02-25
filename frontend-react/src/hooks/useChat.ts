@@ -3,10 +3,9 @@ import {
   fetchConversations,
   fetchMessages,
   createConversation,
-  sendUserMessage,
-  sendAIMessage,
-  askAI,
+  sendChatMessage,
   deleteConversation,
+  fetchMessageCount,
 } from '../services/chat.api';
 
 export function useChat() {
@@ -20,6 +19,8 @@ export function useChat() {
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
   const [isWaiting, setIsWaiting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [messageLimitReached, setMessageLimitReached] = useState(false);
+  const [messageCount, setMessageCount] = useState<{ used: number; limit: number | null; is_premium: boolean } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -27,10 +28,21 @@ export function useChat() {
     if (token) {
       setIsAuthenticated(true);
       loadConversations();
+      loadMessageCount();
     } else {
       console.log('Pas de token trouvé - mode local activé');
     }
   }, []);
+
+  const loadMessageCount = async () => {
+    try {
+      const res = await fetchMessageCount();
+      setMessageCount(res.data);
+      setMessageLimitReached(!res.data.is_premium && res.data.limit !== null && res.data.used >= res.data.limit);
+    } catch (error: any) {
+      console.warn('Impossible de charger le compteur de messages:', error);
+    }
+  };
 
   const loadConversations = async () => {
     try {
@@ -112,24 +124,30 @@ export function useChat() {
     setIsWaiting(true);
 
     try {
-      if (isAuthenticated && activeConversation) {
-        await sendUserMessage(activeConversation, content);
+      // Auto-créer une conversation si l'utilisateur est authentifié mais n'en a pas encore
+      let convId = activeConversation;
+      if (isAuthenticated && !convId) {
+        try {
+          const res = await createConversation();
+          convId = res.data.id;
+          setActiveConversation(convId);
+          loadConversations();
+        } catch (convErr) {
+          console.error('Impossible de créer la conversation automatiquement:', convErr);
+        }
       }
 
       abortRef.current = new AbortController();
 
-      const conversationId = activeConversation || 'local';
-      const aiRes = await askAI(
-        conversationId,
-        content,
-        abortRef.current.signal
-      );
+      let aiResponse: string;
 
-      const aiResponse = aiRes.data.response;
-      
-      // Sauvegarder la réponse de l'IA dans la base de données
-      if (isAuthenticated && activeConversation) {
-        await sendAIMessage(activeConversation, aiResponse);
+      if (isAuthenticated && convId) {
+        // Appel unique : le backend sauvegarde les deux messages et retourne la réponse IA
+        const res = await sendChatMessage(convId, content, abortRef.current.signal);
+        aiResponse = res.data.response;
+        await loadMessageCount();
+      } else {
+        aiResponse = 'Vous devez être connecté pour discuter avec MAX.';
       }
 
       setMessages((prev) => [
@@ -137,11 +155,26 @@ export function useChat() {
         { role: 'assistant', content: aiResponse, timestamp: new Date().toISOString() },
       ]);
     } catch (error: any) {
-      if (error.name !== 'CanceledError') {
-        console.error('Erreur lors de l\'envoi du message:', error);
+      if (error.response?.status === 403 && error.response?.data?.error === 'MESSAGE_LIMIT_REACHED') {
+        setMessageLimitReached(true);
+        setMessageCount(prev => prev ? { ...prev, used: error.response.data.used, limit: error.response.data.limit } : null);
+        setMessages((prev) => prev.slice(0, -1));
+      } else if (error.name === 'CanceledError') {
+        // Annulé par l'utilisateur, rien à faire
+      } else {
+        console.error('[useChat] sendMessage error:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          code: error.code,
+        });
+        const isNetworkError = !error.response;
+        const errorMessage = isNetworkError
+          ? 'Le service de chat est temporairement indisponible. Veuillez réessayer plus tard.'
+          : `Désolé, une erreur est survenue (${error.response?.status ?? 'inconnue'}). Veuillez réessayer.`;
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: 'Désolé, une erreur est survenue. Veuillez réessayer.' },
+          { role: 'assistant', content: errorMessage },
         ]);
       }
     } finally {
@@ -180,5 +213,7 @@ export function useChat() {
     activeConversation,
     createNewConversation,
     removeConversation,
+    messageLimitReached,
+    messageCount,
   };
 }
