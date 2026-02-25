@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 interface MenuItem {
@@ -20,9 +20,8 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ className }) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [userEmail, setUserEmail] = useState<string>('');
+  const [userDisplay, setUserDisplay] = useState<string>('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -30,16 +29,9 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
       setIsLoggedIn(true);
       const userName = localStorage.getItem('userName');
       const userEmailStored = localStorage.getItem('userEmail');
-      setUserEmail(userName || userEmailStored || 'Utilisateur');
+      setUserDisplay(userName || userEmailStored || 'Utilisateur');
     }
   }, []);
-
-  const getInitials = useMemo<string>(() => {
-    const names = userEmail.split(' ');
-    const firstInitial = names[0]?.charAt(0).toUpperCase() || '';
-    const lastInitial = names[1]?.charAt(0).toUpperCase() || '';
-    return firstInitial + lastInitial;
-  }, [userEmail]);
 
   const scrollToSection = (href: string): void => {
     const targetElement = document.querySelector(href);
@@ -58,7 +50,6 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
     setIsLoggedIn(false);
-    setIsDropdownOpen(false);
     window.location.reload();
   };
 
@@ -97,27 +88,14 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
             {/* Boutons Connexion et Chat dans le menu burger */}
             <div className="mobile-buttons">
               {!isLoggedIn ? (
-                <Link  to="/auth" className="connexion-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/auth" className="connexion-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
                   Connexion
                 </Link>
               ) : (
-                <div className="user-menu-mobile">
-                  <button 
-                    className="user-icon-mobile" 
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    {getInitials}
-                  </button>
-                  {isDropdownOpen && (
-                    <div className="dropdown-mobile">
-                      <p>{userEmail}</p>
-                      <Link to="/dashboard" style={{ textDecoration: 'none', color: '#1c5372', padding: '0.5rem 1rem', display: 'block', width: '100%' }} onClick={() => setIsMenuOpen(false)}>
-                        Tableau de bord
-                      </Link>
-                      <button onClick={() => { logout(); setIsMenuOpen(false); }}>Déconnexion</button>
-                    </div>
-                  )}
-                </div>
+                <Link to="/profile" className="user-pill" onClick={() => setIsMenuOpen(false)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                  <span>{userDisplay}</span>
+                </Link>
               )}
               <Link  to="/chatbot" className="inscription-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
                 <span>Accéder au chat</span>
@@ -128,27 +106,14 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
         </div>
         <div className="website-buttons desktop-only">
           {!isLoggedIn ? (
-            <Link  to="/auth" className="connexion-btn cta">
+            <Link to="/auth" className="connexion-btn cta">
               Connexion
             </Link>
           ) : (
-            <div className="user-menu">
-              <button 
-                className="user-icon" 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                {getInitials}
-              </button>
-              {isDropdownOpen && (
-                <div className="dropdown">
-                  <p>{userEmail}</p>
-                  <Link to="/dashboard" style={{ textDecoration: 'none', color: '#1c5372', padding: '0.5rem 1rem', display: 'block', width: '100%' }}>
-                    Tableau de bord
-                  </Link>
-                  <button onClick={logout}>Déconnexion</button>
-                </div>
-              )}
-            </div>
+            <Link to="/profile" className="user-pill">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+              <span>{userDisplay}</span>
+            </Link>
           )}
           <Link  to="/chatbot" className="inscription-btn cta">
             <span> Accéder au chat</span>
