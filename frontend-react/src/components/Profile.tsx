@@ -355,7 +355,7 @@ const Profile: React.FC = () => {
                 <p className="profile-account-action__title">Supprimer mon compte</p>
                 <p className="profile-account-action__sub">Cette action est irréversible</p>
               </div>
-              <button className="profile-btn profile-btn--danger">Supprimer</button>
+              <button className="profile-btn profile-btn--outline">Supprimer</button>
             </div>
           </div>
         </div>
