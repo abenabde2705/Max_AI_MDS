@@ -6,6 +6,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { sequelize } from './config/db.js';
 import authRoutes from './routes/auth.js';
+import chatRoutes from './routes/chat.js';
 import conversationRoutes from './routes/conversations.js';
 import messageRoutes from './routes/messages.js';
 import feedbackRoutes from './routes/feedback.js';
@@ -183,6 +184,7 @@ app.get('/metrics', async (req: Request, res: Response): Promise<void> => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/chat', chatRoutes);
 app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/feedback', feedbackRoutes);

@@ -1,5 +1,4 @@
-from fastapi import FastAPI, HTTPException, Header
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
 import httpx
@@ -11,7 +10,6 @@ import httpx
 OLLAMA_BASE = os.getenv("OLLAMA_HOST", "http://ollama:11434")
 OLLAMA_URL = f"{OLLAMA_BASE}/api/chat"
 MODEL_NAME = "qwen2.5:3b"
-API_KEY = os.getenv("API_KEY")
 
 # =============================
 # Ollama call helper
@@ -61,17 +59,12 @@ def generate_response(user_input: str) -> str:
 # FastAPI App
 # =============================
 
+# Ce service est interne au réseau Docker.
+# Il n'est pas exposé publiquement via Traefik.
+# L'authentification est gérée par le backend Express (JWT).
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-class Message(BaseModel):
+class ChatRequest(BaseModel):
     message: str
     session_id: str | None = None
 
@@ -81,7 +74,7 @@ class Message(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "Max Chat API is running 🚀"}
+    return {"message": "Max Chat API is running"}
 
 @app.get("/health")
 async def health():
@@ -101,10 +94,7 @@ async def health():
         raise HTTPException(status_code=503, detail=f"Ollama non disponible : {e}")
 
 @app.post("/chat")
-async def chat_with_max(data: Message, x_api_key: str = Header(None)):
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
+async def chat_with_max(data: ChatRequest):
     try:
         response = generate_response(data.message)
         return {"response": response}

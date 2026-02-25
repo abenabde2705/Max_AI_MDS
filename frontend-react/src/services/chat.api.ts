@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
-const CHAT_API = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8000';
 
 export const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -25,35 +24,24 @@ export const fetchMessages = (conversationId: string) =>
 export const createConversation = () =>
   axios.post(`${API_BASE}/conversations`, {}, { headers: getAuthHeaders() });
 
-export const sendUserMessage = (
+/**
+ * Envoie un message au backend qui proxy vers le Chat API interne.
+ * Sauvegarde le message utilisateur ET la réponse IA côté serveur.
+ * Aucune clé API n'est exposée au client.
+ */
+export const sendChatMessage = (
   conversationId: string,
-  content: string
+  message: string,
+  signal?: AbortSignal
 ) =>
   axios.post(
-    `${API_BASE}/messages`,
-    { conversation_id: conversationId, sender: 'user', content },
-    { headers: getAuthHeaders() }
-  );
-
-export const sendAIMessage = (
-  conversationId: string,
-  content: string
-) =>
-  axios.post(
-    `${API_BASE}/messages`,
-    { conversation_id: conversationId, sender: 'ai', content },
-    { headers: getAuthHeaders() }
-  );
-
-export const askAI = (conversationId: string, message: string, signal?: AbortSignal) =>
-  axios.post(
-    `${CHAT_API}/chat`,
+    `${API_BASE}/chat`,
     { conversation_id: conversationId, message },
-    {
-      signal,
-      headers: { 'x-api-key': import.meta.env.VITE_CHAT_API_KEY ?? '' },
-    }
+    { headers: getAuthHeaders(), signal }
   );
 
 export const deleteConversation = (conversationId: string) =>
   axios.delete(`${API_BASE}/conversations/${conversationId}`, { headers: getAuthHeaders() });
+
+export const fetchMessageCount = () =>
+  axios.get(`${API_BASE}/users/me/message-count`, { headers: getAuthHeaders() });
