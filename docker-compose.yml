@@ -63,6 +63,9 @@ services:
       - OLLAMA_HOST=http://ollama:11434
     depends_on:
       - ollama
+     # Lié à 127.0.0.1 uniquement — accessible via SSH tunnel pour le dev local, jamais public
+    ports:
+      - "127.0.0.1:8000:8000"
     networks:
       - web
       - default
