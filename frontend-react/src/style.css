@@ -1266,8 +1266,7 @@ input:disabled, textarea:disabled {
 /* Newsletter Component */
 /* Newsletter Section */
 .newsletter-container {
-  
-  padding: 4rem 11rem;
+  padding: 4rem clamp(1rem, 8vw, 11rem);
   color: white;
   font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -1503,7 +1502,7 @@ text-transform: capitalize;
 }
 
 .discovery-section p {
-  color: #555;
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
   font-size: 17px;
   margin-bottom: 4rem;
@@ -1541,6 +1540,17 @@ color: #FFFFFF;
 }
 
 /* Responsive Styles */
+@media (max-width: 1024px) {
+  .discovery-section .content {
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+
+  .discovery-section h2 {
+    font-size: 1.8rem;
+  }
+}
+
 @media (max-width: 768px) {
   .discovery-section .content {
     flex-direction: column;
@@ -1912,6 +1922,33 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
 }
 
+@media (max-width: 1024px) {
+  .plans-container {
+    gap: 2rem;
+  }
+
+  .plan-card {
+    width: 300px;
+  }
+}
+
+@media (max-width: 900px) {
+  .plans-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .plan-card {
+    width: 90%;
+    max-width: 420px;
+  }
+
+  .plan-card.highlight {
+    transform: scale(1);
+  }
+}
+
 @media (max-width: 768px) {
   .Abonnement {
     padding: 3rem 1rem;
@@ -1926,19 +1963,9 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
     font-size: 1rem;
   }
 
-  .plans-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-  }
-
   .plan-card {
     width: 90%;
     max-width: 400px;
-  }
-
-  .plan-card.highlight {
-    transform: scale(1);
   }
 
   .plan-card.highlight:hover {
@@ -1986,27 +2013,21 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 
 .testimonials-section h2,
 .testimonials-title {
-  font-family: 'Ubuntu', sans-serif;  
+  font-family: 'Ubuntu', sans-serif;
   text-align: left;
   color: #DAE63D;
-
-width: 890px;
-height: 30px;
-left: calc(50% - 890px/2 - 145px);
-font-style: normal;
-font-weight: 700;
-font-size: 48px;
-line-height: 30px;
-
+  font-style: normal;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  line-height: 1.2;
+  max-width: 100%;
 }
 
 .testimonials-section p {
   color: #ffffff;
-
-font-style: normal;
-font-weight: 400;
-font-size: 24px;
-
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(1rem, 2vw, 1.5rem);
 }
 
 .testimonials-container {
@@ -3354,10 +3375,16 @@ padding-top: 6rem;
   }
 
   .hero-subtitle {
-    font-size: 1.1rem;
-    letter-spacing: 0.05em;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
     margin-top: 1.5rem;
     margin-bottom: 2rem;
+    max-width: 90vw;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to   { width: min(44ch, 85vw); }
   }
 
   .hero-content {
@@ -3376,10 +3403,16 @@ padding-top: 6rem;
   }
 
   .hero-subtitle {
-    font-size: 0.95rem;
-    letter-spacing: 0.03em;
-    margin-top: 1.2rem;
-    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    margin-top: 1rem;
+    margin-bottom: 1.2rem;
+    max-width: 95vw;
+    white-space: normal;
+    border-right: none;
+    width: auto !important;
+    animation: none;
+    opacity: 1;
   }
 
   .cta-button {
@@ -3433,7 +3466,7 @@ padding-top: 6rem;
 
 .feature-text h2 {
   font-family: 'Ubuntu', sans-serif;
-  font-size: 48px;
+  font-size: clamp(1.5rem, 3.5vw, 3rem);
   color: #DAE63D;
   margin-top: 20px;
   margin-bottom: 16px;
@@ -3456,9 +3489,10 @@ padding-top: 6rem;
 .feature-text p {
   max-width: 100%;
   font-weight: 400;
-  font-size: 24px;
-  line-height: 40px;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  line-height: 1.7;
   text-align: justify;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 @media (max-width: 768px) {
@@ -3498,6 +3532,16 @@ padding-top: 6rem;
 }
 
 /* About Section Responsive styles */
+@media (max-width: 1024px) {
+  .about-section {
+    padding: 0 1.5rem;
+  }
+
+  .features-container {
+    gap: 2.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .features-container {
     flex-direction: column;
@@ -3619,13 +3663,23 @@ padding-top: 6rem;
 
 .feature-card p {
   color: #ffffff;
-  line-height: 1.4;
+  line-height: 1.5;
   font-size: 0.95rem;
-  max-width: 50%;
+  max-width: 75%;
   margin: 0 auto;
 }
 
 /* Feature Cards Responsive Styles */
+@media (max-width: 1024px) {
+  .features-grid {
+    gap: 4rem 0;
+  }
+
+  .feature-card p {
+    max-width: 85%;
+  }
+}
+
 @media (max-width: 768px) {
   .features-grid {
     grid-template-columns: 1fr;
@@ -3638,6 +3692,7 @@ padding-top: 6rem;
 
   .feature-card p {
     font-size: 0.9rem;
+    max-width: 80%;
   }
 }
 
@@ -3652,6 +3707,7 @@ padding-top: 6rem;
 
   .feature-card p {
     font-size: 0.85rem;
+    max-width: 90%;
   }
 }
 
