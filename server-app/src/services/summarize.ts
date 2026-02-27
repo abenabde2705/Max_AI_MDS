@@ -17,7 +17,7 @@ export async function summarizeAndSave(conversationId: string, userId: string): 
     attributes: ['sender', 'content'],
   });
 
-  if (messages.length === 0) return;
+  if (messages.length === 0) { return; }
 
   const formattedMessages = messages.map((m: any) => ({
     sender: m.sender,
