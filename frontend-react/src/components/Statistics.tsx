@@ -118,19 +118,19 @@ export default function Statistics() {
           <div className="statistics__cards">
             {loading
               ? Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="statistics__card statistics__card--skeleton">
-                    <div className="statistics__skeleton-line statistics__skeleton-line--short" />
-                    <div className="statistics__skeleton-line statistics__skeleton-line--tall" />
-                    <div className="statistics__skeleton-line statistics__skeleton-line--medium" />
-                  </div>
-                ))
+                <div key={i} className="statistics__card statistics__card--skeleton">
+                  <div className="statistics__skeleton-line statistics__skeleton-line--short" />
+                  <div className="statistics__skeleton-line statistics__skeleton-line--tall" />
+                  <div className="statistics__skeleton-line statistics__skeleton-line--medium" />
+                </div>
+              ))
               : stats.map((stat, index) => (
-                  <div key={index} className="statistics__card">
-                    <p className="statistics__card-label">{stat.label}</p>
-                    <h3 className="statistics__card-value">{stat.value}</h3>
-                    <p className="statistics__card-subtext">{stat.subtext}</p>
-                  </div>
-                ))
+                <div key={index} className="statistics__card">
+                  <p className="statistics__card-label">{stat.label}</p>
+                  <h3 className="statistics__card-value">{stat.value}</h3>
+                  <p className="statistics__card-subtext">{stat.subtext}</p>
+                </div>
+              ))
             }
           </div>
 
