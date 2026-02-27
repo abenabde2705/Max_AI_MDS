@@ -54,6 +54,8 @@ vi.mock('@/hooks/useChat', () => ({
     activeConversation: null,
     createNewConversation: mockCreateNewConversation,
     removeConversation: mockRemoveConversation,
+    messageLimitReached: false,
+    messageCount: { used: 1, limit: 10, is_premium: false },
   })
 }));
 

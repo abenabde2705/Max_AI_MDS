@@ -42,12 +42,14 @@ vi.mock('@/hooks/useChat', () => ({
     activeConversation: null,
     createNewConversation: mockCreateNewConversation,
     removeConversation: mockRemoveConversation,
+    messageLimitReached: false,
+    messageCount: { used: 1, limit: 10, is_premium: false },
   })
 }));
 
-// Mock de chatAPI
-vi.mock('@/services/chat.api', () => ({
-  fetchUserProfile: vi.fn(() => Promise.resolve({
+// Hoist mockFetchUserProfile so it can be referenced both in the factory and in tests
+const { mockFetchUserProfile } = vi.hoisted(() => ({
+  mockFetchUserProfile: vi.fn(() => Promise.resolve({
     data: {
       user: {
         firstName: 'Test',
@@ -55,7 +57,12 @@ vi.mock('@/services/chat.api', () => ({
         email: 'test@example.com'
       }
     }
-  })),
+  }))
+}));
+
+// Mock de chatAPI
+vi.mock('@/services/chat.api', () => ({
+  fetchUserProfile: mockFetchUserProfile,
   fetchConversations: vi.fn(() => Promise.resolve({ data: [] })),
   fetchMessages: vi.fn(() => Promise.resolve({ data: { messages: [] } })),
   createConversation: vi.fn(() => Promise.resolve({ data: { id: '1' } })),
@@ -511,8 +518,10 @@ describe('Chat Component - Extended Tests', () => {
     });
 
     it('displays user initials from profile', async () => {
+      // Add a user message so the avatar element is rendered
+      mockMessages = [...mockMessages, { role: 'user', content: 'Bonjour' }];
       render(<ChatWrapper />);
-      
+
       await waitFor(() => {
         // Should display "TU" for Test User
         const userAvatar = document.querySelector('.max-chat__user-avatar');
@@ -540,8 +549,10 @@ describe('Chat Component - Extended Tests', () => {
         }
       });
 
+      // Add a user message so the avatar element is rendered
+      mockMessages = [...mockMessages, { role: 'user', content: 'Bonjour' }];
       render(<ChatWrapper />);
-      
+
       await waitFor(() => {
         // Should use first two letters of email
         const userAvatar = document.querySelector('.max-chat__user-avatar');
