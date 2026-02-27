@@ -159,14 +159,15 @@ router.post('/', authenticateToken, async (req: CreateConversationRequest, res: 
 
     // Archive and summarize the previous conversation in the background
     if (previousConversation) {
-      const msgCount = await Message.count({ where: { conversationId: previousConversation.id } });
+      const prevId = previousConversation.getDataValue('id') as string;
+      const msgCount = await Message.count({ where: { conversationId: prevId } });
 
       if (msgCount > 0) {
         // Archive immediately
-        await Conversation.update({ isArchived: true }, { where: { id: previousConversation.id } });
+        await Conversation.update({ isArchived: true }, { where: { id: prevId } });
 
         // Fire-and-forget summarize
-        summarizeAndSave(previousConversation.id, req.user.id).catch(err =>
+        summarizeAndSave(prevId, req.user.id).catch(err =>
           console.error('Résumé échoué:', err)
         );
       }
