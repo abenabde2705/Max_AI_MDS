@@ -5,6 +5,7 @@ import { Button } from '@/ui/components/Button';
 import { Icon } from '@/ui/icons';
 import Sidebar from './Sidebar';
 import LogoYellow from '@/assets/img/logo_yellow.png';
+import { fetchJournalEntries, createJournalEntry, deleteJournalEntry } from '@/services/chat.api';
 import './styles/EmotionalJournal.css';
 
 interface JournalEntry {
@@ -25,59 +26,79 @@ const moodData = {
   colere: { emoji: '😠', label: 'En colère', color: '#FF6347' },
 };
 
-export default function EmotionalJournal() {
-  const [entries, setEntries] = useState<JournalEntry[]>([
-    {
-      id: '1',
-      mood: 'bien',
-      moodEmoji: '😊',
-      moodLabel: 'Bien',
-      date: 'Lundi 13 octobre 2025',
-      description:
-        'Aujourd\'hui j\'ai eu une conversation importante avec mon équipe. Je me sens écouté et valorisé.',
-      tags: ['travail', 'positif'],
-    },
-    {
-      id: '2',
-      mood: 'moyen',
-      moodEmoji: '😐',
-      moodLabel: 'Moyen',
-      date: 'Dimanche 12 octobre 2025',
-      description: 'Journée normale, quelques moments de stress mais rien d\'insurmontable.',
-      tags: ['stress', 'routine'],
-    },
-  ]);
+function toDisplayEntry(raw: { id: string; mood: string; description: string; tags: string[]; dateLogged: string }): JournalEntry {
+  const mood = raw.mood as keyof typeof moodData;
+  return {
+    id: raw.id,
+    mood,
+    moodEmoji: moodData[mood]?.emoji ?? '😐',
+    moodLabel: moodData[mood]?.label ?? raw.mood,
+    date: new Date(raw.dateLogged).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+    description: raw.description,
+    tags: raw.tags || [],
+  };
+}
 
+export default function EmotionalJournal() {
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     mood: 'bien',
     description: '',
     tags: '',
   });
 
-  const handleAddEntry = () => {
-    if (formData.description.trim()) {
-      const newEntry: JournalEntry = {
-        id: Date.now().toString(),
-        mood: formData.mood as 'super' | 'bien' | 'moyen' | 'triste' | 'colere',
-        moodEmoji: moodData[formData.mood as keyof typeof moodData].emoji,
-        moodLabel: moodData[formData.mood as keyof typeof moodData].label,
-        date: new Date().toLocaleDateString('fr-FR', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        }),
+  const loadEntries = async () => {
+    try {
+      const res = await fetchJournalEntries();
+      setEntries(res.data.map(toDisplayEntry));
+    } catch (err) {
+      console.error('Erreur chargement journal:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadEntries();
+  }, []);
+
+  const handleAddEntry = async () => {
+    if (!formData.description.trim()) return;
+
+    setSubmitting(true);
+    try {
+      await createJournalEntry({
+        mood: formData.mood,
         description: formData.description,
         tags: formData.tags
           .split(',')
           .map((tag) => tag.trim())
           .filter((tag) => tag),
-      };
-
-      setEntries([newEntry, ...entries]);
+      });
       setFormData({ mood: 'bien', description: '', tags: '' });
       setShowModal(false);
+      await loadEntries();
+    } catch (err) {
+      console.error('Erreur création entrée:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteEntry = async (id: string) => {
+    try {
+      await deleteJournalEntry(id);
+      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } catch (err) {
+      console.error('Erreur suppression entrée:', err);
     }
   };
 
@@ -110,29 +131,44 @@ export default function EmotionalJournal() {
         </header>
 
         <div className="emotional-journal__container">
-          <div className="emotional-journal__entries">
-            {entries.map((entry) => (
-              <div key={entry.id} className="emotional-journal__entry">
-                <div className="emotional-journal__entry-header">
-                  <div className="emotional-journal__mood-badge">
-                    <span className="emotional-journal__mood-emoji">{entry.moodEmoji}</span>
-                    <span className="emotional-journal__mood-label">{entry.moodLabel}</span>
+          {loading ? (
+            <p className="emotional-journal__loading">Chargement...</p>
+          ) : entries.length === 0 ? (
+            <p className="emotional-journal__empty">
+              Aucune entrée pour l'instant. Commencez à suivre votre humeur !
+            </p>
+          ) : (
+            <div className="emotional-journal__entries">
+              {entries.map((entry) => (
+                <div key={entry.id} className="emotional-journal__entry">
+                  <div className="emotional-journal__entry-header">
+                    <div className="emotional-journal__mood-badge">
+                      <span className="emotional-journal__mood-emoji">{entry.moodEmoji}</span>
+                      <span className="emotional-journal__mood-label">{entry.moodLabel}</span>
+                    </div>
+                    <span className="emotional-journal__date">{entry.date}</span>
+                    <button
+                      className="emotional-journal__delete-btn"
+                      onClick={() => handleDeleteEntry(entry.id)}
+                      aria-label="Supprimer l'entrée"
+                    >
+                      <Icon name="trash" size="sm" />
+                    </button>
                   </div>
-                  <span className="emotional-journal__date">{entry.date}</span>
-                </div>
 
-                <p className="emotional-journal__description">{entry.description}</p>
+                  <p className="emotional-journal__description">{entry.description}</p>
 
-                <div className="emotional-journal__tags">
-                  {entry.tags.map((tag, index) => (
-                    <span key={index} className="emotional-journal__tag">
-                      {tag}
-                    </span>
-                  ))}
+                  <div className="emotional-journal__tags">
+                    {entry.tags.map((tag, index) => (
+                      <span key={index} className="emotional-journal__tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
 
@@ -195,8 +231,9 @@ export default function EmotionalJournal() {
                 variant="primary"
                 onClick={handleAddEntry}
                 className="emotional-journal__modal-button"
+                disabled={submitting}
               >
-                Ajouter l'entrée
+                {submitting ? 'Enregistrement...' : 'Ajouter l\'entrée'}
               </Button>
             </div>
           </div>

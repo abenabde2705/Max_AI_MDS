@@ -113,10 +113,13 @@ export interface RecommendationAttributes {
 
 export interface EmotionalJournalAttributes {
   id: string;
-  conversationId: string;
+  conversationId?: string;
   userId: string;
   globalEmotion?: Record<string, any>;
   dateLogged: Date;
+  mood?: string;
+  description?: string;
+  tags?: string[];
 }
 
 // Types pour les services externes

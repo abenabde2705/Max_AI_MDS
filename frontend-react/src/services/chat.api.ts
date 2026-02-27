@@ -45,3 +45,15 @@ export const deleteConversation = (conversationId: string) =>
 
 export const fetchMessageCount = () =>
   axios.get(`${API_BASE}/users/me/message-count`, { headers: getAuthHeaders() });
+
+export const fetchConversationStats = () =>
+  axios.get(`${API_BASE}/conversations/stats/summary`, { headers: getAuthHeaders() });
+
+export const fetchJournalEntries = () =>
+  axios.get(`${API_BASE}/journal`, { headers: getAuthHeaders() });
+
+export const createJournalEntry = (entry: { mood: string; description: string; tags: string[] }) =>
+  axios.post(`${API_BASE}/journal`, entry, { headers: getAuthHeaders() });
+
+export const deleteJournalEntry = (id: string) =>
+  axios.delete(`${API_BASE}/journal/${id}`, { headers: getAuthHeaders() });

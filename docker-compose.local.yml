@@ -44,6 +44,20 @@ services:
       - default
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend-react:/app
+      - /app/node_modules
+
+  adminer:
+    image: adminer
+    container_name: maxai-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - default
 
   chat_api:
     build:
