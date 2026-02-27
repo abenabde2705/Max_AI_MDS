@@ -34,6 +34,9 @@ npm run lint:fix      # ESLint with auto-fix
 npm run test          # Vitest unit tests
 npm run test:coverage # Coverage report
 npm run test:ci       # CI mode (no watch)
+
+# Run a single test file
+npx vitest run src/tests/Chat.test.tsx
 ```
 
 ### Backend (`server-app/`)
@@ -46,6 +49,9 @@ npm run test          # Jest tests
 npm run test:coverage # Coverage report
 npm run test:watch    # Watch mode
 npm run type-check    # TypeScript type validation only
+
+# Run a single test file
+npx jest src/tests/auth.test.ts
 ```
 
 ### Chat API (`chat_api/`)
@@ -72,13 +78,15 @@ docker compose up -d   # Start Prometheus + Grafana
 ### Data Flow
 ```
 Browser → frontend-react (React/Vite)
-               ↓ REST
+               ↓ REST (JWT via localStorage)
           server-app (Express) → PostgreSQL
-               ↓ also handles auth via Firebase + Passport (Google/Facebook OAuth)
+               ↓ proxies chat via POST /api/chat
           chat_api (FastAPI) → Ollama (qwen2:3b on VPS)
 ```
 
 The frontend uses **Firebase** for authentication and Firestore for some real-time data. The backend uses **Passport.js** for OAuth and **JWT** for API authentication. These are two separate auth mechanisms that coexist.
+
+**Chat message flow**: The frontend never calls the Python `chat_api` directly. It calls `server-app`'s `POST /api/chat`, which proxies to the Python service and also persists the messages to PostgreSQL. The `x-api-key` header for the chat service stays server-side and is never exposed to the browser.
 
 ### Backend (`server-app/src/`)
 - `routes/` — One file per resource: `auth.ts`, `conversations.ts`, `messages.ts`, `users.ts`, `feedback.ts`
@@ -91,11 +99,12 @@ Database schema changes should go through migration files in `src/migrations/`, 
 
 ### Frontend (`frontend-react/src/`)
 - State management: **Zustand** (not Redux)
-- HTTP: **Axios** via `src/services/`
-- Auth: **Firebase** (`firebaseConfig.ts`)
-- Routing: React Router v6 (`App.tsx`)
-- Styling: Tailwind CSS v4
+- HTTP: **Axios** — all API calls are in the single file `src/services/chat.api.ts`
+- Auth: **Firebase** (`firebaseConfig.ts`). Protected routes check `localStorage.getItem('token')` in the `ProtectedRoute` wrapper in `App.tsx`.
+- Routing: React Router v6 (`App.tsx`). Protected routes: `/chatbot`, `/dashboard`, `/profile`, `/journal`, `/statistics`, `/coaches`
+- Styling: Tailwind CSS v4 + `src/style.css` (main, large file) + `src/styles/gradients.css` and `src/styles/buttons.css` (imported separately in components)
 - Key custom hook: `src/hooks/useChat.ts` (manages conversation state)
+- `vite.config.js` has `server.allowedHosts` — add your local domain or `localhost` if accessing outside Docker
 
 ### Chat API (`chat_api/qwen_api.py`)
 - `EmotionalChatbot` class holds per-session conversation history
@@ -146,3 +155,5 @@ Each service needs its own `.env`. Key variables:
 - **Grafana default credentials**: `admin` / `admin123` (local dev only).
 - **Monorepo**: Each service (`frontend-react`, `server-app`, `chat_api`) manages its own `node_modules` / virtualenv. The root `package.json` only contains scripts for data generation/benchmarking.
 - **SonarCloud**: Project key `abenabde2705_Max_AI_MDS`, org `abenabde2705`. Coverage is uploaded from Jest (backend priority).
+- **Backend is ES Modules**: `server-app` has `"type": "module"` in `package.json` — use `import/export`, not `require()`. File extensions must be explicit in imports (`.js` even for `.ts` source files).
+- **Backend `.env` loading**: In Docker (`DOCKER_ENV=true`) uses standard `dotenv.config()`; locally it loads from the root `.env` two levels up.

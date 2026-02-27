@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
+import json
 import httpx
 
 # =============================
@@ -68,6 +69,13 @@ class ChatRequest(BaseModel):
     message: str
     session_id: str | None = None
 
+class SummarizeMessage(BaseModel):
+    sender: str
+    content: str
+
+class SummarizeRequest(BaseModel):
+    messages: list[SummarizeMessage]
+
 # =============================
 # Routes
 # =============================
@@ -98,5 +106,67 @@ async def chat_with_max(data: ChatRequest):
     try:
         response = generate_response(data.message)
         return {"response": response}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/summarize")
+async def summarize_conversation(data: SummarizeRequest):
+    try:
+        if not data.messages:
+            raise HTTPException(status_code=400, detail="Aucun message à résumer")
+
+        # Build conversation transcript for the prompt
+        transcript = "\n".join(
+            f"{'Utilisateur' if m.sender == 'user' else 'Max'}: {m.content}"
+            for m in data.messages
+        )
+
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Tu es un assistant d'analyse émotionnelle. "
+                    "On te donne la transcription d'une conversation entre un utilisateur et Max (un chatbot de soutien émotionnel). "
+                    "Tu dois répondre UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks) contenant :\n"
+                    '- "summary": un résumé de la conversation en 2-3 phrases\n'
+                    '- "mood": l\'humeur globale de l\'utilisateur, parmi: "super", "bien", "moyen", "triste", "colere"\n'
+                    '- "title": un titre court et descriptif (max 50 caractères)\n'
+                    '- "tags": un tableau de 2-3 tags thématiques en français\n\n'
+                    "Exemple de réponse attendue :\n"
+                    '{"summary": "L\'utilisateur a partagé son stress au travail...", "mood": "moyen", "title": "Stress professionnel", "tags": ["travail", "stress", "fatigue"]}'
+                ),
+            },
+            {
+                "role": "user",
+                "content": f"Voici la conversation à analyser :\n\n{transcript}",
+            },
+        ]
+
+        raw = _ollama_call(messages, temperature=0.3, max_tokens=300)
+
+        # Try to parse the JSON response, handling potential markdown wrapping
+        cleaned = raw.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+        result = json.loads(cleaned)
+
+        # Validate required fields with defaults
+        return {
+            "summary": result.get("summary", "Résumé non disponible"),
+            "mood": result.get("mood", "moyen") if result.get("mood") in ("super", "bien", "moyen", "triste", "colere") else "moyen",
+            "title": result.get("title", "Conversation")[:50],
+            "tags": result.get("tags", [])[:5],
+        }
+    except json.JSONDecodeError:
+        # If the model didn't return valid JSON, return safe defaults
+        return {
+            "summary": "Résumé automatique indisponible",
+            "mood": "moyen",
+            "title": "Conversation",
+            "tags": [],
+        }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

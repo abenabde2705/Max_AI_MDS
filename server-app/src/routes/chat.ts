@@ -73,6 +73,13 @@ router.post('/', chatRateLimit, authenticateToken, checkMessageLimit, async (req
       sentAt: new Date()
     });
 
+    // Auto-titre : si c'est le 1er message, utiliser les 40 premiers caractères comme titre
+    const messageCount = await Message.count({ where: { conversationId: conversation_id } });
+    if (messageCount === 1) {
+      const title = trimmedMessage.slice(0, 40).trim() + (trimmedMessage.length > 40 ? '...' : '');
+      await Conversation.update({ title }, { where: { id: conversation_id } });
+    }
+
     // Appeler le Chat API interne (réseau Docker, jamais exposé publiquement)
     const chatApiUrl = process.env.CHAT_API_URL || 'http://chat_api:8000';
     const chatResponse = await fetch(`${chatApiUrl}/chat`, {

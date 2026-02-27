@@ -4,15 +4,18 @@ import { v4 as uuidv4 } from 'uuid';
 import type { EmotionalJournalAttributes } from '../../types/global.js';
 
 // Type pour les attributs optionnels lors de la création
-type EmotionalJournalCreationAttributes = Optional<EmotionalJournalAttributes, 'id' | 'createdAt' | 'updatedAt'>;
+type EmotionalJournalCreationAttributes = Optional<EmotionalJournalAttributes, 'id' | 'conversationId' | 'globalEmotion' | 'mood' | 'description' | 'tags'>;
 
 // Classe du modèle EmotionalJournal avec tous les types
 class EmotionalJournal extends Model<EmotionalJournalAttributes, EmotionalJournalCreationAttributes> implements EmotionalJournalAttributes {
   public id!: string;
-  public conversationId!: string;
+  public conversationId?: string;
   public userId!: string;
   public globalEmotion?: Record<string, any>;
   public dateLogged!: Date;
+  public mood?: string;
+  public description?: string;
+  public tags?: string[];
 }
 
 // Initialisation du modèle
@@ -24,7 +27,7 @@ EmotionalJournal.init({
   },
   conversationId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     field: 'conversation_id',
     references: {
       model: 'conversations',
@@ -50,6 +53,19 @@ EmotionalJournal.init({
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
     field: 'date_logged'
+  },
+  mood: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  tags: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: []
   }
 }, {
   sequelize,

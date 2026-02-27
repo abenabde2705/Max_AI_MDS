@@ -11,6 +11,7 @@ import conversationRoutes from './routes/conversations.js';
 import messageRoutes from './routes/messages.js';
 import feedbackRoutes from './routes/feedback.js';
 import userRoutes from './routes/users.js';
+import journalRoutes from './routes/journal.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
 import './config/passport.js';
 
@@ -189,6 +190,7 @@ app.use('/api/conversations', conversationRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/journal', journalRoutes);
 
 // Route de test avec métrique custom
 app.get('/api/health', (req: Request, res: Response): void => {
