@@ -3,14 +3,6 @@ import { toast } from 'react-toastify';
 import { Icon } from '@/ui/icons';
 import { colors } from '@/ui/tokens/colors';
 
-const moodEmojis: Record<string, string> = {
-  super: '😊',
-  bien: '🙂',
-  moyen: '😐',
-  triste: '😢',
-  colere: '😠',
-};
-
 interface ChatHistoricProps {
   isOpen: boolean
   onClose: () => void
@@ -89,25 +81,12 @@ export default function ChatHistoric({
                     }}
                   >
                     <div className="historic-item-icon">
-                      {conv.emotionalContext?.mood ? (
-                        <span className="historic-item-mood-emoji">
-                          {moodEmojis[conv.emotionalContext.mood] || '💬'}
-                        </span>
-                      ) : (
-                        <span className="historic-item-initials">{userInitials}</span>
-                      )}
+                      <span className="historic-item-initials">{userInitials}</span>
                     </div>
                     <div className="historic-item-content">
                       <h3 className="historic-item-title">
                         {conv.title || `Conversation ${conv.id?.slice(0, 8) || 'Sans titre'}`}
                       </h3>
-                      {conv.emotionalContext?.summary && (
-                        <p className="historic-item-summary">
-                          {conv.emotionalContext.summary.length > 60
-                            ? conv.emotionalContext.summary.slice(0, 60) + '...'
-                            : conv.emotionalContext.summary}
-                        </p>
-                      )}
                       <p className="historic-item-date">
                         {conv.createdAt ? (
                           <>
@@ -130,20 +109,19 @@ export default function ChatHistoric({
                     className="historic-item-delete"
                     onClick={(e) => {
                       e.stopPropagation();
+                      const toastId = `delete-${conv.id}`;
                       const confirmDelete = () => {
                         onDeleteConversation(conv.id);
+                        toast.dismiss(toastId);
                         toast.success('Conversation supprimée avec succès');
                       };
-                      
+
                       toast.info(
                         <div>
                           <p>Voulez-vous vraiment supprimer cette conversation ?</p>
                           <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
                             <button
-                              onClick={() => {
-                                confirmDelete();
-                                toast.dismiss();
-                              }}
+                              onClick={confirmDelete}
                               style={{
                                 padding: '6px 12px',
                                 background: '#ff3b30',
@@ -156,7 +134,7 @@ export default function ChatHistoric({
                               Supprimer
                             </button>
                             <button
-                              onClick={() => toast.dismiss()}
+                              onClick={() => toast.dismiss(toastId)}
                               style={{
                                 padding: '6px 12px',
                                 background: '#888',
@@ -171,6 +149,7 @@ export default function ChatHistoric({
                           </div>
                         </div>,
                         {
+                          toastId,
                           autoClose: false,
                           closeButton: false,
                         }

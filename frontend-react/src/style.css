@@ -4265,6 +4265,9 @@ border-radius: 70px 0px 0px 70px;
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 640px) {
