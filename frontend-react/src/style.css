@@ -123,10 +123,10 @@ button {
 
 .navbar {
   display: flex;
-  gap: 0.5rem;
+  gap: 2rem;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 2rem;
+  padding: 0 2rem;
   /* Liquid Glass Effect */
   background: linear-gradient(
     90deg,
@@ -140,14 +140,12 @@ button {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1);
   border-radius: 50px;
-  width: 90%;
-  height: 55px;
-  max-width: 1200px;
+  height: 79px;
   position: relative;
   z-index: 10;
 }
@@ -155,7 +153,7 @@ button {
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 87px;
+  gap: 70px;
 }
 
 .logo {
@@ -169,14 +167,14 @@ button {
 }
 
 .navbar-logo {
-  height: 19px;
+  height: 38px;
   width: auto;
   object-fit: contain;
 }
 
 .nav-items {
   display: flex;
-  gap: 2.5rem;
+  gap: 16px;
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
@@ -184,16 +182,30 @@ button {
   position: relative;
   color: white;
   text-decoration: none;
-  display: inline-block;
-  padding: 0.5rem 0;
-  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 1rem;
+  height: 75px;
+  font-size: 20px;
+  font-weight: 700;
+  transition: color 0.3s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
+  white-space: nowrap;
+  border-radius: 40px;
+  border: 1px solid transparent;
 }
 
-
-
+.nav-link:hover:not(.active) {
+  padding: 0 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
 
 .nav-link.active {
-  padding: 0.4rem 1.1rem;
+  padding: 0 1.5rem;
+  height: 75px;
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.15) 0%,
@@ -206,11 +218,11 @@ button {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
+  border-radius: 40px;
 }
 
 
@@ -259,11 +271,12 @@ button {
   cursor: pointer;
   font-size: 0.9rem;
   padding: 0.5rem 1rem;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 .connexion-btn:hover {
   opacity: 0.8;
+  transform: translateY(-1px);
 }
 
 .inscription-btn {
@@ -278,7 +291,7 @@ button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .inscription-btn a,
@@ -287,12 +300,13 @@ button {
 }
 
 .inscription-btn:hover {
-  opacity: 0.8;
-
+  background: rgba(218, 230, 61, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(218, 230, 61, 0.15);
 }
 
 .inscription-btn:hover span {
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .arrow {
@@ -429,8 +443,28 @@ border: 1px solid #DAE63D;
 }
 
 @media (max-width: 912px) {
-  .desktop-only {
-    display: none !important;
+  .website-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .website-buttons .connexion-btn {
+    font-size: 13px;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .website-buttons .inscription-btn {
+    font-size: 12px;
+    min-width: auto;
+    height: 32px;
+    padding: 0 0.75rem;
+  }
+
+  .website-buttons .inscription-btn .arrow {
+    display: none;
   }
 
   .mobile-buttons {
@@ -3254,6 +3288,9 @@ padding-top: 6rem;
 .hero-content {
   max-width: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-title {
@@ -3280,38 +3317,29 @@ padding-top: 6rem;
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
-  color: white;
+  display: inline-block;
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.92);
+  margin-top: 2.5rem;
   margin-bottom: 3rem;
-  margin-top: 3rem;
-
-  opacity: 0.9;
-  /* Typewriter animation */
   overflow: hidden;
   white-space: nowrap;
-  border-right: 2px solid white;
+  border-right: 2px solid rgba(218, 230, 61, 0.8);
   width: 0;
-  animation: typing 6s steps(30, end) infinite, blink 0.6s step-end infinite;
+  animation: typing 3.5s steps(44, end) forwards, blink 0.75s step-end infinite;
+  text-shadow: 0 0 30px rgba(218, 230, 61, 0.25);
 }
 
-/* Keyframes for typing effect */
 @keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+  from { width: 0; }
+  to   { width: 44ch; }
 }
 
-/* Keyframes for blinking cursor */
 @keyframes blink {
-  from, to {
-    border-color: transparent;
-  }
-  50% {
-    border-color: white;
-  }
+  from, to { border-color: transparent; }
+  50%      { border-color: rgba(218, 230, 61, 0.8); }
 }
 
 /* Hero Responsive Styles */
@@ -3326,8 +3354,9 @@ padding-top: 6rem;
   }
 
   .hero-subtitle {
-    font-size: 1.2rem;
-    margin-top: 2rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    margin-top: 1.5rem;
     margin-bottom: 2rem;
   }
 
@@ -3347,8 +3376,9 @@ padding-top: 6rem;
   }
 
   .hero-subtitle {
-    font-size: 1rem;
-    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    margin-top: 1.2rem;
     margin-bottom: 1.5rem;
   }
 
