@@ -43,44 +43,6 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response): Prom
   }
 });
 
-// POST /api/journal — Créer une nouvelle entrée manuelle
-router.post('/', authenticateToken, async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    if (!req.user) {
-      res.status(401).json({ message: 'Utilisateur non authentifié' });
-      return;
-    }
-
-    const { mood, description, tags } = req.body;
-
-    if (!mood || !description?.trim()) {
-      res.status(400).json({ message: 'mood et description sont requis' });
-      return;
-    }
-
-    const entry = await EmotionalJournal.create({
-      userId: req.user.id,
-      mood,
-      description: description.trim(),
-      tags: tags || [],
-      dateLogged: new Date()
-    });
-
-    res.status(201).json({
-      id: entry.getDataValue('id'),
-      mood: entry.getDataValue('mood'),
-      description: entry.getDataValue('description'),
-      tags: entry.getDataValue('tags') || [],
-      dateLogged: entry.getDataValue('dateLogged'),
-      globalEmotion: entry.getDataValue('globalEmotion'),
-      conversationId: entry.getDataValue('conversationId')
-    });
-  } catch (error) {
-    console.error('Erreur POST /api/journal:', error);
-    res.status(500).json({ message: 'Erreur interne du serveur' });
-  }
-});
-
 // DELETE /api/journal/:id — Supprimer une entrée (vérifie l'ownership)
 router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response): Promise<void> => {
   try {

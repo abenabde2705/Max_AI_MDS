@@ -4246,6 +4246,21 @@ border-radius: 70px 0px 0px 70px;
   text-overflow: ellipsis;
 }
 
+.historic-item-summary {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  margin: 0 0 2px 0;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historic-item-mood-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
 .historic-item-date {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;

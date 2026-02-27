@@ -52,8 +52,5 @@ export const fetchConversationStats = () =>
 export const fetchJournalEntries = () =>
   axios.get(`${API_BASE}/journal`, { headers: getAuthHeaders() });
 
-export const createJournalEntry = (entry: { mood: string; description: string; tags: string[] }) =>
-  axios.post(`${API_BASE}/journal`, entry, { headers: getAuthHeaders() });
-
 export const deleteJournalEntry = (id: string) =>
   axios.delete(`${API_BASE}/journal/${id}`, { headers: getAuthHeaders() });

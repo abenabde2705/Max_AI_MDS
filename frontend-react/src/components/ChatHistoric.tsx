@@ -3,6 +3,14 @@ import { toast } from 'react-toastify';
 import { Icon } from '@/ui/icons';
 import { colors } from '@/ui/tokens/colors';
 
+const moodEmojis: Record<string, string> = {
+  super: '😊',
+  bien: '🙂',
+  moyen: '😐',
+  triste: '😢',
+  colere: '😠',
+};
+
 interface ChatHistoricProps {
   isOpen: boolean
   onClose: () => void
@@ -81,12 +89,25 @@ export default function ChatHistoric({
                     }}
                   >
                     <div className="historic-item-icon">
-                      <span className="historic-item-initials">{userInitials}</span>
+                      {conv.emotionalContext?.mood ? (
+                        <span className="historic-item-mood-emoji">
+                          {moodEmojis[conv.emotionalContext.mood] || '💬'}
+                        </span>
+                      ) : (
+                        <span className="historic-item-initials">{userInitials}</span>
+                      )}
                     </div>
                     <div className="historic-item-content">
                       <h3 className="historic-item-title">
                         {conv.title || `Conversation ${conv.id?.slice(0, 8) || 'Sans titre'}`}
                       </h3>
+                      {conv.emotionalContext?.summary && (
+                        <p className="historic-item-summary">
+                          {conv.emotionalContext.summary.length > 60
+                            ? conv.emotionalContext.summary.slice(0, 60) + '...'
+                            : conv.emotionalContext.summary}
+                        </p>
+                      )}
                       <p className="historic-item-date">
                         {conv.createdAt ? (
                           <>
