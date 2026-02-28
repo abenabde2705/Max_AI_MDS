@@ -145,9 +145,9 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
             style={isMobile ? { backgroundColor: menuBg } : undefined}
           >
             {menuItems.map((item) => (
-              <button
+              <a
                 key={item.text}
-                type="button"
+                href="#"
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToSection(item.href);
@@ -155,7 +155,7 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
                 className={`nav-link${activeSection === item.href.replace('#', '') ? ' active' : ''}`}
               >
                 {item.text}
-              </button>
+              </a>
             ))}
             {/* Boutons Connexion et Chat dans le menu burger */}
             <div className="mobile-buttons">
