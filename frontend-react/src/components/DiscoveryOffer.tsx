@@ -2,14 +2,13 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { testi1 } from '../assets/images';
 
 interface DiscoveryOfferProps {
   id?: string;
   className?: string;
 }
 
-const DiscoveryOffer: React.FC<DiscoveryOfferProps> = ({ id, className }) => {
+const DiscoveryOffer: React.FC<DiscoveryOfferProps> = ({ id: _id, className: _className }) => {
   useEffect(() => {
     AOS.init();
   }, []);

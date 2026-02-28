@@ -1,8 +1,6 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../../layout/NavBar';
-import Footer from '../../layout/Footer';
-import { colors, opacity } from '@/ui';
 import logoImg from '../../assets/img/hero/logomax.png';
 
 interface FormData {
