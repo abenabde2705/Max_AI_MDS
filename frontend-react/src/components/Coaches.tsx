@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/ui/components/Button';
-import Sidebar from './Sidebar';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import './styles/Coaches.css';
 
@@ -69,9 +67,6 @@ const coaches: Coach[] = [
 
 export default function Coaches() {
   return (
-    <div className="max-chat">
-      <Sidebar onCreateNewConversation={() => {}} />
-
       <main className="max-chat__main">
         <header className="max-chat__header">
           <div className="max-chat__header-left">
@@ -150,6 +145,5 @@ export default function Coaches() {
           </div>
         </div>
       </main>
-    </div>
   );
 }

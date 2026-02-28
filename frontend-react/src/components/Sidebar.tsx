@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/ui/components/Button';
 import { Icon } from '@/ui/icons';
 import LogoMax from '@/assets/img/logomax.png';
@@ -7,14 +8,39 @@ interface SidebarProps {
   onCreateNewConversation: () => void
 }
 
-export default function Sidebar({ onCreateNewConversation }: SidebarProps) {
+const navItems = [
+  { path: '/chatbot',    label: 'Chat IA' },
+  { path: '/journal',    label: 'Journal' },
+  { path: '/statistics', label: 'Statistiques' },
+  { path: '/coaches',    label: 'Coachs' },
+];
+
+export default function Sidebar({ onCreateNewConversation: _onCreateNewConversation }: SidebarProps) {
   const navigate = useNavigate();
-  const currentPath = window.location.pathname;
+  const location = useLocation();
+
+  const activeIndex = navItems.findIndex(item => item.path === location.pathname);
+
+  const navRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicatorTop, setIndicatorTop] = useState(0);
+  const [ready, setReady] = useState(false);
+
+  useLayoutEffect(() => {
+    const activeBtn = buttonRefs.current[activeIndex];
+    const nav = navRef.current;
+    if (activeBtn && nav) {
+      const navRect = nav.getBoundingClientRect();
+      const btnRect = activeBtn.getBoundingClientRect();
+      setIndicatorTop(btnRect.top - navRect.top);
+      setReady(true);
+    }
+  }, [activeIndex]);
 
   return (
     <aside className="max-chat__sidebar">
       <div className="max-chat__logo">
-        <button 
+        <button
           className="max-chat__logo-icon"
           onClick={() => navigate('/')}
           title="Retour à l'accueil"
@@ -24,31 +50,24 @@ export default function Sidebar({ onCreateNewConversation }: SidebarProps) {
         <img src={LogoMax} alt="MAX Logo" className="max-chat__logo-image" />
       </div>
 
-      <nav className="max-chat__nav">
-        <button 
-          className={`max-chat__nav-button ${currentPath === '/chatbot' ? 'max-chat__nav-button--active' : ''}`}
-          onClick={() => navigate('/chatbot')}
-        >
-          Chat IA
-        </button>
-        <button 
-          className={`max-chat__nav-button ${currentPath === '/journal' ? 'max-chat__nav-button--active' : ''}`}
-          onClick={() => navigate('/journal')}
-        >
-          Journal
-        </button>
-        <button 
-          className={`max-chat__nav-button ${currentPath === '/statistics' ? 'max-chat__nav-button--active' : ''}`}
-          onClick={() => navigate('/statistics')}
-        >
-          Statistiques
-        </button>
-        <button 
-          className={`max-chat__nav-button ${currentPath === '/coaches' ? 'max-chat__nav-button--active' : ''}`}
-          onClick={() => navigate('/coaches')}
-        >
-          Coachs
-        </button>
+      <nav className="max-chat__nav" ref={navRef}>
+        <div
+          className="max-chat__nav-indicator"
+          style={{
+            transform: `translateY(${indicatorTop}px)`,
+            opacity: ready ? 1 : 0,
+          }}
+        />
+        {navItems.map((item, i) => (
+          <button
+            key={item.path}
+            ref={(el) => { buttonRefs.current[i] = el; }}
+            className={`max-chat__nav-button ${activeIndex === i ? 'max-chat__nav-button--active' : ''}`}
+            onClick={() => navigate(item.path)}
+          >
+            {item.label}
+          </button>
+        ))}
       </nav>
 
       <div className="max-chat__premium">

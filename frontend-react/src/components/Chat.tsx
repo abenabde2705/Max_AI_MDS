@@ -8,7 +8,6 @@ import { colors } from '@/ui/tokens/colors';
 import { useChat } from '@/hooks/useChat';
 import { fetchUserProfile } from '@/services/chat.api';
 import ChatHistoric from './ChatHistoric';
-import Sidebar from './Sidebar';
 import LogoPrincipal from '@/assets/img/Logo_principal.png';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 const emotions = [
@@ -79,9 +78,7 @@ export default function MaxAIChat() {
   };
 
   return (
-    <div className="max-chat">
-      <Sidebar onCreateNewConversation={createNewConversation} />
-
+    <>
       <main className="max-chat__main">
         <header className="max-chat__header">
           <div className="max-chat__header-left">
@@ -230,6 +227,6 @@ export default function MaxAIChat() {
         activeConversation={activeConversation}
         userInitials={userInitials}
       />
-    </div>
+    </>
   );
 }

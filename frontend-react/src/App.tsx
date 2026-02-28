@@ -18,6 +18,7 @@ import Profile from './components/Profile';
 import EmotionalJournal from './components/EmotionalJournal';
 import Statistics from './components/Statistics';
 import Coaches from './components/Coaches';
+import ChatLayout from './components/ChatLayout';
 
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
@@ -42,10 +43,12 @@ const App: React.FC = () => {
       />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/chatbot" element={<ProtectedRoute element={<Chat />} />} />
-        <Route path="/journal" element={<ProtectedRoute element={<EmotionalJournal />} />} />
-        <Route path="/statistics" element={<ProtectedRoute element={<Statistics />} />} />
-        <Route path="/coaches" element={<ProtectedRoute element={<Coaches />} />} />
+        <Route element={<ProtectedRoute element={<ChatLayout />} />}>
+          <Route path="/chatbot" element={<Chat />} />
+          <Route path="/journal" element={<EmotionalJournal />} />
+          <Route path="/statistics" element={<Statistics />} />
+          <Route path="/coaches" element={<Coaches />} />
+        </Route>
         <Route path="/auth" element={<AuthUser />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
