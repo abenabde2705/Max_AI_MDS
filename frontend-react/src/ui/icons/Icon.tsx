@@ -13,7 +13,7 @@ const sizeMap = {
 export const Icon = ({
   name,
   size = 'md',
-  color = 'currentColor',
+  color: _color = 'currentColor',
   className,
 }: IconProps) => {
   const svgUrl = iconMap[name];

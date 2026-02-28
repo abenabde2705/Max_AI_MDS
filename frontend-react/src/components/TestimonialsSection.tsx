@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import TestimonialsPopup from './Modals/TestimonialsPopup';
-import { testi3 } from '../assets/images';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 

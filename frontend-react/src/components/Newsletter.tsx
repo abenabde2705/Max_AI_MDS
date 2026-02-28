@@ -1,4 +1,4 @@
-import React, { useState, useMemo, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useMemo, FormEvent } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
@@ -6,7 +6,7 @@ interface NewsletterProps {
   className?: string;
 }
 
-const Newsletter: React.FC<NewsletterProps> = ({ className }) => {
+const Newsletter: React.FC<NewsletterProps> = ({ className: _className }) => {
   const [email, setEmail] = useState<string>('');
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -99,7 +99,7 @@ const Newsletter: React.FC<NewsletterProps> = ({ className }) => {
           )}
           
           <p className="privacy-notice">
-            Nous prenons soin de vos données dans notre <a href="#" className="privacy-link">politique de confidentialité</a>
+            Nous prenons soin de vos données dans notre <button type="button" className="privacy-link" onClick={(e) => e.preventDefault()}>politique de confidentialité</button>
           </p>
         </div>
       </div>

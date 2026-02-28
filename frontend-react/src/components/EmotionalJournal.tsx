@@ -71,60 +71,60 @@ export default function EmotionalJournal() {
   };
 
   return (
-      <main className="max-chat__main">
-        <header className="max-chat__header">
-          <div className="max-chat__header-left">
-            <div className="max-chat__header-avatar">
-              <img src={LogoYellow} alt="MAX Logo" />
-            </div>
-
-            <div className="max-chat__header-info">
-              <h1 className="max-chat__title">Journal Émotionnel</h1>
-              <p className="max-chat__subtitle">Résumés automatiques de vos conversations</p>
-            </div>
+    <main className="max-chat__main">
+      <header className="max-chat__header">
+        <div className="max-chat__header-left">
+          <div className="max-chat__header-avatar">
+            <img src={LogoYellow} alt="MAX Logo" />
           </div>
-        </header>
 
-        <div className="emotional-journal__container">
-          {loading ? (
-            <p className="emotional-journal__loading">Chargement...</p>
-          ) : entries.length === 0 ? (
-            <p className="emotional-journal__empty">
-              Aucune entrée pour l'instant. Les résumés apparaîtront automatiquement après vos conversations avec Max.
-            </p>
-          ) : (
-            <div className="emotional-journal__entries">
-              {entries.map((entry) => (
-                <div key={entry.id} className="emotional-journal__entry">
-                  <div className="emotional-journal__entry-header">
-                    <div className="emotional-journal__mood-badge">
-                      <span className="emotional-journal__mood-emoji">{entry.moodEmoji}</span>
-                      <span className="emotional-journal__mood-label">{entry.moodLabel}</span>
-                    </div>
-                    <span className="emotional-journal__date">{entry.date}</span>
-                    <button
-                      className="emotional-journal__delete-btn"
-                      onClick={() => handleDeleteEntry(entry.id)}
-                      aria-label="Supprimer l'entrée"
-                    >
-                      <Icon name="trash" size="sm" />
-                    </button>
-                  </div>
-
-                  <p className="emotional-journal__description">{entry.description}</p>
-
-                  <div className="emotional-journal__tags">
-                    {entry.tags.map((tag, index) => (
-                      <span key={index} className="emotional-journal__tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="max-chat__header-info">
+            <h1 className="max-chat__title">Journal Émotionnel</h1>
+            <p className="max-chat__subtitle">Résumés automatiques de vos conversations</p>
+          </div>
         </div>
-      </main>
+      </header>
+
+      <div className="emotional-journal__container">
+        {loading ? (
+          <p className="emotional-journal__loading">Chargement...</p>
+        ) : entries.length === 0 ? (
+          <p className="emotional-journal__empty">
+              Aucune entrée pour l'instant. Les résumés apparaîtront automatiquement après vos conversations avec Max.
+          </p>
+        ) : (
+          <div className="emotional-journal__entries">
+            {entries.map((entry) => (
+              <div key={entry.id} className="emotional-journal__entry">
+                <div className="emotional-journal__entry-header">
+                  <div className="emotional-journal__mood-badge">
+                    <span className="emotional-journal__mood-emoji">{entry.moodEmoji}</span>
+                    <span className="emotional-journal__mood-label">{entry.moodLabel}</span>
+                  </div>
+                  <span className="emotional-journal__date">{entry.date}</span>
+                  <button
+                    className="emotional-journal__delete-btn"
+                    onClick={() => handleDeleteEntry(entry.id)}
+                    aria-label="Supprimer l'entrée"
+                  >
+                    <Icon name="trash" size="sm" />
+                  </button>
+                </div>
+
+                <p className="emotional-journal__description">{entry.description}</p>
+
+                <div className="emotional-journal__tags">
+                  {entry.tags.map((tag, index) => (
+                    <span key={index} className="emotional-journal__tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

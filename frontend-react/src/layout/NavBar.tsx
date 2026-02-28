@@ -44,7 +44,7 @@ function interpolateGradient(progress: number): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ className }) => {
+const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userDisplay, setUserDisplay] = useState<string>('');
@@ -115,7 +115,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
     }
   };
 
-  const logout = (): void => {
+  const _logout = (): void => {
     localStorage.removeItem('token');
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
@@ -145,9 +145,9 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
             style={isMobile ? { backgroundColor: menuBg } : undefined}
           >
             {menuItems.map((item) => (
-              <a
+              <button
                 key={item.text}
-                href="#"
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToSection(item.href);
@@ -155,7 +155,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
                 className={`nav-link${activeSection === item.href.replace('#', '') ? ' active' : ''}`}
               >
                 {item.text}
-              </a>
+              </button>
             ))}
             {/* Boutons Connexion et Chat dans le menu burger */}
             <div className="mobile-buttons">

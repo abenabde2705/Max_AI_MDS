@@ -7,7 +7,7 @@ interface AbonnementProps {
   className?: string;
 }
 
-const Abonnement: React.FC<AbonnementProps> = ({ className }) => {
+const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   useEffect(() => {
     AOS.init();
   }, []);
