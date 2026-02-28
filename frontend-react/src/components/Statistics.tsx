@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Sidebar from './Sidebar';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import { fetchConversationStats, fetchJournalEntries } from '@/services/chat.api';
 import './styles/Statistics.css';
@@ -96,9 +95,6 @@ export default function Statistics() {
   }, []);
 
   return (
-    <div className="max-chat">
-      <Sidebar onCreateNewConversation={() => {}} />
-
       <main className="max-chat__main">
         <header className="max-chat__header">
           <div className="max-chat__header-left">
@@ -193,6 +189,5 @@ export default function Statistics() {
           </div>
         </div>
       </main>
-    </div>
   );
 }

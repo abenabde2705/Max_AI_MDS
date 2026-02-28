@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Icon } from '@/ui/icons';
-import Sidebar from './Sidebar';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import { fetchJournalEntries, deleteJournalEntry } from '@/services/chat.api';
 import './styles/EmotionalJournal.css';
@@ -72,9 +71,6 @@ export default function EmotionalJournal() {
   };
 
   return (
-    <div className="max-chat">
-      <Sidebar onCreateNewConversation={() => {}} />
-
       <main className="max-chat__main">
         <header className="max-chat__header">
           <div className="max-chat__header-left">
@@ -130,6 +126,5 @@ export default function EmotionalJournal() {
           )}
         </div>
       </main>
-    </div>
   );
 }

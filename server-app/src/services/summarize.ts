@@ -20,8 +20,8 @@ export async function summarizeAndSave(conversationId: string, userId: string): 
   if (messages.length === 0) { return; }
 
   const formattedMessages = messages.map((m: any) => ({
-    sender: m.sender,
-    content: m.content,
+    sender: m.getDataValue('sender') as string,
+    content: m.getDataValue('content') as string,
   }));
 
   // 2. Call chat_api /summarize
