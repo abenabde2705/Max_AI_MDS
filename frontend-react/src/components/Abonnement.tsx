@@ -1,5 +1,8 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PlanCard from './PlanCard';
+import { createCheckoutSession } from '../services/chat.api';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -8,15 +11,36 @@ interface AbonnementProps {
 }
 
 const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
+  const navigate = useNavigate();
+  const [loadingPlan, setLoadingPlan] = useState<'premium' | 'student' | null>(null);
+
   useEffect(() => {
     AOS.init();
   }, []);
 
+  const handlePremiumCheckout = async () => {
+    setLoadingPlan('premium');
+    try {
+      const { data } = await createCheckoutSession('premium');
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Erreur checkout premium:', error);
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const handleStudentPlan = () => {
+    navigate('/student-verify');
+  };
+
   return (
-    <div id="app" className="Abonnement" >
+    <div id="app" className="Abonnement">
       <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
         <h1 id="title" className="title">ABONNEMENTS</h1>
-        
+
         <div className="plans-container">
           <PlanCard
             title="Plan Free"
@@ -26,14 +50,14 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
             features={[
               'Fonctionnalités Incluses :',
               '',
-              'Limite De 10 Échanges',
+              'Limite De 10 Échanges Par Jour',
               '',
               'Chatbot Max (Écoute Empathique)',
             ]}
             buttonText=""
             buttonStyle="free"
           />
-          
+
           <PlanCard
             title="Plan Premium"
             price="14,99€"
@@ -52,11 +76,13 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               '',
               'Journal Émotionnel Simple',
             ]}
-            buttonText=""
+            buttonText={loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium'}
             buttonStyle="primary"
             highlight={true}
+            onClick={handlePremiumCheckout}
+            disabled={loadingPlan !== null}
           />
-          
+
           <PlanCard
             title="Plan Campus"
             price="8€"
@@ -67,8 +93,10 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               '',
               'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
             ]}
-            buttonText=""
+            buttonText={loadingPlan === 'student' ? 'Chargement...' : 'Vérification étudiante'}
             buttonStyle="campus"
+            onClick={handleStudentPlan}
+            disabled={loadingPlan !== null}
           />
         </div>
       </div>

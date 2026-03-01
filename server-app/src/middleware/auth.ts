@@ -5,8 +5,7 @@ import User from '../models/User.js';
 import Message from '../models/Message.js';
 import Conversation from '../models/Conversation.js';
 import Subscription from '../models/Subscription.js';
-
-const FREE_MESSAGE_LIMIT = 10;
+import { FREE_MESSAGE_LIMIT } from '../config/constants.js';
 
 interface JWTPayload {
     id: string;
@@ -76,7 +75,8 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
             username: user.getDataValue('pseudonym') || '',
             firstname: user.getDataValue('firstName'),
             lastname: user.getDataValue('lastName'),
-            is_premium: user.getDataValue('isPremium')
+            is_premium: user.getDataValue('isPremium'),
+            role: user.getDataValue('role') || 'user'
         };
 
         console.log('Auth successful for user:', user.getDataValue('email'));
@@ -136,7 +136,8 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
                 username: user.getDataValue('pseudonym') || '',
                 firstname: user.getDataValue('firstName'),
                 lastname: user.getDataValue('lastName'),
-                is_premium: user.getDataValue('isPremium')
+                is_premium: user.getDataValue('isPremium'),
+                role: user.getDataValue('role') || 'user'
             };
         }
 
@@ -204,7 +205,10 @@ export const checkMessageLimit = async (req: Request, res: Response, next: NextF
             return;
         }
 
-        // Compter les messages utilisateur sur toutes ses conversations
+        // Compter uniquement les messages d'aujourd'hui (reset quotidien implicite)
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
         const conversations = await Conversation.findAll({
             where: { userId: req.user.id },
             attributes: ['id']
@@ -215,7 +219,8 @@ export const checkMessageLimit = async (req: Request, res: Response, next: NextF
         const messageCount = conversationIds.length === 0 ? 0 : await Message.count({
             where: {
                 conversationId: { [Op.in]: conversationIds },
-                sender: 'user'
+                sender: 'user',
+                sentAt: { [Op.gte]: startOfDay }
             }
         });
 

@@ -4,9 +4,8 @@ import { Request, Response, NextFunction } from 'express';
  * Middleware pour vérifier les rôles d'utilisateur
  */
 
-export const requireRole = (_allowedRoles: string[]) => {
+export const requireRole = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    // Vérifier que l'utilisateur est authentifié
     if (!req.user) {
       res.status(401).json({
         message: 'Authentification requise'
@@ -14,8 +13,14 @@ export const requireRole = (_allowedRoles: string[]) => {
       return;
     }
 
-    // TODO: Système de rôles désactivé temporairement
-    // Tous les utilisateurs authentifiés ont accès
+    const userRole = (req.user as any).role || 'user';
+    if (!allowedRoles.includes(userRole)) {
+      res.status(403).json({
+        message: 'Accès refusé : permissions insuffisantes'
+      });
+      return;
+    }
+
     next();
   };
 };

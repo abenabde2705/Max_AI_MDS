@@ -54,3 +54,27 @@ export const fetchJournalEntries = () =>
 
 export const deleteJournalEntry = (id: string) =>
   axios.delete(`${API_BASE}/journal/${id}`, { headers: getAuthHeaders() });
+
+// ─── Subscriptions ───────────────────────────────────────────────────────────
+
+export const createCheckoutSession = (plan: 'premium' | 'student') =>
+  axios.post(`${API_BASE}/subscriptions/checkout`, { plan }, { headers: getAuthHeaders() });
+
+export const createPortalSession = () =>
+  axios.post(`${API_BASE}/subscriptions/portal`, {}, { headers: getAuthHeaders() });
+
+export const cancelSubscription = () =>
+  axios.post(`${API_BASE}/subscriptions/cancel`, {}, { headers: getAuthHeaders() });
+
+export const fetchCurrentSubscription = () =>
+  axios.get(`${API_BASE}/subscriptions/current`, { headers: getAuthHeaders() });
+
+// ─── Student Verification ─────────────────────────────────────────────────────
+
+export const submitStudentVerification = (formData: FormData) =>
+  axios.post(`${API_BASE}/student-verification/submit`, formData, {
+    headers: { ...getAuthHeaders(), 'Content-Type': 'multipart/form-data' }
+  });
+
+export const fetchStudentVerificationStatus = () =>
+  axios.get(`${API_BASE}/student-verification/status`, { headers: getAuthHeaders() });

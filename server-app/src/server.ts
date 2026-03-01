@@ -12,6 +12,9 @@ import messageRoutes from './routes/messages.js';
 import feedbackRoutes from './routes/feedback.js';
 import userRoutes from './routes/users.js';
 import journalRoutes from './routes/journal.js';
+import subscriptionRoutes from './routes/subscriptions.js';
+import stripeWebhookRouter from './routes/webhooks.js';
+import studentVerificationRoutes from './routes/studentVerification.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
 import './config/passport.js';
 
@@ -44,6 +47,9 @@ if (process.env.NODE_ENV !== 'production' && !process.env.DOCKER_ENV) {
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
+
+// ⚠️ Webhook Stripe — doit être monté AVANT express.json() pour préserver le raw body
+app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
 // Logger configuration
 const logger = pino({
@@ -126,7 +132,7 @@ const connectDB = async (): Promise<void> => {
 connectDB();
 
 // Middlewares
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
 
 app.use(
   cors({
@@ -144,7 +150,7 @@ app.use(
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     optionsSuccessStatus: 200
   })
@@ -191,6 +197,8 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/journal', journalRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api', studentVerificationRoutes);
 
 // Route de test avec métrique custom
 app.get('/api/health', (req: Request, res: Response): void => {

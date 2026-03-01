@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserAttributes } from '../../types/global.js';
 
 // Type pour les attributs optionnels lors de la création
-type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym'>;
+type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym' | 'role' | 'stripeCustomerId'>;
 
 // Classe du modèle User avec tous les types
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -15,6 +15,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public isAnonymous!: boolean;
   public pseudonym?: string;
   public isPremium!: boolean;
+  public role!: 'user' | 'admin';
+  public stripeCustomerId?: string;
   public firstName?: string;
   public lastName?: string;
   public age?: number;
@@ -86,6 +88,22 @@ User.init({
     type: DataTypes.BOOLEAN,
     defaultValue: false,
     field: 'is_premium'
+  },
+  role: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'user',
+    validate: {
+      isIn: {
+        args: [['user', 'admin']],
+        msg: 'Le rôle doit être "user" ou "admin"'
+      }
+    }
+  },
+  stripeCustomerId: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'stripe_customer_id'
   },
   firstName: {
     type: DataTypes.STRING(100),
