@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { PremiumProvider, usePremium } from './context/PremiumContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -26,6 +27,12 @@ const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) 
   return token ? element : <Navigate to="/auth" replace />;
 };
 
+const PremiumRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
+  const { isPremium, loading } = usePremium();
+  if (loading) return null;
+  return isPremium ? element : <Navigate to="/chatbot" replace />;
+};
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -43,11 +50,11 @@ const App: React.FC = () => {
       />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route element={<ProtectedRoute element={<ChatLayout />} />}>
+        <Route element={<ProtectedRoute element={<PremiumProvider><ChatLayout /></PremiumProvider>} />}>
           <Route path="/chatbot" element={<Chat />} />
-          <Route path="/journal" element={<EmotionalJournal />} />
-          <Route path="/statistics" element={<Statistics />} />
-          <Route path="/coaches" element={<Coaches />} />
+          <Route path="/journal" element={<PremiumRoute element={<EmotionalJournal />} />} />
+          <Route path="/statistics" element={<PremiumRoute element={<Statistics />} />} />
+          <Route path="/coaches" element={<PremiumRoute element={<Coaches />} />} />
         </Route>
         <Route path="/auth" element={<AuthUser />} />
         <Route path="/auth/callback" element={<AuthCallback />} />

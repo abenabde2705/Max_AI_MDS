@@ -37,24 +37,25 @@ def _ollama_call(messages: list, temperature: float = 0.7, max_tokens: int = 120
 # Chat logic (stateless)
 # =============================
 
-def generate_response(user_input: str) -> str:
-    messages = [
-        {
-            "role": "system",
-            "content": (
-                "Tu es Max, un compagnon empathique, bienveillant et naturel. "
-                "Tu réponds de manière courte (1 à 2 phrases maximum), chaleureuse et humaine. "
-                "Tu utilises toujours la langue de l'utilisateur. "
-                "Tu ne réponds qu'aux sujets liés aux émotions et au bien-être."
-            ),
-        },
-        {
-            "role": "user",
-            "content": user_input,
-        },
-    ]
+def generate_response(user_input: str, history: list | None = None, cross_context: str | None = None) -> str:
+    system = (
+        "Tu es Max, un compagnon empathique, bienveillant et naturel. "
+        "Tu réponds de manière courte (2 à 3 phrases maximum), chaleureuse et humaine. "
+        "Tu utilises toujours la langue de l'utilisateur. "
+        "Tu ne réponds qu'aux sujets liés aux émotions et au bien-être."
+    )
+    if cross_context:
+        system += (
+            "\n\nVoici des extraits de conversations passées avec cet utilisateur "
+            "(pour t'aider à te souvenir de lui) :\n" + cross_context
+        )
 
-    return _ollama_call(messages)
+    messages = [{"role": "system", "content": system}]
+    if history:
+        messages.extend(history)
+    messages.append({"role": "user", "content": user_input})
+
+    return _ollama_call(messages, max_tokens=256)
 
 # =============================
 # FastAPI App
@@ -68,6 +69,8 @@ app = FastAPI()
 class ChatRequest(BaseModel):
     message: str
     session_id: str | None = None
+    history: list[dict] | None = None
+    cross_conversation_context: str | None = None
 
 class SummarizeMessage(BaseModel):
     sender: str
@@ -104,7 +107,7 @@ async def health():
 @app.post("/chat")
 async def chat_with_max(data: ChatRequest):
     try:
-        response = generate_response(data.message)
+        response = generate_response(data.message, data.history, data.cross_conversation_context)
         return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
