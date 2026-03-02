@@ -14,6 +14,7 @@ declare global {
         firstname?: string | undefined;
         lastname?: string | undefined;
         is_premium: boolean;
+        role?: 'user' | 'admin';
       };
     }
   }
@@ -27,6 +28,8 @@ export interface UserAttributes {
   isAnonymous: boolean;
   pseudonym?: string;
   isPremium: boolean;
+  role: 'user' | 'admin';
+  stripeCustomerId?: string;
   firstName?: string;
   lastName?: string;
   age?: number;
@@ -99,9 +102,24 @@ export interface FeedbackAttributes {
 export interface SubscriptionAttributes {
   id: string;
   userId: string;
+  plan: 'premium' | 'student';
   status: 'active' | 'canceled';
   startDate: Date;
   endDate?: Date;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  stripePeriodEnd?: Date;
+}
+
+export interface StudentVerificationAttributes {
+  id: string;
+  userId: string;
+  status: 'pending' | 'approved' | 'rejected';
+  cardImagePath: string;
+  submittedAt: Date;
+  reviewedAt?: Date;
+  reviewedBy?: string;
+  rejectionReason?: string;
 }
 
 export interface RecommendationAttributes {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchCurrentSubscription, cancelSubscription, createPortalSession } from '../services/chat.api';
 
 interface UserProfile {
   firstName: string;
@@ -9,6 +10,12 @@ interface UserProfile {
   birthDate?: string;
   plan?: string;
   createdAt?: string;
+}
+
+interface SubscriptionInfo {
+  plan: 'premium' | 'student' | 'free';
+  status: 'active' | 'canceled';
+  stripePeriodEnd?: string;
 }
 
 const Profile: React.FC = () => {
@@ -22,6 +29,7 @@ const Profile: React.FC = () => {
     plan: 'Free',
     createdAt: '',
   });
+  const [subscription, setSubscription] = useState<SubscriptionInfo>({ plan: 'free', status: 'active' });
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<UserProfile>(user);
@@ -42,15 +50,18 @@ const Profile: React.FC = () => {
 
       try {
         const API_URL = import.meta.env.VITE_API_URL;
-        const response = await fetch(`${API_URL}/api/auth/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const [profileResponse, subResponse] = await Promise.allSettled([
+          fetch(`${API_URL}/api/auth/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }),
+          fetchCurrentSubscription()
+        ]);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (profileResponse.status === 'fulfilled' && profileResponse.value.ok) {
+          const data = await profileResponse.value.json();
           const userData = data.user || data;
           const profile: UserProfile = {
             firstName: userData.firstName || userData.firstname || '',
@@ -66,6 +77,14 @@ const Profile: React.FC = () => {
         } else {
           localStorage.removeItem('token');
           navigate('/auth');
+          return;
+        }
+
+        if (subResponse.status === 'fulfilled') {
+          const subData = subResponse.value.data;
+          if (subData.success && subData.data) {
+            setSubscription(subData.data);
+          }
         }
       } catch (error) {
         console.error('Erreur lors du chargement du profil:', error);
@@ -167,7 +186,7 @@ const Profile: React.FC = () => {
               {user.firstName} {user.lastName}
             </h2>
             <p className="profile-avatar-card__plan">
-              Membre {user.plan === 'premium' ? 'Premium' : 'Free'}
+              Membre {subscription.plan === 'premium' ? 'Premium' : subscription.plan === 'student' ? 'Campus' : 'Free'}
             </p>
             <p className="profile-avatar-card__since">
               Membre depuis {formatMemberSince(user.createdAt)}
@@ -286,32 +305,56 @@ const Profile: React.FC = () => {
               <div className="profile-subscription__plan-row">
                 <div>
                   <p className="profile-subscription__plan-name">
-                    Plan {user.plan === 'premium' ? 'premium' : 'free'}
+                    Plan {subscription.plan === 'premium' ? 'Premium' : subscription.plan === 'student' ? 'Campus' : 'Free'}
                   </p>
                   <p className="profile-subscription__plan-price">
-                    {user.plan === 'premium' ? '14,99€ / Mois' : 'Gratuit'}
+                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '8€ / Mois' : 'Gratuit'}
                   </p>
+                  {subscription.stripePeriodEnd && (
+                    <p className="profile-subscription__plan-renew">
+                      Renouvellement : {new Date(subscription.stripePeriodEnd).toLocaleDateString('fr-FR')}
+                    </p>
+                  )}
                 </div>
-                <span className={`profile-subscription__badge ${user.plan === 'premium' ? 'profile-subscription__badge--premium' : ''}`}>
-                  Actif
+                <span className={`profile-subscription__badge ${subscription.plan !== 'free' ? 'profile-subscription__badge--premium' : ''}`}>
+                  {subscription.status === 'active' ? 'Actif' : 'Annulé'}
                 </span>
               </div>
               <div className="profile-subscription__actions">
                 <button className="profile-btn profile-btn--outline profile-btn--sm" onClick={() => navigate('/#title')}>
                   Changer de plan
                 </button>
-                {user.plan === 'premium' && (
-                  <button className="profile-btn profile-btn--danger profile-btn--sm">
-                    Annuler l'abonnement
-                  </button>
+                {subscription.plan !== 'free' && (
+                  <>
+                    <button
+                      className="profile-btn profile-btn--outline profile-btn--sm"
+                      onClick={async () => {
+                        try {
+                          const { data } = await createPortalSession();
+                          if (data.url) window.location.href = data.url;
+                        } catch {
+                          console.error('Erreur portail facturation');
+                        }
+                      }}
+                    >
+                      Gérer la facturation
+                    </button>
+                    <button
+                      className="profile-btn profile-btn--danger profile-btn--sm"
+                      onClick={async () => {
+                        if (!window.confirm('Confirmer l\'annulation de votre abonnement ?')) return;
+                        try {
+                          await cancelSubscription();
+                          alert('Abonnement annulé à la fin de la période en cours.');
+                        } catch {
+                          console.error('Erreur annulation abonnement');
+                        }
+                      }}
+                    >
+                      Annuler l'abonnement
+                    </button>
+                  </>
                 )}
-              </div>
-              <div className="profile-subscription__billing-row">
-                <div>
-                  <p className="profile-subscription__billing-title">Historique de facturation</p>
-                  <p className="profile-subscription__billing-sub">Téléchargez vos factures</p>
-                </div>
-                <button className="profile-btn profile-btn--primary profile-btn--sm">Voir</button>
               </div>
             </div>
           </div>

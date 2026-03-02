@@ -27,6 +27,8 @@ services:
     environment:
       - DB_HOST=postgres
       - CHAT_API_URL=http://chat_api:8000
+    volumes:
+      - uploads_data:/app/uploads
     networks:
       - web
       - default
@@ -73,6 +75,7 @@ services:
 volumes:
   postgres_data:
   ollama_data:
+  uploads_data:
 
 networks:
   web:
