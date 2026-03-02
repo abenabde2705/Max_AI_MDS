@@ -80,6 +80,53 @@ class WebhookService {
         }
     }
 
+    // Airtable - Tous les feedbacks
+    async sendToAirtable(feedbackData: any): Promise<WebhookResult> {
+        const apiKey = process.env.AIRTABLE_API_KEY;
+        const baseId = process.env.AIRTABLE_BASE_ID;
+        const tableName = process.env.AIRTABLE_TABLE_NAME;
+
+        if (!apiKey || !baseId || !tableName) {
+            return { service: 'airtable', success: false, skipped: true, reason: 'Config Airtable manquante' };
+        }
+
+        try {
+            const response = await axios.post(
+                `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
+                {
+                    fields: {
+                        'Title': feedbackData.title,
+                        'Description': feedbackData.description,
+                        'User Email': feedbackData.userEmail
+                    }
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            return {
+                service: 'airtable',
+                success: true,
+                response: { id: response.data.id }
+            };
+        } catch (error: any) {
+            console.error('=== AIRTABLE ERROR ===');
+            console.error('Status:', error?.response?.status);
+            console.error('Response data:', JSON.stringify(error?.response?.data, null, 2));
+            console.error('Message:', error?.message);
+            console.error('=====================');
+            return {
+                service: 'airtable',
+                success: false,
+                error: JSON.stringify(error?.response?.data ?? error?.message)
+            };
+        }
+    }
+
     // Slack - Notifications pour feedback critique
     async sendSlackNotification(feedbackData: any): Promise<WebhookResult> {
         if (!process.env.SLACK_WEBHOOK_URL) {
@@ -147,6 +194,10 @@ class WebhookService {
     // Orchestrateur principal
     async processWebhooks(feedbackData: any): Promise<WebhookResult[]> {
         const results: WebhookResult[] = [];
+
+        // Tous les feedbacks → Airtable
+        const airtableResult = await this.sendToAirtable(feedbackData);
+        results.push(airtableResult);
 
         // Pour les bugs critiques ou high severity, créer GitHub issue
         if (['critical', 'high'].includes(feedbackData.severity) || feedbackData.type === 'bug') {

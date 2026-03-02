@@ -160,6 +160,9 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Servir les fichiers uploadés (cartes étudiantes)
+app.use('/uploads', express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), '../uploads')));
+
 // Session configuration for Passport
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
