@@ -230,11 +230,12 @@ button {
 .hamburger {
   display: none;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.35rem;
   background: transparent;
   border: none;
   cursor: pointer;
   z-index: 11;
+  padding: 4px;
 }
 
 .hamburger .bar {
@@ -242,6 +243,20 @@ button {
   height: 3px;
   background-color: white;
   border-radius: 5px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+
+/* Animation croix quand menu ouvert */
+.hamburger.open .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.hamburger.open .bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburger.open .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
 }
 
 .website-buttons {
@@ -370,7 +385,52 @@ border: 1px solid #DAE63D;
 }
 
 /* Responsive Styles */
-@media (min-width: 1031px) and (max-width: 1306px) {
+@media (min-width: 1307px) and (max-width: 1550px) {
+  .navbar {
+    padding: 0 1.5rem;
+    width: 95%;
+    height: 68px;
+  }
+
+  .nav-left {
+    gap: 40px;
+  }
+
+  .nav-items {
+    gap: 4px;
+  }
+
+  .nav-link {
+    font-size: 16px;
+    padding: 0 0.75rem;
+    height: 65px;
+  }
+
+  .nav-link.active {
+    height: 65px;
+    padding: 0 0.75rem;
+  }
+
+  .navbar-logo {
+    height: 30px;
+  }
+
+  .connexion-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .inscription-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 1rem;
+  }
+
+  .website-buttons {
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 1261px) and (max-width: 1306px) {
   .navbar {
     padding: 0.75rem 1.25rem;
     width: 95%;
@@ -404,78 +464,142 @@ border: 1px solid #DAE63D;
   }
 }
 
-@media (min-width: 912px) and (max-width: 1030px) {
+@media (min-width: 912px) and (max-width: 1261px) {
   .navbar {
-    padding: 0.6rem 1rem;
-    width: 96%;
-    height: auto;
+    padding: 0 0.75rem;
+    width: 97%;
+    height: 56px;
   }
 
   .nav-left {
-    gap: 0.8rem;
+    gap: 0.5rem;
   }
 
   .nav-items {
-    gap: 0.7rem;
+    gap: 0;
   }
 
   .nav-link {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
+    padding: 0 0.5rem;
+    height: 54px;
   }
 
   .nav-link.active {
-    padding: 0.3rem 0.6rem;
+    height: 54px;
+    padding: 0 0.5rem;
+  }
+
+  .nav-link:hover:not(.active) {
+    padding: 0 0.6rem;
   }
 
   .navbar-logo {
-    height: 14px;
+    height: 20px;
   }
 
-  .connexion-btn,
+  .connexion-btn {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+
   .inscription-btn {
-    font-size: 0.75rem;
-    padding: 0.35rem 0.7rem;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .website-buttons {
+    gap: 0.4rem;
   }
 
   .inscription-btn .arrow {
     display: none;
   }
+
+  .user-pill {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem 0.25rem 0.5rem;
+    max-width: 130px;
+  }
 }
 
 @media (max-width: 912px) {
-  .website-buttons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-  }
-
-  .website-buttons .connexion-btn {
-    font-size: 13px;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .website-buttons .inscription-btn {
-    font-size: 12px;
-    min-width: auto;
-    height: 32px;
-    padding: 0 0.75rem;
-  }
-
-  .website-buttons .inscription-btn .arrow {
+  /* Masquer les boutons desktop, le hamburger prend le relais */
+  .desktop-only {
     display: none;
   }
 
+  /* Navbar : wrapping pour laisser le menu dropdown sortir en dessous */
+  .navbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0 1.25rem;
+    border-radius: 30px;
+    min-height: 65px;
+  }
+
+  /* nav-left occupe toute la largeur pour logo + hamburger côte à côte */
+  .nav-left {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Masquer les liens desktop */
+  .nav-items {
+    display: none;
+  }
+
+  /* Menu mobile : slide depuis le haut */
+  .nav-items.mobile-menu {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    right: 0;
+    padding: 1.25rem 1rem;
+    border-radius: 20px;
+    z-index: 10;
+    transform: translateY(-200%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+  }
+
+  .nav-items.mobile-menu.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Liens du menu mobile */
+  .nav-items.mobile-menu .nav-link {
+    height: auto;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Boutons mobiles (connexion + chat) dans le dropdown */
   .mobile-buttons {
     display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   .mobile-btn {
     width: 100%;
     justify-content: center;
     padding: 0.7rem 1.5rem !important;
-    margin: 0.5rem 0;
   }
 
   .mobile-btn.connexion-btn {
@@ -485,64 +609,27 @@ border: 1px solid #DAE63D;
   .mobile-btn.inscription-btn {
     border: 1px solid #DAE63D;
     color: #DAE63D;
+    border-radius: 25px;
   }
 
-  .website-buttons {
-    display: flex; /* Rendre les boutons visibles */
-    flex-direction: column; /* Empiler les boutons verticalement */
-    gap: 1rem; /* Ajouter un espace entre les boutons */
-    align-items: center;
-    margin-top: 1rem;
-    width: 100%;
-  }
-
-  .website-buttons button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .website-buttons .inscription-btn,
-  .website-buttons .connexion-btn {
-    margin-bottom: 0.5rem;
-  }
-
-  .navbar {
-    flex-wrap: wrap;
-    height: auto;
-  }
-
-  .nav-items {
-    display: none;
-  }
-
-  .nav-items.mobile-menu {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        gap: 1rem;
-        position: absolute;
-        top: 120%;
-        left: 0;
-        right: 0;
-        padding: 1rem;
-        border-radius: 20px 20px 20px 20px;
-        z-index: 10;
-        transform: translateY(-200%);
-        opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-
-  .nav-items.mobile-menu.open {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
+  /* Afficher le hamburger */
   .hamburger {
     display: flex;
   }
 }
 
 @media (max-width: 480px) {
+  .navbar-container {
+    padding-top: 1rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .navbar {
+    border-radius: 20px;
+    min-height: 58px;
+  }
+
   .nav-left {
     justify-content: space-between;
     width: 100%;
@@ -553,15 +640,16 @@ border: 1px solid #DAE63D;
   }
 
   .hamburger .bar {
-    width: 20px;
+    width: 22px;
   }
 
   .nav-items.mobile-menu {
-    padding: 0.5rem 1rem;
+    padding: 1rem 0.75rem;
+    top: 105%;
   }
 
   .nav-link {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -608,7 +696,7 @@ border: 1px solid #DAE63D;
 @media (max-width: 480px) {
   .footer {
     padding: 20px 2%;
-    border-radius: 15px;
+    border-radius: 28px;
   }
 }
 
@@ -4309,11 +4397,49 @@ border-radius: 70px 0px 0px 70px;
 
 @media (max-width: 960px) {
   .max-chat { flex-direction: column; padding: 20px; }
-  .max-chat__sidebar { width: 100%; flex-direction: row; align-items: center; gap: 16px; padding: 16px; border-radius: 30px; }
-  .max-chat__logo { display: none; }
-  .max-chat__nav { flex-direction: row; flex-wrap: wrap; gap: 10px; padding-top: 0; }
-  .max-chat__nav-button { width: auto; height: auto; padding: 10px 16px; font-size: 16px; }
-  .max-chat__premium { margin-top: 0; }
+
+  /* Sidebar horizontale — logo + nav + premium sur une ligne */
+  .max-chat__sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    border-radius: 30px;
+  }
+
+  /* Logo + bouton retour : toujours visibles, compacts */
+  .max-chat__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .max-chat__logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .max-chat__logo-image {
+    height: 28px;
+  }
+
+  /* Nav horizontale centrée */
+  .max-chat__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 0;
+    justify-content: center;
+    flex: 1;
+  }
+  .max-chat__nav-indicator { display: none; }
+  .max-chat__nav-button { width: auto; height: auto; padding: 8px 16px; font-size: 15px; border-radius: 30px; }
+
+  /* Premium compact */
+  .max-chat__premium { margin-top: 0; flex-shrink: 0; }
+  .max-chat__premium-note { display: none; }
+
   .max-chat__main { gap: 12px; }
   .max-chat__header { padding: 16px; flex-wrap: wrap; }
   .max-chat__header-left { flex: 1; min-width: 200px; }
@@ -4327,8 +4453,11 @@ border-radius: 70px 0px 0px 70px;
 
 @media (max-width: 768px) {
   .max-chat { padding: 15px; }
-  .max-chat__sidebar { width: 100%; padding: 12px; gap: 12px; }
-  .max-chat__nav-button { width: auto; height: auto; padding: 8px 12px; font-size: 14px; }
+  .max-chat__sidebar { width: 100%; padding: 10px 14px; gap: 10px; }
+  .max-chat__logo { display: flex; gap: 8px; }
+  .max-chat__logo-icon { width: 32px; height: 32px; }
+  .max-chat__logo-image { height: 24px; }
+  .max-chat__nav-button { width: auto; height: auto; padding: 7px 12px; font-size: 13px; border-radius: 25px; }
   .max-chat__header { padding: 12px; gap: 8px; }
   .max-chat__header-left { gap: 8px; }
   .max-chat__header-avatar { display: none; }
@@ -4353,15 +4482,41 @@ border-radius: 70px 0px 0px 70px;
 
 @media (max-width: 640px) {
   .max-chat { flex-direction: column; padding: 12px; height: auto; min-height: 100vh; }
-  .max-chat__sidebar { width: 100%; padding: 10px; gap: 10px; border-radius: 20px; flex-direction: row; justify-content: space-between; align-items: center; }
-  .max-chat__logo { display: none; }
-  .max-chat__nav { width: 100%; flex-direction: row; gap: 6px; flex-wrap: wrap; padding-top: 0; }
-  .max-chat__nav-button { width: auto; height: auto; padding: 6px 10px; font-size: 12px; border-radius: 25px; }
+  .max-chat__sidebar {
+    width: 100%;
+    padding: 10px 14px;
+    gap: 8px;
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Ligne du haut : bouton retour + logo */
+  .max-chat__logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .max-chat__logo-icon { width: 30px; height: 30px; }
+  .max-chat__logo-image { height: 22px; }
+
+  /* Nav sous le logo */
+  .max-chat__nav {
+    width: 100%;
+    flex-direction: row;
+    gap: 6px;
+    flex-wrap: nowrap;
+    padding-top: 0;
+    justify-content: space-between;
+  }
+  .max-chat__nav-button { flex: 1; height: auto; padding: 6px 4px; font-size: 11px; border-radius: 20px; text-align: center; }
   .max-chat__premium { display: none; }
   .max-chat__main { gap: 10px; }
   .max-chat__header { flex-direction: column; align-items: flex-start; gap: 10px; padding: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
   .max-chat__header-left { gap: 8px; width: 100%; }
-  .max-chat__header-avatar { display: none; }
+  .max-chat__header-avatar {display: contents;}
   .max-chat__title { font-size: 20px; margin: 0; }
   .max-chat__plan { font-size: 11px; margin: 2px 0 0; }
   .max-chat__header-actions { flex-direction: column; width: 100%; gap: 6px; }

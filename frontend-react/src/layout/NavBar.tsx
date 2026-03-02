@@ -134,7 +134,7 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
             </Link>
           </div>
           {/* Bouton hamburger pour mobile */}
-          <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <button className={`hamburger${isMenuOpen ? ' open' : ''}`} onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Menu">
             <span className="bar"></span>
             <span className="bar"></span>
             <span className="bar"></span>
