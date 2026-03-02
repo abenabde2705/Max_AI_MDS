@@ -4,6 +4,9 @@ import '@testing-library/jest-dom';
 
 // Configuration globale pour les tests React
 beforeAll(() => {
+  // Mock scrollIntoView (non implémenté dans jsdom)
+  window.HTMLElement.prototype.scrollIntoView = vi.fn();
+
   // Mock des APIs qui ne sont pas disponibles dans jsdom
   Object.defineProperty(globalThis, 'matchMedia', {
     writable: true,
