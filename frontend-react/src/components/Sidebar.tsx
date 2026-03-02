@@ -3,21 +3,23 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/ui/components/Button';
 import { Icon } from '@/ui/icons';
 import LogoMax from '@/assets/img/logomax.png';
+import { usePremium } from '@/context/PremiumContext';
 
 interface SidebarProps {
   onCreateNewConversation: () => void
 }
 
 const navItems = [
-  { path: '/chatbot',    label: 'Chat IA' },
-  { path: '/journal',    label: 'Journal' },
-  { path: '/statistics', label: 'Statistiques' },
-  { path: '/coaches',    label: 'Coachs' },
+  { path: '/chatbot',    label: 'Chat IA',      premium: false },
+  { path: '/journal',    label: 'Journal',      premium: true  },
+  { path: '/statistics', label: 'Statistiques', premium: true  },
+  { path: '/coaches',    label: 'Coachs',       premium: true  },
 ];
 
 export default function Sidebar({ onCreateNewConversation: _onCreateNewConversation }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isPremium, loading } = usePremium();
 
   const activeIndex = navItems.findIndex(item => item.path === location.pathname);
 
@@ -58,22 +60,29 @@ export default function Sidebar({ onCreateNewConversation: _onCreateNewConversat
             opacity: ready ? 1 : 0,
           }}
         />
-        {navItems.map((item, i) => (
-          <button
-            key={item.path}
-            ref={(el) => { buttonRefs.current[i] = el; }}
-            className={`max-chat__nav-button ${activeIndex === i ? 'max-chat__nav-button--active' : ''}`}
-            onClick={() => navigate(item.path)}
-          >
-            {item.label}
-          </button>
-        ))}
+        {navItems.map((item, i) => {
+          const isLocked = !loading && !isPremium && item.premium;
+          return (
+            <button
+              key={item.path}
+              ref={(el) => { buttonRefs.current[i] = el; }}
+              className={`max-chat__nav-button ${activeIndex === i ? 'max-chat__nav-button--active' : ''} ${isLocked ? 'max-chat__nav-button--locked' : ''}`}
+              onClick={() => isLocked ? navigate('/#title') : navigate(item.path)}
+              title={isLocked ? 'Fonctionnalité réservée aux membres Premium' : undefined}
+            >
+              {item.label}
+              {isLocked && <span className="max-chat__nav-lock">Premium</span>}
+            </button>
+          );
+        })}
       </nav>
 
-      <div className="max-chat__premium">
-        <Button fullWidth className="max-chat__premium-button" variant="primary">Passez Premium</Button>
-        <p className="max-chat__premium-note">Vos échanges restent confidentiels et sécurisés</p>
-      </div>
+      {!loading && !isPremium && (
+        <div className="max-chat__premium">
+          <Button fullWidth className="max-chat__premium-button" variant="primary" onClick={() => navigate('/#title')}>Passez Premium</Button>
+          <p className="max-chat__premium-note">Vos échanges restent confidentiels et sécurisés</p>
+        </div>
+      )}
     </aside>
   );
 }

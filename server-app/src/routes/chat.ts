@@ -1,8 +1,10 @@
 import express, { Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
+import { Op } from 'sequelize';
 import { authenticateToken, checkMessageLimit } from '../middleware/auth.js';
 import Message from '../models/Message.js';
 import Conversation from '../models/Conversation.js';
+import Subscription from '../models/Subscription.js';
 
 // 20 requêtes par minute par IP — cohérent avec l'ancien rate-limit Traefik
 const chatRateLimit = rateLimit({
@@ -80,12 +82,64 @@ router.post('/', chatRateLimit, authenticateToken, checkMessageLimit, async (req
       await Conversation.update({ title }, { where: { id: conversation_id } });
     }
 
+    // Déterminer si l'utilisateur a accès à la mémoire (premium ou student actif)
+    const isPrivileged = req.user.is_premium || !!(await Subscription.findOne({
+      where: { userId: req.user.id, status: 'active' }
+    }));
+
+    let history: { role: string; content: string }[] = [];
+    let crossConversationContext: string | undefined;
+
+    if (isPrivileged) {
+      // Charger l'historique de la conversation courante (sans le message qu'on vient de sauvegarder)
+      const currentMsgs = await Message.findAll({
+        where: { conversationId: conversation_id },
+        order: [['sentAt', 'ASC']],
+        limit: 22,
+      });
+      history = currentMsgs.slice(0, -1).map(m => ({
+        role: m.getDataValue('sender') === 'user' ? 'user' : 'assistant',
+        content: m.getDataValue('content'),
+      }));
+
+      // Charger le contexte des 3 dernières autres conversations
+      const otherConvs = await Conversation.findAll({
+        where: { userId: req.user.id, id: { [Op.ne]: conversation_id } },
+        order: [['updatedAt', 'DESC']],
+        limit: 3,
+      });
+
+      if (otherConvs.length > 0) {
+        const snippets = await Promise.all(
+          otherConvs.map(async (conv) => {
+            const msgs = await Message.findAll({
+              where: { conversationId: conv.getDataValue('id') },
+              order: [['sentAt', 'DESC']],
+              limit: 4,
+            });
+            return msgs
+              .reverse()
+              .map(m =>
+                `${m.getDataValue('sender') === 'user' ? 'Utilisateur' : 'Max'}: ${m.getDataValue('content')}`
+              )
+              .join('\n');
+          })
+        );
+        crossConversationContext = snippets.filter(Boolean).join('\n---\n');
+      }
+    }
+
     // Appeler le Chat API interne (réseau Docker, jamais exposé publiquement)
     const chatApiUrl = process.env.CHAT_API_URL || 'http://chat_api:8000';
     const chatResponse = await fetch(`${chatApiUrl}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: trimmedMessage, session_id: conversation_id })
+      body: JSON.stringify({
+        message: trimmedMessage,
+        session_id: conversation_id,
+        ...(isPrivileged && history.length > 0 && { history }),
+        ...(isPrivileged && crossConversationContext && { cross_conversation_context: crossConversationContext }),
+      })
     });
 
     if (!chatResponse.ok) {
