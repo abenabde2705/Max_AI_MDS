@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import axios from 'axios';
+import Subscription from '../models/Subscription.js';
 
 const router = express.Router();
 
@@ -90,14 +91,30 @@ class WebhookService {
             return { service: 'airtable', success: false, skipped: true, reason: 'Config Airtable manquante' };
         }
 
+        // Mapping des types frontend → valeurs Airtable
+        const typeMap: Record<string, string> = {
+            'bug':         'Bug',
+            'feature':     'Feature-request',
+            'improvement': 'Feature-request',
+            'ui_ux':       'Interface',
+            'performance': 'Performance',
+            'other':       'Other'
+        };
+
         try {
             const response = await axios.post(
                 `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
                 {
                     fields: {
-                        'Title': feedbackData.title,
+                        'Title':       feedbackData.title,
                         'Description': feedbackData.description,
-                        'User Email': feedbackData.userEmail
+                        'Type':        typeMap[feedbackData.type] ?? feedbackData.type,
+                        'Severity':    feedbackData.severity,
+                        'User Email':  feedbackData.userEmail,
+                        'Status':      'Todo',
+                        'Source':      'Dashboard',
+                        'Plan':        feedbackData.plan,
+                        'Metadata':    JSON.stringify({ feedbackId: feedbackData.id })
                     }
                 },
                 {
@@ -114,11 +131,7 @@ class WebhookService {
                 response: { id: response.data.id }
             };
         } catch (error: any) {
-            console.error('=== AIRTABLE ERROR ===');
-            console.error('Status:', error?.response?.status);
-            console.error('Response data:', JSON.stringify(error?.response?.data, null, 2));
-            console.error('Message:', error?.message);
-            console.error('=====================');
+            console.error('Airtable error:', JSON.stringify(error?.response?.data ?? error?.message));
             return {
                 service: 'airtable',
                 success: false,
@@ -307,7 +320,7 @@ router.post('/', authenticateToken, async (req: CreateFeedbackRequest, res: Resp
             return;
         }
 
-        const validTypes = ['bug', 'feature-request', 'general'];
+        const validTypes = ['bug', 'feature', 'improvement', 'ui_ux', 'performance', 'other', 'feature-request', 'general'];
         const validSeverities = ['low', 'medium', 'high', 'critical'];
 
         if (!validTypes.includes(type)) {
@@ -324,6 +337,19 @@ router.post('/', authenticateToken, async (req: CreateFeedbackRequest, res: Resp
             return;
         }
 
+        // Déterminer le plan réel depuis la DB
+        const subscription = await Subscription.findOne({
+            where: { userId: req.user.id, status: 'active' },
+            attributes: ['plan']
+        });
+        const planMap: Record<string, string> = {
+            'free':    'freemium',
+            'premium': 'premium',
+            'student': 'student'
+        };
+        const rawPlan: string = subscription ? subscription.getDataValue('plan') : 'free';
+        const userPlan: string = planMap[rawPlan] ?? rawPlan;
+
         // Données pour les webhooks
         const feedbackData = {
             id: `feedback_${Date.now()}_${req.user.id.slice(0, 8)}`,
@@ -334,6 +360,7 @@ router.post('/', authenticateToken, async (req: CreateFeedbackRequest, res: Resp
             metadata: metadata || {},
             userEmail: req.user.email,
             userId: req.user.id,
+            plan: userPlan,
             createdAt: new Date().toISOString()
         };
 

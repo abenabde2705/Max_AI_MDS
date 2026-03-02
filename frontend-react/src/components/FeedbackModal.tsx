@@ -12,7 +12,6 @@ interface FormData {
   description: string;
   type: 'bug' | 'feature' | 'improvement' | 'ui_ux' | 'performance' | 'other';
   severity: 'low' | 'medium' | 'high' | 'critical';
-  userEmail: string;
 }
 
 interface SubmitStatus {
@@ -43,8 +42,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
     title: '',
     description: '',
     type: 'improvement',
-    severity: 'medium',
-    userEmail: ''
+    severity: 'medium'
   });
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -92,7 +90,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
       });
 
       setTimeout(() => {
-        setFormData({ title: '', description: '', type: 'improvement', severity: 'medium', userEmail: '' });
+        setFormData({ title: '', description: '', type: 'improvement', severity: 'medium' });
         setSubmitStatus(null);
         onClose();
       }, 3000);
@@ -112,7 +110,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
 
   const handleClose = () => {
     if (!isSubmitting) {
-      setFormData({ title: '', description: '', type: 'improvement', severity: 'medium', userEmail: '' });
+      setFormData({ title: '', description: '', type: 'improvement', severity: 'medium' });
       setSubmitStatus(null);
       onClose();
     }
@@ -207,22 +205,6 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="feedback-field">
-            <label className="feedback-label" htmlFor="userEmail">
-              Votre email <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px' }}>(optionnel)</span>
-            </label>
-            <input
-              className="feedback-input"
-              type="email"
-              id="userEmail"
-              name="userEmail"
-              value={formData.userEmail}
-              onChange={handleInputChange}
-              placeholder="pour@suivre-votre-feedback.com"
-              disabled={isSubmitting}
-            />
           </div>
 
           <div className="feedback-actions">
