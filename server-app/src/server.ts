@@ -17,6 +17,13 @@ import stripeWebhookRouter from './routes/webhooks.js';
 import studentVerificationRoutes from './routes/studentVerification.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
 import './config/passport.js';
+import { up as migration001 } from './migrations/001-add-performance-indexes.js';
+import migration002 from './migrations/002-add-oauth-fields.js';
+import migration003 from './migrations/003-allow-null-password.js';
+import { up as migration004 } from './migrations/004-extend-emotional-journal.js';
+import { up as migration005 } from './migrations/005-extend-subscriptions.js';
+import { up as migration006 } from './migrations/006-create-student-verifications.js';
+import { up as migration007 } from './migrations/007-add-user-role-and-stripe.js';
 
 // Monitoring imports
 import pino from 'pino';
@@ -110,15 +117,44 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
 // Import models to ensure they're loaded
 import './models/index.js';
 
+// Runner de migrations — ignore les colonnes déjà existantes
+const runMigrations = async (): Promise<void> => {
+    const qi = sequelize.getQueryInterface();
+    const migrations = [
+        { name: '001', fn: () => migration001(qi, sequelize.constructor as any) },
+        { name: '002', fn: () => migration002.up(qi) },
+        { name: '003', fn: () => migration003.up(qi) },
+        { name: '004', fn: () => migration004(qi, sequelize.constructor as any) },
+        { name: '005', fn: () => migration005(qi, sequelize.constructor as any) },
+        { name: '006', fn: () => migration006(qi, sequelize.constructor as any) },
+        { name: '007', fn: () => migration007(qi, sequelize.constructor as any) },
+    ];
+
+    for (const migration of migrations) {
+        try {
+            await migration.fn();
+            logger.info(`✅ Migration ${migration.name} applied`);
+        } catch (err: any) {
+            const msg: string = err?.message ?? '';
+            if (msg.includes('already exists') || msg.includes('duplicate column')) {
+                logger.info(`⏭️ Migration ${migration.name} already applied, skipping`);
+            } else {
+                logger.warn(`⚠️ Migration ${migration.name} warning: ${msg}`);
+            }
+        }
+    }
+};
+
 // Connexion à la base de données
 const connectDB = async (): Promise<void> => {
     try {
         await sequelize.authenticate();
         logger.info('✅ Database connection established successfully.');
-        
-        // Synchronize models with database - plus souple pour éviter les erreurs de migration
+
+        await runMigrations();
+
         try {
-            await sequelize.sync({ alter: false }); // Pas d'altération forcée
+            await sequelize.sync({ alter: false });
             logger.info('✅ Database synchronized successfully.');
         } catch (syncError: unknown) {
             logger.warn({ syncError }, '⚠️ Database sync warning - continuing anyway');
