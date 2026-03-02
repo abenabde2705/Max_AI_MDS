@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/ui/components/Button';
 import { Input } from '@/ui/components/Input';
 import { Icon } from '@/ui/icons';
@@ -22,6 +22,7 @@ export default function MaxAIChat() {
   const [message, setMessage] = useState('');
   const [isHistoricOpen, setIsHistoricOpen] = useState(false);
   const [userInitials, setUserInitials] = useState('U');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation, messageLimitReached, messageCount } = useChat();
 
   const isApproachingLimit = !messageCount?.is_premium && messageCount?.limit !== null && messageCount !== null && messageCount.used >= 7 && !messageLimitReached;
@@ -65,6 +66,10 @@ export default function MaxAIChat() {
     
     loadUserInfo();
   }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isWaiting]);
 
   const handleSendMessage = () => {
     if (message.trim()) {
@@ -136,7 +141,7 @@ export default function MaxAIChat() {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`max-chat__message-row ${msg.role === 'user' ? 'max-chat__message-row--user' : ''}`}
+              className={`max-chat__message-row max-chat__message-row--animate ${msg.role === 'user' ? 'max-chat__message-row--user' : ''}`}
             >
               {msg.role === 'assistant' && (
                 <div className="max-chat__badge">
@@ -155,15 +160,18 @@ export default function MaxAIChat() {
             </div>
           ))}
           {isWaiting && (
-            <div className="max-chat__message-row">
+            <div className="max-chat__message-row max-chat__message-row--animate">
               <div className="max-chat__badge">
                 <img src={LogoPrincipal} alt="MAX" className="max-chat__badge-logo" />
               </div>
-              <div className="max-chat__bubble max-chat__bubble--assistant">
-                <p className="max-chat__bubble-text">...</p>
+              <div className="max-chat__bubble max-chat__bubble--assistant max-chat__bubble--typing">
+                <span className="max-chat__typing-dot" />
+                <span className="max-chat__typing-dot" />
+                <span className="max-chat__typing-dot" />
               </div>
             </div>
           )}
+          <div ref={messagesEndRef} />
         </div>
 
         <div className="max-chat__input-area">
