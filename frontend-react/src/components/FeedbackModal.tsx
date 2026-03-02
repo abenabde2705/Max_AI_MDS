@@ -77,7 +77,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Erreur lors de l'envoi");
+        throw new Error(errorData.error || 'Erreur lors de l\'envoi');
       }
 
       const result = await response.json();
@@ -96,10 +96,10 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
       }, 3000);
 
     } catch (error) {
-      console.error("Erreur lors de l'envoi du feedback:", error);
+      console.error('Erreur lors de l\'envoi du feedback:', error);
       setSubmitStatus({
         type: 'error',
-        title: "Erreur d'envoi",
+        title: 'Erreur d\'envoi',
         message: error instanceof Error ? error.message : 'Erreur inconnue',
         details: 'Veuillez réessayer ou contacter le support'
       });
