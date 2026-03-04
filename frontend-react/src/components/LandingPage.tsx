@@ -9,10 +9,12 @@ import '../styles/gradients.css';
 import Abonnement from './Abonnement';
 import Newsletter from './Newsletter';
 import Footer from '../layout/Footer';
+import BackgroundShapes from './BackgroundShapes';
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="landing-page gradient-bg2">
+    <div className="landing-page gradient-bg2" style={{ position: 'relative', overflowX: 'hidden' }}>
+      <BackgroundShapes />
       <div>
         <NavBar className="component-margin" />
         <HeroSection id="hero" className="component-margin" />

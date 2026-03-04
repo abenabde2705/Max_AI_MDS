@@ -989,6 +989,8 @@ button {
 /* Landing Page Styles */
 .landing-page {
   min-height: 150vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 /* Section Spacer - Ligne blanche entre les composants */
@@ -2090,6 +2092,8 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 /* LandingPage Component - Styles exacts du Vue.js */
 .landing-page {
   min-height: 150vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .last-component {  
