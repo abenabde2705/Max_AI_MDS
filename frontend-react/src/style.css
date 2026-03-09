@@ -989,6 +989,8 @@ button {
 /* Landing Page Styles */
 .landing-page {
   min-height: 150vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 /* Section Spacer - Ligne blanche entre les composants */
@@ -1799,7 +1801,7 @@ color: #FFFFFF;
 }
 
 .Abonnement .title {
-  color: #ffffff;
+  color: #DAE63D;
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
@@ -1984,14 +1986,16 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 }
 
 .plan-button.primary {
-  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
-  color: white;
+  background: linear-gradient(135deg, #dae63d 0%, #b8c832 100%);
+  color: #1a0025;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(218, 230, 61, 0.35);
 }
 
 .plan-button.primary:hover {
-  background: linear-gradient(135deg, #EE5A6F 0%, #FF6B6B 100%);
+  background: linear-gradient(135deg, #e8f54a 0%, #dae63d 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+  box-shadow: 0 8px 28px rgba(218, 230, 61, 0.55);
 }
 
 .plan-button.secondary,
@@ -2088,6 +2092,8 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 /* LandingPage Component - Styles exacts du Vue.js */
 .landing-page {
   min-height: 150vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .last-component {  
@@ -3437,7 +3443,7 @@ padding-top: 6rem;
   white-space: nowrap;
   border-right: 2px solid rgba(218, 230, 61, 0.8);
   width: 0;
-  animation: typing 3.5s steps(44, end) forwards, blink 0.75s step-end infinite;
+  animation: typing 3.5s steps(44, end) infinite alternate, blink 0.75s step-end infinite;
   text-shadow: 0 0 30px rgba(218, 230, 61, 0.25);
 }
 

@@ -50,11 +50,14 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
             priceLabel=""
             description="Version D'essai"
             features={[
-              'Fonctionnalités Incluses :',
-              '',
+           
               'Limite De 10 Échanges Par Jour',
               '',
-              'Chatbot Max (Écoute Empathique)',
+              'Écoute active et bienveillante',
+              '',
+              'Disponibilité 24h/24 & 7j/7',
+              '',
+              'Confidentialité totale'
             ]}
             buttonText=""
             buttonStyle="free"
@@ -64,19 +67,21 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
             title="Plan Premium"
             price="14,99€"
             priceLabel=" / mois"
-            description="Engagement : Sans engagement ou avec abonnement"
+            description="Accompagnement complet sans engagement"
             features={[
-              'Fonctionnalités Incluses :',
+            
+              'Échanges illimités avec Max',
               '',
               'Suivi Émotionnel Personnalisé',
               '',
               'Statistiques Bien-Être',
               '',
               'Recommandation De Professionnels (Coach)',
-              '',
-              'Contenus Exclusifs Audio / Vidéo',
+              
               '',
               'Journal Émotionnel Simple',
+              '',
+              'Accès prioritaire aux nouvelles fonctions'
             ]}
             buttonText={loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium'}
             buttonStyle="primary"
@@ -89,13 +94,12 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
             title="Plan Campus"
             price="8€"
             priceLabel=" / mois"
-            description="Pris en charge par l'établissement"
+            description="Tarif réduit spécial étudiants"
             features={[
-              'Fonctionnalités Incluses :',
-              '',
+              
               'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
             ]}
-            buttonText={loadingPlan === 'student' ? 'Chargement...' : 'Vérification étudiante'}
+            buttonText={loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant'}
             buttonStyle="campus"
             onClick={handleStudentPlan}
             disabled={loadingPlan !== null}

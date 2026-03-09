@@ -28,7 +28,9 @@ export default function MaxAIChat() {
   const isApproachingLimit = !messageCount?.is_premium && messageCount?.limit !== null && messageCount !== null && messageCount.used >= 7 && !messageLimitReached;
   const planLabel = messageCount?.is_premium ? 'Plan Premium' : 'Plan Free';
   const usageText = messageCount
-    ? `${messageCount.used}/${messageCount.limit ?? '∞'} messages`
+    ? messageCount.is_premium
+      ? 'Messages illimités'
+      : `${messageCount.used}/${messageCount.limit ?? 10} messages`
     : '— messages';
   const planClass = messageLimitReached
     ? 'max-chat__plan--danger'
