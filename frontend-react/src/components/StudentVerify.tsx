@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   submitStudentVerification,
   fetchStudentVerificationStatus,
@@ -8,8 +7,12 @@ import {
 
 type VerificationStatus = 'none' | 'pending' | 'approved' | 'rejected';
 
-const StudentVerify: React.FC = () => {
-  const navigate = useNavigate();
+interface StudentVerifyModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const StudentVerifyModal: React.FC<StudentVerifyModalProps> = ({ isOpen, onClose }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [status, setStatus] = useState<VerificationStatus>('none');
@@ -20,6 +23,7 @@ const StudentVerify: React.FC = () => {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
+    if (!isOpen) return;
     const loadStatus = async () => {
       try {
         const { data } = await fetchStudentVerificationStatus();
@@ -32,47 +36,60 @@ const StudentVerify: React.FC = () => {
       }
     };
     loadStatus();
-  }, []);
+  }, [isOpen]);
+
+  // Ferme avec Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
+  // Bloque le scroll body quand ouvert
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (file.size > 5 * 1024 * 1024) {
       setError('Le fichier dépasse la taille maximale de 5 Mo.');
       return;
     }
-
     const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
     if (!allowed.includes(file.type)) {
       setError('Format non supporté. Utilisez JPEG, PNG, WebP ou PDF.');
       return;
     }
-
     setError('');
     setSelectedFile(file);
   };
 
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      const synth = { target: { files: [file] } } as unknown as React.ChangeEvent<HTMLInputElement>;
+      handleFileChange(synth);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!selectedFile) {
-      setError('Veuillez sélectionner un fichier.');
-      return;
-    }
-
+    if (!selectedFile) { setError('Veuillez sélectionner un fichier.'); return; }
     setUploading(true);
     setError('');
-
     const formData = new FormData();
     formData.append('card', selectedFile);
-
     try {
       await submitStudentVerification(formData);
       setStatus('pending');
+      setSelectedFile(null);
     } catch (err: any) {
-      const msg = err?.response?.data?.message || 'Erreur lors de l\'envoi. Veuillez réessayer.';
-      setError(msg);
+      setError(err?.response?.data?.message || 'Erreur lors de l\'envoi. Veuillez réessayer.');
     } finally {
       setUploading(false);
     }
@@ -82,9 +99,7 @@ const StudentVerify: React.FC = () => {
     setCheckoutLoading(true);
     try {
       const { data } = await createCheckoutSession('student');
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      if (data.url) window.location.href = data.url;
     } catch {
       setError('Erreur lors de la création du paiement. Veuillez réessayer.');
     } finally {
@@ -92,93 +107,110 @@ const StudentVerify: React.FC = () => {
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="student-verify-page">
-      <div className="student-verify-container">
-        <button className="profile-btn profile-btn--outline" onClick={() => navigate(-1)}>
-          ← Retour
-        </button>
+    <div className="sv-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="sv-modal" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="sv-header">
+          <div className="sv-header__icon">🎓</div>
+          <div>
+            <h2 className="sv-title">Vérification Étudiante</h2>
+            <p className="sv-subtitle">Tarif Campus à 8€/mois</p>
+          </div>
+          <button className="sv-close" onClick={onClose} aria-label="Fermer">✕</button>
+        </div>
 
-        <h1 className="student-verify-title">Vérification Étudiante</h1>
-        <p className="student-verify-subtitle">
-          Soumettez votre carte étudiante pour bénéficier du tarif étudiant à 8€/mois.
-        </p>
+        <div className="sv-body">
+          {/* Badge de statut */}
+          {status === 'approved' && (
+            <div className="sv-status sv-status--approved">
+              <span className="sv-status__dot" />
+              <div>
+                <strong>Carte approuvée !</strong>
+                <p>Vous pouvez finaliser votre abonnement au tarif étudiant.</p>
+              </div>
+            </div>
+          )}
+          {status === 'pending' && (
+            <div className="sv-status sv-status--pending">
+              <span className="sv-status__dot" />
+              <div>
+                <strong>Vérification en cours</strong>
+                <p>Notre équipe examine votre carte. Revenez dans 24–48h.</p>
+              </div>
+            </div>
+          )}
+          {status === 'rejected' && (
+            <div className="sv-status sv-status--rejected">
+              <span className="sv-status__dot" />
+              <div>
+                <strong>Vérification rejetée</strong>
+                {rejectionReason && <p>Motif : {rejectionReason}</p>}
+                <p>Soumettez un nouveau document ci-dessous.</p>
+              </div>
+            </div>
+          )}
 
-        {/* État : approuvé */}
-        {status === 'approved' && (
-          <div className="student-verify-status student-verify-status--approved">
-            <p className="student-verify-status__icon">✓</p>
-            <h2>Votre carte étudiante a été approuvée !</h2>
-            <p>Vous pouvez maintenant finaliser votre abonnement au tarif étudiant.</p>
+          {/* Formulaire */}
+          {(status === 'none' || status === 'rejected') && (
+            <form onSubmit={handleSubmit} className="sv-form">
+              <div
+                className={`sv-dropzone${selectedFile ? ' sv-dropzone--active' : ''}`}
+                onClick={() => fileInputRef.current?.click()}
+                onDrop={handleDrop}
+                onDragOver={e => e.preventDefault()}
+              >
+                {selectedFile ? (
+                  <>
+                    <span className="sv-dropzone__icon">✓</span>
+                    <span className="sv-dropzone__name">{selectedFile.name}</span>
+                    <span className="sv-dropzone__hint">Cliquez pour changer</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="sv-dropzone__icon">📄</span>
+                    <span>Cliquez ou glissez votre carte étudiante</span>
+                    <span className="sv-dropzone__hint">JPEG, PNG, WebP ou PDF — max 5 Mo</span>
+                  </>
+                )}
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp,.pdf"
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+              />
+
+              {error && <p className="sv-error">{error}</p>}
+
+              <button
+                type="submit"
+                className="profile-btn profile-btn--primary sv-submit"
+                disabled={uploading || !selectedFile}
+              >
+                {uploading ? 'Envoi en cours…' : 'Envoyer pour vérification'}
+              </button>
+            </form>
+          )}
+
+          {/* CTA Checkout */}
+          {status === 'approved' && (
             <button
-              className="profile-btn profile-btn--primary"
+              className="profile-btn profile-btn--primary sv-submit"
               onClick={handleFinalizeCheckout}
               disabled={checkoutLoading}
             >
-              {checkoutLoading ? 'Chargement...' : 'Finaliser mon abonnement (8€/mois)'}
+              {checkoutLoading ? 'Redirection…' : 'Finaliser mon abonnement — 8€/mois'}
             </button>
-          </div>
-        )}
-
-        {/* État : en attente */}
-        {status === 'pending' && (
-          <div className="student-verify-status student-verify-status--pending">
-            <p className="student-verify-status__icon">⏳</p>
-            <h2>Vérification en cours</h2>
-            <p>Votre carte étudiante est en cours d'examen par notre équipe. Revenez dans 24–48h.</p>
-          </div>
-        )}
-
-        {/* État : rejeté */}
-        {status === 'rejected' && (
-          <div className="student-verify-status student-verify-status--rejected">
-            <p className="student-verify-status__icon">✗</p>
-            <h2>Vérification rejetée</h2>
-            {rejectionReason && <p>Motif : {rejectionReason}</p>}
-            <p>Vous pouvez soumettre un nouveau document ci-dessous.</p>
-          </div>
-        )}
-
-        {/* Formulaire de soumission */}
-        {(status === 'none' || status === 'rejected') && (
-          <form className="student-verify-form" onSubmit={handleSubmit}>
-            <div
-              className="student-verify-dropzone"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {selectedFile ? (
-                <p className="student-verify-dropzone__filename">{selectedFile.name}</p>
-              ) : (
-                <>
-                  <p className="student-verify-dropzone__icon">📄</p>
-                  <p>Cliquez ou glissez votre carte étudiante ici</p>
-                  <p className="student-verify-dropzone__hint">JPEG, PNG, WebP ou PDF — max 5 Mo</p>
-                </>
-              )}
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".jpg,.jpeg,.png,.webp,.pdf"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
-
-            {error && <p className="student-verify-error">{error}</p>}
-
-            <button
-              type="submit"
-              className="profile-btn profile-btn--primary"
-              disabled={uploading || !selectedFile}
-            >
-              {uploading ? 'Envoi en cours...' : 'Envoyer pour vérification'}
-            </button>
-          </form>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default StudentVerify;
+export default StudentVerifyModal;

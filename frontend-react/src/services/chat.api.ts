@@ -78,3 +78,10 @@ export const submitStudentVerification = (formData: FormData) =>
 
 export const fetchStudentVerificationStatus = () =>
   axios.get(`${API_BASE}/student-verification/status`, { headers: getAuthHeaders() });
+
+// Admin
+export const fetchAdminVerifications = (status: 'pending' | 'approved' | 'rejected' | 'all' = 'all') =>
+  axios.get(`${API_BASE}/admin/student-verifications?status=${status}`, { headers: getAuthHeaders() });
+
+export const reviewStudentVerification = (id: string, status: 'approved' | 'rejected', rejectionReason?: string) =>
+  axios.patch(`${API_BASE}/admin/student-verifications/${id}`, { status, rejectionReason }, { headers: getAuthHeaders() });

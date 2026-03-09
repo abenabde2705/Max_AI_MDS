@@ -19,7 +19,7 @@ import EmotionalJournal from './components/EmotionalJournal';
 import Statistics from './components/Statistics';
 import Coaches from './components/Coaches';
 import ChatLayout from './components/ChatLayout';
-import StudentVerify from './components/StudentVerify';
+import AdminPage from './components/AdminPage';
 
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
@@ -60,7 +60,7 @@ const App: React.FC = () => {
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
-        <Route path="/student-verify" element={<ProtectedRoute element={<StudentVerify />} />} />
+        <Route path="/admin" element={<ProtectedRoute element={<AdminPage />} />} />
 
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
