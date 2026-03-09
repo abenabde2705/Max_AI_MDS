@@ -171,10 +171,13 @@ router.get('/current', authenticateToken, async (req: Request, res: Response): P
     });
 
     if (!subscription) {
+      // Fallback : vérifier le flag is_premium sur l'utilisateur
+      const user = await User.findByPk(userId);
+      const isPremium = !!user?.getDataValue('isPremium');
       res.json({
         success: true,
         data: {
-          plan: 'free',
+          plan: isPremium ? 'premium' : 'free',
           status: 'active',
           startDate: null,
           endDate: null,

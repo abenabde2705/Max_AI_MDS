@@ -77,12 +77,14 @@ export default function Sidebar({ onCreateNewConversation: _onCreateNewConversat
         })}
       </nav>
 
-      {!loading && !isPremium && (
+      
         <div className="max-chat__premium">
+          {!loading && !isPremium && (
           <Button fullWidth className="max-chat__premium-button" variant="primary" onClick={() => navigate('/#title')}>Passez Premium</Button>
+           )}
           <p className="max-chat__premium-note">Vos échanges restent confidentiels et sécurisés</p>
         </div>
-      )}
+     
     </aside>
   );
 }
