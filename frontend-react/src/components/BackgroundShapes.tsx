@@ -252,7 +252,7 @@ const BackgroundShapes: React.FC = () => {
         tl.set(ref.current, { opacity: 0, y: 0 })
           .to(ref.current, { opacity: 0.4, duration: 1, ease: 'power1.in' })
           .to(ref.current, { y: -280, duration: dur - 2, ease: 'none' }, 0)
-          .to(ref.current, { opacity: 0, duration: 1.5, ease: 'power1.out' }, `>-1.5`);
+          .to(ref.current, { opacity: 0, duration: 1.5, ease: 'power1.out' }, '>-1.5');
       });
 
       // ── DOT CLUSTER ─────────────────────────────────────────────────
