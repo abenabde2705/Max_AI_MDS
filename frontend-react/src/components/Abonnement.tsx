@@ -38,75 +38,75 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
 
   return (
     <>
-    <StudentVerifyModal isOpen={studentModalOpen} onClose={() => setStudentModalOpen(false)} />
-    <div id="app" className="Abonnement">
-      <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
-        <h1 id="title" className="title">ABONNEMENTS</h1>
+      <StudentVerifyModal isOpen={studentModalOpen} onClose={() => setStudentModalOpen(false)} />
+      <div id="app" className="Abonnement">
+        <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
+          <h1 id="title" className="title">ABONNEMENTS</h1>
 
-        <div className="plans-container">
-          <PlanCard
-            title="Plan Free"
-            price="Gratuit"
-            priceLabel=""
-            description="Version D'essai"
-            features={[
+          <div className="plans-container">
+            <PlanCard
+              title="Plan Free"
+              price="Gratuit"
+              priceLabel=""
+              description="Version D'essai"
+              features={[
            
-              'Limite De 10 Échanges Par Jour',
-              '',
-              'Écoute active et bienveillante',
-              '',
-              'Disponibilité 24h/24 & 7j/7',
-              '',
-              'Confidentialité totale'
-            ]}
-            buttonText=""
-            buttonStyle="free"
-          />
+                'Limite De 10 Échanges Par Jour',
+                '',
+                'Écoute active et bienveillante',
+                '',
+                'Disponibilité 24h/24 & 7j/7',
+                '',
+                'Confidentialité totale'
+              ]}
+              buttonText=""
+              buttonStyle="free"
+            />
 
-          <PlanCard
-            title="Plan Premium"
-            price="14,99€"
-            priceLabel=" / mois"
-            description="Accompagnement complet sans engagement"
-            features={[
+            <PlanCard
+              title="Plan Premium"
+              price="14,99€"
+              priceLabel=" / mois"
+              description="Accompagnement complet sans engagement"
+              features={[
             
-              'Échanges illimités avec Max',
-              '',
-              'Suivi Émotionnel Personnalisé',
-              '',
-              'Statistiques Bien-Être',
-              '',
-              'Recommandation De Professionnels (Coach)',
+                'Échanges illimités avec Max',
+                '',
+                'Suivi Émotionnel Personnalisé',
+                '',
+                'Statistiques Bien-Être',
+                '',
+                'Recommandation De Professionnels (Coach)',
               
-              '',
-              'Journal Émotionnel Simple',
-              '',
-              'Accès prioritaire aux nouvelles fonctions'
-            ]}
-            buttonText={loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium'}
-            buttonStyle="primary"
-            highlight={true}
-            onClick={handlePremiumCheckout}
-            disabled={loadingPlan !== null}
-          />
+                '',
+                'Journal Émotionnel Simple',
+                '',
+                'Accès prioritaire aux nouvelles fonctions'
+              ]}
+              buttonText={loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium'}
+              buttonStyle="primary"
+              highlight={true}
+              onClick={handlePremiumCheckout}
+              disabled={loadingPlan !== null}
+            />
 
-          <PlanCard
-            title="Plan Campus"
-            price="8€"
-            priceLabel=" / mois"
-            description="Tarif réduit spécial étudiants"
-            features={[
+            <PlanCard
+              title="Plan Campus"
+              price="8€"
+              priceLabel=" / mois"
+              description="Tarif réduit spécial étudiants"
+              features={[
               
-              'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
-            ]}
-            buttonText={loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant'}
-            buttonStyle="campus"
-            onClick={handleStudentPlan}
-            disabled={loadingPlan !== null}
-          />
+                'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
+              ]}
+              buttonText={loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant'}
+              buttonStyle="campus"
+              onClick={handleStudentPlan}
+              disabled={loadingPlan !== null}
+            />
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 };
