@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PlanCard from './PlanCard';
+import StudentVerifyModal from './StudentVerify';
 import { createCheckoutSession } from '../services/chat.api';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -11,8 +11,8 @@ interface AbonnementProps {
 }
 
 const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
-  const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<'premium' | 'student' | null>(null);
+  const [studentModalOpen, setStudentModalOpen] = useState(false);
 
   useEffect(() => {
     AOS.init();
@@ -33,10 +33,12 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   };
 
   const handleStudentPlan = () => {
-    navigate('/student-verify');
+    setStudentModalOpen(true);
   };
 
   return (
+    <>
+    <StudentVerifyModal isOpen={studentModalOpen} onClose={() => setStudentModalOpen(false)} />
     <div id="app" className="Abonnement">
       <div data-aos="fade-up" data-aos-duration="500" data-aos-delay="200">
         <h1 id="title" className="title">ABONNEMENTS</h1>
@@ -101,6 +103,7 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

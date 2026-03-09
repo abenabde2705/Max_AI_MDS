@@ -1,15 +1,22 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { authenticateToken } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/roleAuth.js';
 import StudentVerification from '../models/StudentVerification.js';
+import User from '../models/User.js';
 
 const router = Router();
 
+// Chemin absolu vers le dossier uploads (indépendant du CWD)
+const UPLOADS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../uploads/student-cards');
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
 // Configuration multer pour l'upload des cartes étudiantes
 const storage = multer.diskStorage({
-  destination: 'uploads/student-cards/',
+  destination: UPLOADS_DIR,
   filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname);
     cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
@@ -56,10 +63,13 @@ router.post('/student-verification/submit', authenticateToken, upload.single('ca
       return;
     }
 
+    // Stocker le chemin relatif pour construire l'URL côté client
+    const relPath = `uploads/student-cards/${req.file.filename}`;
+
     const verification = await StudentVerification.create({
       userId,
       status: 'pending',
-      cardImagePath: req.file.path,
+      cardImagePath: relPath,
       submittedAt: new Date()
     });
 
@@ -117,25 +127,44 @@ router.get('/student-verification/status', authenticateToken, async (req: Reques
 });
 
 /**
- * GET /api/admin/student-verifications
- * Liste des vérifications en attente (admin only)
+ * GET /api/admin/student-verifications?status=pending|approved|rejected|all
+ * Liste des vérifications (admin only)
  */
-router.get('/admin/student-verifications', authenticateToken, requireAdmin, async (_req: Request, res: Response): Promise<void> => {
+router.get('/admin/student-verifications', authenticateToken, requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
+    const { status } = req.query;
+    const where: Record<string, string> = {};
+    if (status && status !== 'all') {
+      where.status = status as string;
+    }
+
     const verifications = await StudentVerification.findAll({
-      where: { status: 'pending' },
-      order: [['submittedAt', 'ASC']]
+      where,
+      order: [['submittedAt', 'DESC']]
     });
+
+    // Récupérer les infos utilisateurs en une seule requête
+    const userIds = [...new Set(verifications.map(v => v.getDataValue('userId')))];
+    const users = await User.findAll({ where: { id: userIds } });
+    const userMap = new Map(users.map(u => [u.getDataValue('id'), u]));
 
     res.json({
       success: true,
-      data: verifications.map(v => ({
-        id: v.getDataValue('id'),
-        userId: v.getDataValue('userId'),
-        status: v.getDataValue('status'),
-        cardImagePath: v.getDataValue('cardImagePath'),
-        submittedAt: v.getDataValue('submittedAt')
-      }))
+      data: verifications.map(v => {
+        const user = userMap.get(v.getDataValue('userId'));
+        return {
+          id: v.getDataValue('id'),
+          userId: v.getDataValue('userId'),
+          userEmail: user ? user.getDataValue('email') : null,
+          userFirstName: user ? user.getDataValue('firstName') : null,
+          userLastName: user ? user.getDataValue('lastName') : null,
+          status: v.getDataValue('status'),
+          cardImagePath: v.getDataValue('cardImagePath'),
+          submittedAt: v.getDataValue('submittedAt'),
+          reviewedAt: v.getDataValue('reviewedAt'),
+          rejectionReason: v.getDataValue('rejectionReason')
+        };
+      })
     });
   } catch (error: unknown) {
     console.error('Erreur liste vérifications admin:', error);
