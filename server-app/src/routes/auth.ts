@@ -368,6 +368,7 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
         email: user.getDataValue('email'),
         age: user.getDataValue('age'),
         isPremium: user.getDataValue('isPremium'),
+        role: user.getDataValue('role') || 'user',
         createdAt: user.getDataValue('createdAt'),
         lastLogin: user.getDataValue('lastLogin')
       }

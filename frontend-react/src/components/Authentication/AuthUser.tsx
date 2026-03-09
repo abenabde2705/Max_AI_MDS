@@ -113,7 +113,7 @@ const AuthUser: React.FC = () => {
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
       
-        navigate('/dashboard');
+        navigate('/profile');
       } else {
         // Calculer l'âge à partir de la date de naissance
         const birthDate = new Date(form.birthDate);
@@ -146,7 +146,7 @@ const AuthUser: React.FC = () => {
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
 
-        navigate('/dashboard');
+        navigate('/profile');
       }
     } catch (error) {
       setError('Une erreur est survenue. Veuillez réessayer.');
