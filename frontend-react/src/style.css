@@ -2014,6 +2014,13 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
 }
 
+.plan-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 @media (max-width: 1024px) {
   .plans-container {
     gap: 2rem;

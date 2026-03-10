@@ -130,6 +130,8 @@ const Profile: React.FC = () => {
 
       if (response.ok) {
         setUser(formData);
+        localStorage.setItem('name', `${formData.firstName} ${formData.lastName}`.trim());
+        window.dispatchEvent(new Event('storage'));
         setEditMode(false);
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);

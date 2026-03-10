@@ -52,14 +52,23 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
   const [menuBg, setMenuBg] = useState<string>(interpolateGradient(0));
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
-  useEffect(() => {
+  const refreshUser = () => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
-      const userName = localStorage.getItem('userName');
+      const userName = localStorage.getItem('userName') || localStorage.getItem('name');
       const userEmailStored = localStorage.getItem('userEmail');
       setUserDisplay(userName || userEmailStored || 'Utilisateur');
+    } else {
+      setIsLoggedIn(false);
+      setUserDisplay('');
     }
+  };
+
+  useEffect(() => {
+    refreshUser();
+    window.addEventListener('storage', refreshUser);
+    return () => window.removeEventListener('storage', refreshUser);
   }, []);
 
   useEffect(() => {
