@@ -5,6 +5,7 @@ import EmotionalJournal from './EmotionalJournal.js';
 import Recommendation from './Recommendation.js';
 import Subscription from './Subscription.js';
 import StudentVerification from './StudentVerification.js';
+import CrisisAlert from './CrisisAlert.js';
 
 // Définir les associations avec types
 // User associations
@@ -69,6 +70,12 @@ StudentVerification.belongsTo(User, {
   foreignKey: 'userId'
 });
 
+// CrisisAlert associations
+User.hasMany(CrisisAlert, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Message.hasOne(CrisisAlert, { foreignKey: 'messageId', onDelete: 'CASCADE' });
+CrisisAlert.belongsTo(User, { foreignKey: 'userId' });
+CrisisAlert.belongsTo(Message, { foreignKey: 'messageId' });
+
 // Export des modèles avec types
 export {
   User,
@@ -77,7 +84,8 @@ export {
   EmotionalJournal,
   Recommendation,
   Subscription,
-  StudentVerification
+  StudentVerification,
+  CrisisAlert
 };
 
 // Types pour les relations

@@ -5,6 +5,7 @@ import { authenticateToken, checkMessageLimit } from '../middleware/auth.js';
 import Message from '../models/Message.js';
 import Conversation from '../models/Conversation.js';
 import Subscription from '../models/Subscription.js';
+import CrisisAlert from '../models/CrisisAlert.js';
 
 // 20 requêtes par minute par IP — cohérent avec l'ancien rate-limit Traefik
 const chatRateLimit = rateLimit({
@@ -74,6 +75,32 @@ router.post('/', chatRateLimit, authenticateToken, checkMessageLimit, async (req
       content: trimmedMessage,
       sentAt: new Date()
     });
+
+    // Détection de messages de crise
+    const URGENT_KEYWORDS = ['envie de mourir', 'veux mourir', 'me suicider', 'suicid', 'en finir avec ma vie', 'en finir avec tout', 'me tuer'];
+    const MODERATE_KEYWORDS = ["n'en peux plus", 'ne peux plus', 'désespoir', 'sans espoir', 'ça ne sert à rien', 'ca ne sert a rien', 'sans issue', 'plus envie de rien'];
+    const lowerMsg = trimmedMessage.toLowerCase();
+    const isUrgent = URGENT_KEYWORDS.some((kw) => lowerMsg.includes(kw));
+    const isModerate = !isUrgent && MODERATE_KEYWORDS.some((kw) => lowerMsg.includes(kw));
+    if (isUrgent || isModerate) {
+      try {
+        const savedMsg = await Message.findOne({
+          where: { conversationId: conversation_id, sender: 'user', content: trimmedMessage },
+          order: [['sentAt', 'DESC']],
+        });
+        if (savedMsg) {
+          await CrisisAlert.create({
+            messageId: savedMsg.getDataValue('id'),
+            userId: req.user!.id,
+            severity: isUrgent ? 'urgent' : 'moderate',
+            status: 'unread',
+            detectedAt: new Date(),
+          });
+        }
+      } catch (alertErr) {
+        console.warn('Crisis alert creation failed (non-blocking):', alertErr);
+      }
+    }
 
     // Auto-titre : si c'est le 1er message, utiliser les 40 premiers caractères comme titre
     const messageCount = await Message.count({ where: { conversationId: conversation_id } });

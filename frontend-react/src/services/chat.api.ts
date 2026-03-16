@@ -85,3 +85,18 @@ export const fetchAdminVerifications = (status: 'pending' | 'approved' | 'reject
 
 export const reviewStudentVerification = (id: string, status: 'approved' | 'rejected', rejectionReason?: string) =>
   axios.patch(`${API_BASE}/admin/student-verifications/${id}`, { status, rejectionReason }, { headers: getAuthHeaders() });
+
+export const fetchAdminUsers = (search?: string) =>
+  axios.get(`${API_BASE}/admin/users${search ? `?search=${encodeURIComponent(search)}` : ''}`, { headers: getAuthHeaders() });
+
+export const deleteAdminUser = (id: string) =>
+  axios.delete(`${API_BASE}/admin/users/${id}`, { headers: getAuthHeaders() });
+
+export const fetchAdminSubscriptions = () =>
+  axios.get(`${API_BASE}/admin/subscriptions`, { headers: getAuthHeaders() });
+
+export const fetchAdminCrisisAlerts = (filter?: string) =>
+  axios.get(`${API_BASE}/admin/crisis-alerts${filter && filter !== 'all' ? `?filter=${filter}` : ''}`, { headers: getAuthHeaders() });
+
+export const resolveAdminCrisisAlert = (id: string) =>
+  axios.patch(`${API_BASE}/admin/crisis-alerts/${id}/resolve`, {}, { headers: getAuthHeaders() });
