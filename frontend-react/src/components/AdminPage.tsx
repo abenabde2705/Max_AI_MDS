@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoMax from '../assets/img/logomax.png';
+import { Lock, FileText, RefreshCw } from 'lucide-react';
 import {
   fetchAdminVerifications,
   reviewStudentVerification,
@@ -259,7 +260,7 @@ const AdminPage: React.FC = () => {
   if (authError) {
     return (
       <div className="adm-error">
-        <span>🔒</span>
+        <Lock size={48} strokeWidth={1.5} />
         <h2>Accès refusé</h2>
         <p>Vous n'avez pas les droits pour accéder à cette page.</p>
         <button onClick={() => navigate('/')}>Retour à l'accueil</button>
@@ -381,7 +382,7 @@ const AdminPage: React.FC = () => {
                   onKeyDown={e => e.key === 'Enter' && loadUsers()}
                 />
               </div>
-              <button className="adm-btn adm-btn--primary" onClick={loadUsers}>↻ Rafraîchir</button>
+              <button className="adm-btn adm-btn--primary" onClick={loadUsers}><RefreshCw size={14} style={{ marginRight: 6 }} />Rafraîchir</button>
             </div>
 
             <div className="adm-table-wrap">
@@ -575,7 +576,7 @@ const AdminPage: React.FC = () => {
                         <td><span className="adm-status-badge adm-status-badge--pending">En attente</span></td>
                         <td>
                           {isPdf(v.cardImagePath) ? (
-                            <a href={cardImageUrl(v.cardImagePath)} target="_blank" rel="noreferrer" className="adm-doc-link">📄 PDF</a>
+                            <a href={cardImageUrl(v.cardImagePath)} target="_blank" rel="noreferrer" className="adm-doc-link"><FileText size={14} style={{ marginRight: 4 }} />PDF</a>
                           ) : (
                             <img
                               src={cardImageUrl(v.cardImagePath)}

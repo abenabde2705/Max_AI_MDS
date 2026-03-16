@@ -10,6 +10,7 @@ import { fetchUserProfile } from '@/services/chat.api';
 import ChatHistoric from './ChatHistoric';
 import LogoPrincipal from '@/assets/img/Logo_principal.png';
 import LogoYellow from '@/assets/img/logo_yellow.png';
+import { AlertTriangle, Lock, Sparkles } from 'lucide-react';
 const emotions = [
   { key: 'super', label: 'Super', icon: '😊' },
   { key: 'bien', label: 'Bien', icon: '😌' },
@@ -130,7 +131,7 @@ export default function MaxAIChat() {
 
         {isApproachingLimit && (
           <div className="max-chat__limit-warning">
-            <span className="max-chat__limit-warning-icon">⚠️</span>
+            <AlertTriangle className="max-chat__limit-warning-icon" size={16} />
             <span>
               Il vous reste{' '}
               <strong>{(messageCount!.limit! - messageCount!.used)} message{messageCount!.limit! - messageCount!.used > 1 ? 's' : ''}</strong>{' '}
@@ -179,14 +180,14 @@ export default function MaxAIChat() {
         <div className="max-chat__input-area">
           {messageLimitReached ? (
             <div className="max-chat__limit-wall">
-              <span className="max-chat__limit-wall-icon">🔒</span>
+              <Lock className="max-chat__limit-wall-icon" size={28} />
               <h3 className="max-chat__limit-wall-title">Limite de messages atteinte</h3>
               <p className="max-chat__limit-wall-text">
                 Vous avez utilisé vos <strong>10 messages</strong> du plan gratuit.
                 Passez au plan Premium pour continuer à discuter avec MAX sans limite.
               </p>
               <Button variant="primary" className="max-chat__limit-wall-button">
-                ✨ Passer au Premium
+                <Sparkles size={14} style={{ marginRight: 6 }} />Passer au Premium
               </Button>
             </div>
           ) : (

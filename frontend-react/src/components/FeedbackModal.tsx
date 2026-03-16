@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import './FeedbackModal.css';
+import { AlertTriangle, Plus, ArrowUp, Layout, Zap, MoreHorizontal, Check, X } from 'lucide-react';
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -21,13 +22,22 @@ interface SubmitStatus {
   details?: string;
 }
 
-const TYPE_OPTIONS: { value: FormData['type']; label: string; icon: string }[] = [
-  { value: 'bug',         label: 'Bug',             icon: '⚠' },
-  { value: 'feature',     label: 'Fonctionnalité',  icon: '+' },
-  { value: 'improvement', label: 'Amélioration',    icon: '↑' },
-  { value: 'ui_ux',       label: 'Interface',       icon: '◈' },
-  { value: 'performance', label: 'Performance',     icon: '▶' },
-  { value: 'other',       label: 'Autre',           icon: '…' },
+const TYPE_ICONS: Record<string, React.ReactNode> = {
+  bug:         <AlertTriangle size={14} />,
+  feature:     <Plus size={14} />,
+  improvement: <ArrowUp size={14} />,
+  ui_ux:       <Layout size={14} />,
+  performance: <Zap size={14} />,
+  other:       <MoreHorizontal size={14} />,
+};
+
+const TYPE_OPTIONS: { value: FormData['type']; label: string }[] = [
+  { value: 'bug',         label: 'Bug'           },
+  { value: 'feature',     label: 'Fonctionnalité'},
+  { value: 'improvement', label: 'Amélioration'  },
+  { value: 'ui_ux',       label: 'Interface'     },
+  { value: 'performance', label: 'Performance'   },
+  { value: 'other',       label: 'Autre'         },
 ];
 
 const SEVERITY_OPTIONS: { value: FormData['severity']; label: string }[] = [
@@ -181,7 +191,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
                   onClick={() => setFormData(prev => ({ ...prev, type: opt.value }))}
                   disabled={isSubmitting}
                 >
-                  <span className="feedback-pill-icon">{opt.icon}</span>
+                  <span className="feedback-pill-icon">{TYPE_ICONS[opt.value]}</span>
                   {opt.label}
                 </button>
               ))}
@@ -226,7 +236,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
         {submitStatus && (
           <div className={`feedback-status ${submitStatus.type}`}>
             <span className="feedback-status-icon">
-              {submitStatus.type === 'success' ? '✓' : '✕'}
+              {submitStatus.type === 'success' ? <Check size={20} /> : <X size={20} />}
             </span>
             <h3>{submitStatus.title}</h3>
             <p>{submitStatus.message}</p>
