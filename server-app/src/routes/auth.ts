@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import rateLimit from 'express-rate-limit';
 import { Op } from 'sequelize';
 import User from '../models/User.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
@@ -9,6 +10,30 @@ import passport from '../config/passport.js';
 import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email.js';
 
 const router = express.Router();
+
+const loginRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' }
+});
+
+const registerRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de créations de compte. Réessayez dans 15 minutes.' }
+});
+
+const passwordResetRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de demandes de réinitialisation. Réessayez dans 15 minutes.' }
+});
 
 interface RegisterRequest extends Request {
     body: {
@@ -131,7 +156,7 @@ interface AuthenticatedRequest extends Request {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/register', async (req: RegisterRequest, res: Response): Promise<void> => {
+router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Response): Promise<void> => {
   try {
     const { firstName, lastName, email, password, age } = req.body;
 
@@ -271,7 +296,7 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/login', async (req: LoginRequest, res: Response): Promise<void> => {
+router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
@@ -763,7 +788,7 @@ router.post('/verify-email', async (req: Request, res: Response): Promise<void> 
  *       400:
  *         description: Email requis
  */
-router.post('/request-password-reset', async (req: Request, res: Response): Promise<void> => {
+router.post('/request-password-reset', passwordResetRateLimit, async (req: Request, res: Response): Promise<void> => {
   try {
     const { email } = req.body;
 
