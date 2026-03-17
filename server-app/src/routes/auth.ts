@@ -668,7 +668,7 @@ router.post('/request-email-verification', authenticateToken, async (req: Authen
 
     const verificationToken = jwt.sign(
       { userId: user.id, type: 'email_verification' },
-      process.env.JWT_SECRET || 'fallback_secret',
+      process.env.JWT_SECRET!,
       { expiresIn: '24h' }
     );
 
@@ -721,7 +721,7 @@ router.post('/verify-email', async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
     if (decoded.type !== 'email_verification') {
       res.status(400).json({ message: 'Token invalide' });
@@ -801,7 +801,7 @@ router.post('/request-password-reset', async (req: Request, res: Response): Prom
 
     const resetToken = jwt.sign(
       { userId: user.getDataValue('id'), type: 'password_reset' },
-      process.env.JWT_SECRET || 'fallback_secret',
+      process.env.JWT_SECRET!,
       { expiresIn: '1h' }
     );
 
@@ -868,7 +868,7 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
       return;
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
     if (decoded.type !== 'password_reset') {
       res.status(400).json({ message: 'Token invalide' });
@@ -935,7 +935,7 @@ router.post('/refresh-token', authenticateToken, async (req: AuthenticatedReques
         id: user.id, 
         email: user.email
       },
-      process.env.JWT_SECRET || 'fallback_secret',
+      process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
 

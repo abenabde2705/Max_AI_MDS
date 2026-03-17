@@ -55,6 +55,15 @@ if (process.env.NODE_ENV !== 'production' && !process.env.DOCKER_ENV) {
     dotenv.config();
 }
 
+// Vérification des variables d'environnement critiques au démarrage
+const REQUIRED_ENV = ['JWT_SECRET', 'SESSION_SECRET'];
+for (const key of REQUIRED_ENV) {
+    if (!process.env[key]) {
+        console.error(`❌ Variable d'environnement manquante : ${key}`);
+        process.exit(1);
+    }
+}
+
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
@@ -206,7 +215,7 @@ app.use('/uploads', express.static(path.join(path.dirname(fileURLToPath(import.m
 
 // Session configuration for Passport
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     cookie: {
