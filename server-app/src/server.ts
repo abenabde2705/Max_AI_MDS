@@ -229,12 +229,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Swagger Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    explorer: true,
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Max AI API Documentation'
-}));
+// Swagger Documentation (dev/staging only)
+if (process.env.NODE_ENV !== 'production') {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+        explorer: true,
+        customCss: '.swagger-ui .topbar { display: none }',
+        customSiteTitle: 'Max AI API Documentation'
+    }));
+} else {
+    app.use('/api-docs', (_req, res: Response) => {
+        res.status(404).json({ message: 'Not found' });
+    });
+}
 
 // Metrics endpoint pour Prometheus
 app.get('/metrics', async (req: Request, res: Response): Promise<void> => {
