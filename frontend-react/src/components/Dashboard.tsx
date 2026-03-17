@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Calendar, LogOut, Settings, Shield, MessageCircle, Home, Info } from 'lucide-react';
@@ -18,7 +19,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       
       if (!token) {
         navigate('/auth');
@@ -41,12 +42,12 @@ const Dashboard: React.FC = () => {
             name: `${userData.user.firstName} ${userData.user.lastName}`
           });
         } else {
-          localStorage.removeItem('token');
+          removeToken();
           navigate('/auth');
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
-        localStorage.removeItem('token');
+        removeToken();
         navigate('/auth');
       } finally {
         setLoading(false);
@@ -57,7 +58,7 @@ const Dashboard: React.FC = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    removeToken();
     navigate('/');
     window.location.reload();
   };

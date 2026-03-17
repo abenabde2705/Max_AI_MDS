@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import { useState, useEffect, useRef } from 'react';
 import {
   fetchConversations,
@@ -24,7 +25,7 @@ export function useChat() {
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (token) {
       setIsAuthenticated(true);
       loadConversations();

@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { fetchCurrentSubscription } from '../services/chat.api';
 
@@ -18,7 +19,7 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (!token) {
       setLoading(false);
       return;

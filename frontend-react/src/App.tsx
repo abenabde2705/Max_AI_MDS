@@ -21,10 +21,11 @@ import Coaches from './components/Coaches';
 import ChatLayout from './components/ChatLayout';
 import AdminPage from './components/AdminPage';
 import SetPassword from './components/SetPassword';
+import { getToken } from './utils/token';
 
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   return token ? element : <Navigate to="/auth" replace />;
 };
 

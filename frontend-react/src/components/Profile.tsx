@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Camera } from 'lucide-react';
@@ -43,7 +44,7 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       if (!token) {
         navigate('/auth');
         return;
@@ -76,7 +77,7 @@ const Profile: React.FC = () => {
           setUser(profile);
           setFormData(profile);
         } else {
-          localStorage.removeItem('token');
+          removeToken();
           navigate('/auth');
           return;
         }
@@ -110,7 +111,7 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (!token) return;
 
     try {
@@ -143,7 +144,7 @@ const Profile: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    removeToken();
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');

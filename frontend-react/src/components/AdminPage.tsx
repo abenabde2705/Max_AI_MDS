@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoMax from '../assets/img/logomax.png';
@@ -128,7 +129,7 @@ const AdminPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (!token) { navigate('/auth'); return; }
     fetch(`${API_URL}/api/auth/profile`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())

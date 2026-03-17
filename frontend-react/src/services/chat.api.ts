@@ -1,9 +1,10 @@
 import axios from 'axios';
+import { getToken } from '../utils/token';
 
 const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
 export const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   return {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',

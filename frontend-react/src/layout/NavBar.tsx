@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -53,7 +54,7 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
   const refreshUser = () => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (token) {
       setIsLoggedIn(true);
       const userName = localStorage.getItem('userName') || localStorage.getItem('name');
@@ -125,7 +126,7 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
   };
 
   const _logout = (): void => {
-    localStorage.removeItem('token');
+    removeToken();
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');

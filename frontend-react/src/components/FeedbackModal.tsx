@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import './FeedbackModal.css';
@@ -69,7 +70,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
     setSubmitStatus(null);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = getToken();
 
       if (!token) {
         throw new Error('Vous devez être connecté pour envoyer un feedback');
