@@ -58,7 +58,7 @@ const createStudentVerifications = async (queryInterface: QueryInterface, _Seque
       await queryInterface.addIndex('student_verifications', ['user_id'], { transaction } as any);
       await queryInterface.addIndex('student_verifications', ['status'], { transaction } as any);
 
-      console.log('✅ Table student_verifications créée avec succès');
+      console.log('✅ Table student_verifications crée avec succès');
     } catch (error) {
       console.error('❌ Erreur lors de la création de student_verifications:', error);
       throw error;
