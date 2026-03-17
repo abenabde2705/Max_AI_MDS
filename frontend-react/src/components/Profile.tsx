@@ -23,6 +23,7 @@ interface UserProfile {
   birthDate?: string;
   plan?: string;
   createdAt?: string;
+  isOAuthAccount?: boolean;
 }
 
 interface SubscriptionInfo {
@@ -52,6 +53,9 @@ const Profile: React.FC = () => {
     newsletter: false,
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
   const [passwordError, setPasswordError] = useState('');
@@ -91,6 +95,7 @@ const Profile: React.FC = () => {
             birthDate: userData.birthDate || userData.birth_date || '',
             plan: userData.plan || 'Free',
             createdAt: userData.createdAt || userData.created_at || '',
+            isOAuthAccount: userData.isOAuthAccount || false,
           };
           setUser(profile);
           setFormData(profile);
@@ -191,6 +196,32 @@ const Profile: React.FC = () => {
       setTimeout(() => setPasswordSuccess(false), 3000);
     } catch {
       setPasswordError('Erreur réseau. Veuillez réessayer.');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    setDeleteError('');
+    const token = getToken();
+    if (!token) return;
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/users/me`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        setDeleteError(data.message || 'Erreur lors de la suppression.');
+        setDeleteLoading(false);
+        return;
+      }
+      removeToken();
+      localStorage.clear();
+      navigate('/auth');
+    } catch {
+      setDeleteError('Erreur réseau. Veuillez réessayer.');
+      setDeleteLoading(false);
     }
   };
 
@@ -334,7 +365,14 @@ const Profile: React.FC = () => {
           <div className="profile-card">
             <h3 className="profile-card__title">Sécurité</h3>
             <div className="profile-security">
-              {!showPasswordForm ? (
+              {user.isOAuthAccount ? (
+                <div className="profile-security__row">
+                  <div>
+                    <p className="profile-security__label">Mot de passe</p>
+                    <p className="profile-security__oauth-note">Compte connecté via Google ou Facebook — le mot de passe est géré par votre fournisseur d'identité.</p>
+                  </div>
+                </div>
+              ) : !showPasswordForm ? (
                 <div className="profile-security__row">
                   <div>
                     <p className="profile-security__label">Mot de passe</p>
@@ -525,11 +563,41 @@ const Profile: React.FC = () => {
                 <p className="profile-account-action__title">Supprimer mon compte</p>
                 <p className="profile-account-action__sub">Cette action est irréversible</p>
               </div>
-              <button className="profile-btn profile-btn--outline">Supprimer</button>
+              <button className="profile-btn profile-btn--danger" onClick={() => { setShowDeleteModal(true); setDeleteError(''); }}>
+                Supprimer
+              </button>
             </div>
           </div>
         </div>
       </div>
+      {/* Modale suppression de compte */}
+      {showDeleteModal && (
+        <div className="profile-modal-overlay" onClick={() => !deleteLoading && setShowDeleteModal(false)}>
+          <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="profile-modal__title">Supprimer mon compte</h2>
+            <p className="profile-modal__text">
+              Cette action est <strong>définitive et irréversible</strong>. Toutes vos données seront supprimées : conversations, journal, abonnement.
+            </p>
+            {deleteError && <p className="profile-modal__error">{deleteError}</p>}
+            <div className="profile-modal__actions">
+              <button
+                className="profile-btn profile-btn--outline"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleteLoading}
+              >
+                Annuler
+              </button>
+              <button
+                className="profile-btn profile-btn--danger"
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Suppression...' : 'Confirmer la suppression'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -155,7 +155,7 @@ const ConditionsUtilisation: React.FC = () => {
             <p>Pour toute question relative aux présentes CGU :</p>
             <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
               <li>Email : <strong style={{ color: '#DAE63D' }}>contact@maxai-mds.fr</strong></li>
-              <li>Adresse : Max AI SAS, France</li>
+              <li>Adresse : Max AI SAS, 40 Rue du Chemin Vert, 75011 Paris, France</li>
             </ul>
           </Section>
 

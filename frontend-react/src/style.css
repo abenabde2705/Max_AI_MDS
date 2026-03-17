@@ -5670,10 +5670,68 @@ color: #F2F5FF;
   margin: 0;
 }
 
+.profile-security__oauth-note {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
 .profile-security__divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.1);
   margin: 1rem 0;
+}
+
+/* Delete account modal */
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.profile-modal {
+  background: linear-gradient(180deg, #161A4D 0%, #470059 100%);
+  border: 2px solid rgba(255, 107, 107, 0.4);
+  border-radius: 24px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 90%;
+}
+
+.profile-modal__title {
+  color: #ff6b6b;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.profile-modal__text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.profile-modal__text strong {
+  color: #fff;
+}
+
+.profile-modal__error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.profile-modal__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
 }
 
 /* Subscription */

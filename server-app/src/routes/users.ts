@@ -1,9 +1,22 @@
 import express, { Request, Response } from 'express';
+import Stripe from 'stripe';
 import { Op } from 'sequelize';
 import { authenticateToken } from '../middleware/auth.js';
+import User from '../models/User.js';
 import Message from '../models/Message.js';
 import Conversation from '../models/Conversation.js';
 import Subscription from '../models/Subscription.js';
+import EmotionalJournal from '../models/EmotionalJournal.js';
+import CrisisAlert from '../models/CrisisAlert.js';
+import StudentVerification from '../models/StudentVerification.js';
+
+let _stripe: Stripe | null = null;
+const getStripe = (): Stripe | null => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  if (!_stripe) _stripe = new Stripe(key, { apiVersion: '2026-02-25.clover' });
+  return _stripe;
+};
 
 const FREE_MESSAGE_LIMIT = 10;
 
@@ -90,6 +103,60 @@ router.get('/me/message-count', authenticateToken, async (req: AuthenticatedRequ
     console.error('Erreur lors du comptage des messages:', error);
     const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ message: 'Erreur interne du serveur', error: message });
+  }
+});
+
+/**
+ * DELETE /api/users/me - Suppression du compte (RGPD)
+ */
+router.delete('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
+    const userId = req.user.id;
+
+    // 1. Annuler l'abonnement Stripe actif si présent
+    const subscription = await Subscription.findOne({
+      where: { userId, status: 'active' }
+    });
+
+    if (subscription) {
+      const stripeSubId = subscription.getDataValue('stripeSubscriptionId');
+      if (stripeSubId) {
+        const stripe = getStripe();
+        if (stripe) {
+          await stripe.subscriptions.cancel(stripeSubId).catch(() => {
+            // Non bloquant : on supprime le compte même si Stripe échoue
+          });
+        }
+      }
+    }
+
+    // 2. Récupérer les IDs de conversations pour supprimer les messages
+    const conversations = await Conversation.findAll({
+      where: { userId },
+      attributes: ['id']
+    });
+    const conversationIds = conversations.map(c => c.getDataValue('id'));
+
+    // 3. Suppression en cascade manuelle
+    if (conversationIds.length > 0) {
+      await Message.destroy({ where: { conversationId: { [Op.in]: conversationIds } } });
+    }
+    await Conversation.destroy({ where: { userId } });
+    await EmotionalJournal.destroy({ where: { userId } });
+    await CrisisAlert.destroy({ where: { userId } });
+    await Subscription.destroy({ where: { userId } });
+    await StudentVerification.destroy({ where: { userId } });
+    await User.destroy({ where: { id: userId } });
+
+    res.json({ success: true, message: 'Compte supprimé avec succès' });
+  } catch (error: unknown) {
+    console.error('Erreur lors de la suppression du compte:', error);
+    res.status(500).json({ message: 'Erreur interne du serveur' });
   }
 });
 

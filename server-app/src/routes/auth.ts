@@ -387,7 +387,8 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
         isPremium: user.getDataValue('isPremium'),
         role: user.getDataValue('role') || 'user',
         createdAt: user.getDataValue('createdAt'),
-        lastLogin: user.getDataValue('lastLogin')
+        lastLogin: user.getDataValue('lastLogin'),
+        isOAuthAccount: !!(user.getDataValue('googleId') || user.getDataValue('facebookId'))
       }
     });
   } catch (error: unknown) {
@@ -484,14 +485,17 @@ router.put('/change-password', authenticateToken, async (req: ChangePasswordRequ
     }
 
     const user = await User.findByPk(req.user.id);
-    
+
     if (!user) {
-      res.status(404).json({
-        message: 'Utilisateur non trouvé'
-      });
+      res.status(404).json({ message: 'Utilisateur non trouvé' });
       return;
     }
-    
+
+    if (user.getDataValue('googleId') || user.getDataValue('facebookId')) {
+      res.status(403).json({ message: 'Les comptes connectés via Google ou Facebook ne peuvent pas modifier leur mot de passe ici.' });
+      return;
+    }
+
     // Vérifier le mot de passe actuel
     const isCurrentPasswordValid = await user.comparePassword(currentPassword);
     if (!isCurrentPasswordValid) {
