@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
 import User from '../models/User.js';
 import Subscription from '../models/Subscription.js';
+import { sendSubscriptionEmail } from '../services/email.js';
 
 const router = Router();
 
@@ -133,6 +134,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
       stripePeriodEnd
     });
   }
+
+  // Envoyer l'email de confirmation d'abonnement (non-bloquant)
+  sendSubscriptionEmail({
+    to: user.getDataValue('email'),
+    firstName: user.getDataValue('firstName'),
+    plan,
+  }).catch(err => console.error('Erreur envoi email abonnement:', err));
 
   console.log(`✅ Abonnement ${plan} activé pour l'utilisateur ${userId}`);
 }

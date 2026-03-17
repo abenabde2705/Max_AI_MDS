@@ -1,5 +1,5 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import NavBar from '../../layout/NavBar';
 import logoImg from '../../assets/img/hero/logomax.png';
 import { setToken } from '../../utils/token';
@@ -343,9 +343,17 @@ const AuthUser: React.FC = () => {
             </div>
           )}
               
-          <button 
-            type="submit" 
-            className="login-button" 
+          {mode === 'login' && (
+            <div style={{ textAlign: 'right', marginTop: '-0.25rem', marginBottom: '0.5rem' }}>
+              <Link to="/forgot-password" style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', textDecoration: 'none' }}>
+                Mot de passe oublié ?
+              </Link>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="login-button"
             disabled={loading}
           >
             {loading ? 'Chargement...' : (mode === 'login' ? 'Connexion' : 'Inscription')}

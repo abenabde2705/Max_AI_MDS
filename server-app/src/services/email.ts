@@ -106,6 +106,59 @@ export const sendWelcomeEmail = async (opts: { to: string; firstName: string }) 
 };
 
 /**
+ * Email de réinitialisation de mot de passe.
+ */
+export const sendPasswordResetEmail = async (opts: {
+  to: string;
+  firstName: string;
+  token: string;
+}) => {
+  const link = `${FRONTEND_URL}/reset-password?token=${opts.token}`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: 'Réinitialisation de votre mot de passe Max',
+    html: `
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+          <tr><td align="center">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+              <tr><td>
+                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                  Bonjour ${opts.firstName} 👋
+                </h2>
+                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Vous avez demandé à réinitialiser votre mot de passe <strong style="color:#DAE63D;">Max AI</strong>.<br/>
+                  Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
+                </p>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr><td align="center" style="padding:0 0 32px;">
+                    <a href="${link}"
+                       style="display:inline-block;background:#DAE63D;color:#161a4d;text-decoration:none;
+                              font-weight:700;font-size:1rem;padding:14px 36px;border-radius:50px;">
+                      Réinitialiser mon mot de passe
+                    </a>
+                  </td></tr>
+                </table>
+                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                  Ce lien expire dans 1h. Si vous n'avez pas fait cette demande, ignorez cet email.
+                </p>
+              </td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </body>
+      </html>
+    `,
+  });
+};
+
+/**
  * Email de confirmation d'abonnement.
  */
 export const sendSubscriptionEmail = async (opts: {
