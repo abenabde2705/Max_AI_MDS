@@ -505,9 +505,10 @@ router.put('/change-password', authenticateToken, async (req: ChangePasswordRequ
       return;
     }
 
-    // Mettre à jour le mot de passe (le hook beforeSave s'occupera du hachage)
-    user.password = newPassword;
-    await user.save();
+    // Hasher et sauvegarder directement sans dépendre du hook beforeUpdate
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.setDataValue('password', hashedPassword);
+    await user.save({ hooks: false });
 
     res.json({
       message: 'Mot de passe changé avec succès'
