@@ -6610,3 +6610,35 @@ color: #F2F5FF;
 
 .set-pwd__success h2 { color: #dae63d; margin: 0; font-size: 1.4rem; }
 .set-pwd__success p  { color: rgba(255, 255, 255, 0.6); margin: 0; }
+
+/* ─── Show/hide password toggle ──────────────────────────────────────────────── */
+
+.set-pwd__input-wrap,
+.auth-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.set-pwd__input-wrap input,
+.auth-input-wrap input {
+  width: 100%;
+  padding-right: 48px !important;
+}
+
+.set-pwd__eye,
+.auth-eye {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.set-pwd__eye:hover,
+.auth-eye:hover { color: #9c59ff; }
