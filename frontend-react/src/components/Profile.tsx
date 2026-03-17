@@ -1,5 +1,16 @@
 import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
+
+const EyeOn = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+  </svg>
+);
+const EyeOff = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>
+  </svg>
+);
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, Camera } from 'lucide-react';
 import { fetchCurrentSubscription, cancelSubscription, createPortalSession } from '../services/chat.api';
@@ -41,6 +52,13 @@ const Profile: React.FC = () => {
     newsletter: false,
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNext, setShowNext] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -140,6 +158,39 @@ const Profile: React.FC = () => {
       }
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    if (passwordForm.next !== passwordForm.confirm) {
+      setPasswordError('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    if (passwordForm.next.length < 8) {
+      setPasswordError('Le mot de passe doit contenir au moins 8 caractères.');
+      return;
+    }
+    const token = getToken();
+    if (!token) return;
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/auth/change-password`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: passwordForm.current, newPassword: passwordForm.next }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setPasswordError(data.message || 'Erreur lors du changement de mot de passe.');
+        return;
+      }
+      setPasswordSuccess(true);
+      setShowPasswordForm(false);
+      setPasswordForm({ current: '', next: '', confirm: '' });
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch {
+      setPasswordError('Erreur réseau. Veuillez réessayer.');
     }
   };
 
@@ -283,19 +334,91 @@ const Profile: React.FC = () => {
           <div className="profile-card">
             <h3 className="profile-card__title">Sécurité</h3>
             <div className="profile-security">
-              <div className="profile-security__row">
-                <div>
-                  <p className="profile-security__label">Mot de passe</p>
-                  <input
-                    className="profile-form__input"
-                    type="password"
-                    value="••••••••••••••••••"
-                    disabled
-                    style={{ letterSpacing: '3px' }}
-                  />
+              {!showPasswordForm ? (
+                <div className="profile-security__row">
+                  <div>
+                    <p className="profile-security__label">Mot de passe</p>
+                    <input
+                      className="profile-form__input"
+                      type="password"
+                      value="••••••••••••••••••"
+                      disabled
+                      style={{ letterSpacing: '3px' }}
+                    />
+                  </div>
+                  <button
+                    className="profile-btn profile-btn--primary profile-btn--sm"
+                    onClick={() => { setShowPasswordForm(true); setPasswordError(''); setShowCurrent(false); setShowNext(false); setShowConfirm(false); }}
+                  >
+                    Modifier
+                  </button>
                 </div>
-                <button className="profile-btn profile-btn--primary profile-btn--sm">Modifier</button>
-              </div>
+              ) : (
+                <div className="profile-password-form">
+                  <div className="profile-form__field">
+                    <label className="profile-form__label">Mot de passe actuel</label>
+                    <div className="auth-input-wrap">
+                      <input
+                        className="profile-form__input"
+                        type={showCurrent ? 'text' : 'password'}
+                        value={passwordForm.current}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, current: e.target.value })}
+                        placeholder="••••••••"
+                      />
+                      <button type="button" className="auth-eye" onClick={() => setShowCurrent(v => !v)} tabIndex={-1}>
+                        {showCurrent ? <EyeOff /> : <EyeOn />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="profile-form__field">
+                    <label className="profile-form__label">Nouveau mot de passe</label>
+                    <div className="auth-input-wrap">
+                      <input
+                        className="profile-form__input"
+                        type={showNext ? 'text' : 'password'}
+                        value={passwordForm.next}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })}
+                        placeholder="Min. 8 caractères"
+                      />
+                      <button type="button" className="auth-eye" onClick={() => setShowNext(v => !v)} tabIndex={-1}>
+                        {showNext ? <EyeOff /> : <EyeOn />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="profile-form__field">
+                    <label className="profile-form__label">Confirmer le mot de passe</label>
+                    <div className="auth-input-wrap">
+                      <input
+                        className="profile-form__input"
+                        type={showConfirm ? 'text' : 'password'}
+                        value={passwordForm.confirm}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
+                        placeholder="••••••••"
+                      />
+                      <button type="button" className="auth-eye" onClick={() => setShowConfirm(v => !v)} tabIndex={-1}>
+                        {showConfirm ? <EyeOff /> : <EyeOn />}
+                      </button>
+                    </div>
+                  </div>
+                  {passwordError && <p className="profile-password-form__error">{passwordError}</p>}
+                  <div className="profile-form__actions">
+                    <button
+                      className="profile-btn profile-btn--outline"
+                      onClick={() => { setShowPasswordForm(false); setPasswordForm({ current: '', next: '', confirm: '' }); setPasswordError(''); setShowCurrent(false); setShowNext(false); setShowConfirm(false); }}
+                    >
+                      Annuler
+                    </button>
+                    <button className="profile-btn profile-btn--primary" onClick={handleChangePassword}>
+                      Confirmer
+                    </button>
+                  </div>
+                </div>
+              )}
+              {passwordSuccess && (
+                <div className="profile-success-banner" style={{ marginTop: '0.75rem' }}>
+                  <CheckCircle size={16} style={{ marginRight: 8 }} />Mot de passe mis à jour
+                </div>
+              )}
               <div className="profile-security__divider" />
               <div className="profile-security__row profile-security__row--2fa">
                 <span className="profile-security__label">Authentification à deux facteurs</span>

@@ -5658,6 +5658,18 @@ color: #F2F5FF;
   display: block;
 }
 
+.profile-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-password-form__error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
 .profile-security__divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.1);
