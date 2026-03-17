@@ -7,6 +7,7 @@ import {
   reviewStudentVerification,
   fetchAdminUsers,
   deleteAdminUser,
+  createAdminUser,
   fetchAdminSubscriptions,
   fetchAdminCrisisAlerts,
   resolveAdminCrisisAlert,
@@ -80,6 +81,9 @@ const AdminPage: React.FC = () => {
   const [userSearch, setUserSearch] = useState('');
   const [usersLoading, setUsersLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [addUserForm, setAddUserForm] = useState({ firstName: '', lastName: '', email: '', dateOfBirth: '', phone: '', plan: 'free' });
+  const [addUserLoading, setAddUserLoading] = useState(false);
 
   // Subscriptions
   const [subTab, setSubTab] = useState<SubTab>('all');
@@ -221,6 +225,31 @@ const AdminPage: React.FC = () => {
     } catch { showToast('Erreur résolution alerte', 'err'); }
   };
 
+  const handleAddUser = async () => {
+    if (!addUserForm.firstName.trim() || !addUserForm.email) {
+      showToast('Prénom et email sont requis', 'err');
+      return;
+    }
+    setAddUserLoading(true);
+    try {
+      await createAdminUser({
+        firstName: addUserForm.firstName.trim(),
+        lastName: addUserForm.lastName.trim(),
+        email: addUserForm.email,
+        dateOfBirth: addUserForm.dateOfBirth || undefined,
+        plan: addUserForm.plan,
+      });
+      showToast('Utilisateur créé avec succès', 'ok');
+      setShowAddUser(false);
+      setAddUserForm({ firstName: '', lastName: '', email: '', dateOfBirth: '', phone: '', plan: 'free' });
+      loadUsers();
+    } catch (err: any) {
+      showToast(err?.response?.data?.message || 'Erreur création utilisateur', 'err');
+    } finally {
+      setAddUserLoading(false);
+    }
+  };
+
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 
@@ -278,6 +307,93 @@ const AdminPage: React.FC = () => {
         <div className="adm-lightbox" onClick={() => setPreviewUrl(null)}>
           <button className="adm-lightbox__close" onClick={() => setPreviewUrl(null)}>✕</button>
           <img src={previewUrl} alt="Carte étudiante" onClick={e => e.stopPropagation()} />
+        </div>
+      )}
+
+      {/* Add user modal */}
+      {showAddUser && (
+        <div className="adm-modal-overlay" onClick={() => setShowAddUser(false)}>
+          <div className="adm-add-user-modal" onClick={e => e.stopPropagation()}>
+            <div className="adm-add-user-modal__header">
+              <h2 className="adm-add-user-modal__title">Ajouter un utilisateur</h2>
+              <button className="adm-add-user-modal__close" onClick={() => setShowAddUser(false)}>✕</button>
+            </div>
+
+            <div className="adm-add-user-modal__row">
+              <div className="adm-add-user-modal__field">
+                <label>Prénom</label>
+                <input
+                  type="text"
+                  placeholder="John"
+                  value={addUserForm.firstName}
+                  onChange={e => setAddUserForm(f => ({ ...f, firstName: e.target.value }))}
+                />
+              </div>
+              <div className="adm-add-user-modal__field">
+                <label>Nom</label>
+                <input
+                  type="text"
+                  placeholder="Doe"
+                  value={addUserForm.lastName}
+                  onChange={e => setAddUserForm(f => ({ ...f, lastName: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="adm-add-user-modal__field">
+              <label>E-mail</label>
+              <input
+                type="email"
+                placeholder="example@email.com"
+                value={addUserForm.email}
+                onChange={e => setAddUserForm(f => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+
+            <div className="adm-add-user-modal__field">
+              <label>Date de naissance</label>
+              <input
+                type="date"
+                value={addUserForm.dateOfBirth}
+                onChange={e => setAddUserForm(f => ({ ...f, dateOfBirth: e.target.value }))}
+              />
+            </div>
+
+            <div className="adm-add-user-modal__field">
+              <label>Téléphone</label>
+              <input
+                type="tel"
+                placeholder="+33 6 00 00 00 00"
+                value={addUserForm.phone}
+                onChange={e => setAddUserForm(f => ({ ...f, phone: e.target.value }))}
+              />
+            </div>
+
+            <div className="adm-add-user-modal__field">
+              <label>Plan</label>
+              <select
+                value={addUserForm.plan}
+                onChange={e => setAddUserForm(f => ({ ...f, plan: e.target.value }))}
+              >
+                <option value="free">Free</option>
+                <option value="premium">Premium</option>
+                <option value="student">Campus</option>
+              </select>
+            </div>
+
+            <div className="adm-add-user-modal__actions">
+              <button className="adm-add-user-modal__btn adm-add-user-modal__btn--cancel" onClick={() => setShowAddUser(false)}>
+                Annuler
+              </button>
+              <button
+                className="adm-add-user-modal__btn adm-add-user-modal__btn--create"
+                onClick={handleAddUser}
+                disabled={addUserLoading}
+              >
+                {addUserLoading ? '…' : 'Créer'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -383,6 +499,12 @@ const AdminPage: React.FC = () => {
                 />
               </div>
               <button className="adm-btn adm-btn--primary" onClick={loadUsers}><RefreshCw size={14} style={{ marginRight: 6 }} />Rafraîchir</button>
+              <button className="adm-btn adm-btn--add" onClick={() => setShowAddUser(true)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: 6 }}>
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Ajouter un utilisateur
+              </button>
             </div>
 
             <div className="adm-table-wrap">

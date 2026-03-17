@@ -8,6 +8,7 @@ import Subscription from '../models/Subscription.js';
 import Message from '../models/Message.js';
 import Conversation from '../models/Conversation.js';
 import CrisisAlert from '../models/CrisisAlert.js';
+import bcrypt from 'bcryptjs';
 
 const router = Router();
 
@@ -107,6 +108,63 @@ router.delete('/admin/users/:id', authenticateToken, requireAdmin, async (req: R
     res.json({ success: true, message: 'Utilisateur supprimé' });
   } catch (error: unknown) {
     console.error('Admin DELETE /users/:id error:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { firstName, lastName, email, dateOfBirth, plan } = req.body;
+
+    if (!firstName || !lastName || !email) {
+      res.status(400).json({ success: false, message: 'Nom complet et email sont requis' });
+      return;
+    }
+
+    const existing = await User.findOne({ where: { email: email.toLowerCase() } });
+    if (existing) {
+      res.status(400).json({ success: false, message: 'Un compte existe déjà avec cet email' });
+      return;
+    }
+
+    let age: number | null = null;
+    if (dateOfBirth) {
+      const birth = new Date(dateOfBirth);
+      const diff = Date.now() - birth.getTime();
+      age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+    }
+
+    const tempPassword = Math.random().toString(36).slice(-10) + 'A1!';
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    const user = await User.create({
+      firstName,
+      lastName,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      age: age ?? 18,
+      isAnonymous: false,
+      isPremium: false,
+    });
+
+    const userId = user.getDataValue('id');
+
+    if (plan && plan !== 'free') {
+      await Subscription.create({
+        userId,
+        plan,
+        status: 'active',
+        startDate: new Date(),
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Utilisateur créé avec succès',
+      data: { id: userId, email: email.toLowerCase(), firstName, lastName },
+    });
+  } catch (error: unknown) {
+    console.error('Admin POST /users error:', error);
     res.status(500).json({ success: false, message: 'Erreur serveur' });
   }
 });

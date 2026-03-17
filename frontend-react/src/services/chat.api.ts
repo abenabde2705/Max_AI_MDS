@@ -92,6 +92,9 @@ export const fetchAdminUsers = (search?: string) =>
 export const deleteAdminUser = (id: string) =>
   axios.delete(`${API_BASE}/admin/users/${id}`, { headers: getAuthHeaders() });
 
+export const createAdminUser = (data: { firstName: string; lastName: string; email: string; dateOfBirth?: string; plan: string }) =>
+  axios.post(`${API_BASE}/admin/users`, data, { headers: getAuthHeaders() });
+
 export const fetchAdminSubscriptions = () =>
   axios.get(`${API_BASE}/admin/subscriptions`, { headers: getAuthHeaders() });
 
