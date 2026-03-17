@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import axios from 'axios';
+import Subscription from '../models/Subscription.js';
 
 const router = express.Router();
 
@@ -80,6 +81,65 @@ class WebhookService {
         }
     }
 
+    // Airtable - Tous les feedbacks
+    async sendToAirtable(feedbackData: any): Promise<WebhookResult> {
+        const apiKey = process.env.AIRTABLE_API_KEY;
+        const baseId = process.env.AIRTABLE_BASE_ID;
+        const tableName = process.env.AIRTABLE_TABLE_NAME;
+
+        if (!apiKey || !baseId || !tableName) {
+            return { service: 'airtable', success: false, skipped: true, reason: 'Config Airtable manquante' };
+        }
+
+        // Mapping des types frontend → valeurs Airtable
+        const typeMap: Record<string, string> = {
+            'bug':         'Bug',
+            'feature':     'Feature-request',
+            'improvement': 'Feature-request',
+            'ui_ux':       'Interface',
+            'performance': 'Performance',
+            'other':       'Other'
+        };
+
+        try {
+            const response = await axios.post(
+                `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`,
+                {
+                    fields: {
+                        'Title':       feedbackData.title,
+                        'Description': feedbackData.description,
+                        'Type':        typeMap[feedbackData.type] ?? feedbackData.type,
+                        'Severity':    feedbackData.severity,
+                        'User Email':  feedbackData.userEmail,
+                        'Status':      'Todo',
+                        'Source':      'Dashboard',
+                        'Plan':        feedbackData.plan,
+                        'Metadata':    JSON.stringify({ feedbackId: feedbackData.id })
+                    }
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            return {
+                service: 'airtable',
+                success: true,
+                response: { id: response.data.id }
+            };
+        } catch (error: any) {
+            console.error('Airtable error:', JSON.stringify(error?.response?.data ?? error?.message));
+            return {
+                service: 'airtable',
+                success: false,
+                error: JSON.stringify(error?.response?.data ?? error?.message)
+            };
+        }
+    }
+
     // Slack - Notifications pour feedback critique
     async sendSlackNotification(feedbackData: any): Promise<WebhookResult> {
         if (!process.env.SLACK_WEBHOOK_URL) {
@@ -147,6 +207,10 @@ class WebhookService {
     // Orchestrateur principal
     async processWebhooks(feedbackData: any): Promise<WebhookResult[]> {
         const results: WebhookResult[] = [];
+
+        // Tous les feedbacks → Airtable
+        const airtableResult = await this.sendToAirtable(feedbackData);
+        results.push(airtableResult);
 
         // Pour les bugs critiques ou high severity, créer GitHub issue
         if (['critical', 'high'].includes(feedbackData.severity) || feedbackData.type === 'bug') {
@@ -256,7 +320,7 @@ router.post('/', authenticateToken, async (req: CreateFeedbackRequest, res: Resp
             return;
         }
 
-        const validTypes = ['bug', 'feature-request', 'general'];
+        const validTypes = ['bug', 'feature', 'improvement', 'ui_ux', 'performance', 'other', 'feature-request', 'general'];
         const validSeverities = ['low', 'medium', 'high', 'critical'];
 
         if (!validTypes.includes(type)) {
@@ -273,6 +337,19 @@ router.post('/', authenticateToken, async (req: CreateFeedbackRequest, res: Resp
             return;
         }
 
+        // Déterminer le plan réel depuis la DB
+        const subscription = await Subscription.findOne({
+            where: { userId: req.user.id, status: 'active' },
+            attributes: ['plan']
+        });
+        const planMap: Record<string, string> = {
+            'free':    'freemium',
+            'premium': 'premium',
+            'student': 'student'
+        };
+        const rawPlan: string = subscription ? subscription.getDataValue('plan') : 'free';
+        const userPlan: string = planMap[rawPlan] ?? rawPlan;
+
         // Données pour les webhooks
         const feedbackData = {
             id: `feedback_${Date.now()}_${req.user.id.slice(0, 8)}`,
@@ -283,6 +360,7 @@ router.post('/', authenticateToken, async (req: CreateFeedbackRequest, res: Resp
             metadata: metadata || {},
             userEmail: req.user.email,
             userId: req.user.id,
+            plan: userPlan,
             createdAt: new Date().toISOString()
         };
 

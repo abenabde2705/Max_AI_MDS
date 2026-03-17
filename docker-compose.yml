@@ -26,6 +26,10 @@ services:
     command: node dist/server.js
     environment:
       - DB_HOST=postgres
+      - CHAT_API_URL=http://chat_api:8000
+      - NODE_ENV=production
+    volumes:
+      - uploads_data:/app/uploads
     networks:
       - web
       - default
@@ -42,14 +46,14 @@ services:
     ports:
       - "5173:5173"
 
-  # Profil "local-ai" : uniquement si tu veux tester chat_api/ollama en local
-  # En dev normal, ces services tournent sur le VPS → ne pas les démarrer ici
   ollama:
     image: ollama/ollama
     container_name: maxai-ollama
     restart: always
     volumes:
       - ollama_data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"   # Accessible uniquement via SSH tunnel, jamais public
     networks:
       - default
 
@@ -67,12 +71,12 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     networks:
-      - web
       - default
 
 volumes:
   postgres_data:
   ollama_data:
+  uploads_data:
 
 networks:
   web:

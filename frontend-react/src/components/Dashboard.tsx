@@ -1,6 +1,7 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Calendar, LogOut, Settings, Shield } from 'lucide-react';
+import { User, Mail, Calendar, LogOut, Settings, Shield, MessageCircle, Home, Info } from 'lucide-react';
 
 interface UserData {
   id: string;
@@ -18,7 +19,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       
       if (!token) {
         navigate('/auth');
@@ -41,12 +42,12 @@ const Dashboard: React.FC = () => {
             name: `${userData.user.firstName} ${userData.user.lastName}`
           });
         } else {
-          localStorage.removeItem('token');
+          removeToken();
           navigate('/auth');
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
-        localStorage.removeItem('token');
+        removeToken();
         navigate('/auth');
       } finally {
         setLoading(false);
@@ -57,7 +58,7 @@ const Dashboard: React.FC = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    removeToken();
     navigate('/');
     window.location.reload();
   };
@@ -178,16 +179,16 @@ const Dashboard: React.FC = () => {
           <h2>Actions rapides</h2>
           <div className="actions-grid">
             <button className="action-btn" onClick={() => navigate('/chatbot')}>
-              💬 Parler à Max
+              <MessageCircle size={16} /> Parler à Max
             </button>
             <button className="action-btn" onClick={() => navigate('/')}>
-              🏠 Accueil
+              <Home size={16} /> Accueil
             </button>
             <button className="action-btn" onClick={() => window.location.href = '#about'}>
-              ℹ️ À propos
+              <Info size={16} /> À propos
             </button>
             <button className="action-btn logout-action" onClick={handleLogout}>
-              🚪 Se déconnecter
+              <LogOut size={16} /> Se déconnecter
             </button>
           </div>
         </div>

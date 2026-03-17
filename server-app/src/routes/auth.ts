@@ -1,11 +1,39 @@
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import rateLimit from 'express-rate-limit';
+import { Op } from 'sequelize';
 import User from '../models/User.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/roleAuth.js';
 import passport from '../config/passport.js';
+import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email.js';
 
 const router = express.Router();
+
+const loginRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' }
+});
+
+const registerRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de créations de compte. Réessayez dans 15 minutes.' }
+});
+
+const passwordResetRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de demandes de réinitialisation. Réessayez dans 15 minutes.' }
+});
 
 interface RegisterRequest extends Request {
     body: {
@@ -128,7 +156,7 @@ interface AuthenticatedRequest extends Request {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/register', async (req: RegisterRequest, res: Response): Promise<void> => {
+router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Response): Promise<void> => {
   try {
     const { firstName, lastName, email, password, age } = req.body;
 
@@ -163,14 +191,13 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
       isPremium: false
     });
 
-    console.log('Created user:', user);
-    console.log('User ID:', user.getDataValue('id'));
-    console.log('User dataValues:', user.dataValues);
-    console.log('User getDataValue id:', user.getDataValue('id'));
+    // Envoyer l'email de bienvenue (non-bloquant)
+    sendWelcomeEmail({ to: email.toLowerCase(), firstName }).catch(err =>
+      console.error('Erreur envoi email de bienvenue:', err)
+    );
 
     // Générer un token JWT
     const userId = user.getDataValue('id');
-    console.log('Using userId for token:', userId);
     const token = generateToken(userId);
 
     res.status(201).json({
@@ -269,7 +296,7 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/login', async (req: LoginRequest, res: Response): Promise<void> => {
+router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
@@ -295,12 +322,7 @@ router.post('/login', async (req: LoginRequest, res: Response): Promise<void> =>
     }
 
     // Vérifier le mot de passe
-    console.log('Password provided:', password);
-    console.log('Stored hash:', user.getDataValue('password'));
-    console.log('GetDataValue hash:', user.getDataValue('password'));
-    
     const isPasswordValid = await user.comparePassword(password);
-    console.log('Password comparison result:', isPasswordValid);
     
     if (!isPasswordValid) {
       res.status(401).json({
@@ -346,12 +368,7 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
       return;
     }
 
-    console.log('Profile request - req.user:', req.user);
-    console.log('Profile request - req.user.id:', req.user.id);
-    console.log('Profile request - typeof req.user.id:', typeof req.user.id);
-
     const user = await User.findByPk(req.user.id);
-    console.log('Profile request - found user:', user ? `${user.email} (${user.id})` : 'null');
     
     if (!user) {
       res.status(404).json({
@@ -368,8 +385,10 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
         email: user.getDataValue('email'),
         age: user.getDataValue('age'),
         isPremium: user.getDataValue('isPremium'),
+        role: user.getDataValue('role') || 'user',
         createdAt: user.getDataValue('createdAt'),
-        lastLogin: user.getDataValue('lastLogin')
+        lastLogin: user.getDataValue('lastLogin'),
+        isOAuthAccount: !!(user.getDataValue('googleId') || user.getDataValue('facebookId'))
       }
     });
   } catch (error: unknown) {
@@ -466,14 +485,17 @@ router.put('/change-password', authenticateToken, async (req: ChangePasswordRequ
     }
 
     const user = await User.findByPk(req.user.id);
-    
+
     if (!user) {
-      res.status(404).json({
-        message: 'Utilisateur non trouvé'
-      });
+      res.status(404).json({ message: 'Utilisateur non trouvé' });
       return;
     }
-    
+
+    if (user.getDataValue('googleId') || user.getDataValue('facebookId')) {
+      res.status(403).json({ message: 'Les comptes connectés via Google ou Facebook ne peuvent pas modifier leur mot de passe ici.' });
+      return;
+    }
+
     // Vérifier le mot de passe actuel
     const isCurrentPasswordValid = await user.comparePassword(currentPassword);
     if (!isCurrentPasswordValid) {
@@ -483,9 +505,10 @@ router.put('/change-password', authenticateToken, async (req: ChangePasswordRequ
       return;
     }
 
-    // Mettre à jour le mot de passe (le hook beforeSave s'occupera du hachage)
-    user.password = newPassword;
-    await user.save();
+    // Hasher et sauvegarder directement sans dépendre du hook beforeUpdate
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.setDataValue('password', hashedPassword);
+    await user.save({ hooks: false });
 
     res.json({
       message: 'Mot de passe changé avec succès'
@@ -659,7 +682,7 @@ router.post('/request-email-verification', authenticateToken, async (req: Authen
 
     const verificationToken = jwt.sign(
       { userId: user.id, type: 'email_verification' },
-      process.env.JWT_SECRET || 'fallback_secret',
+      process.env.JWT_SECRET!,
       { expiresIn: '24h' }
     );
 
@@ -712,7 +735,7 @@ router.post('/verify-email', async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
     if (decoded.type !== 'email_verification') {
       res.status(400).json({ message: 'Token invalide' });
@@ -770,7 +793,7 @@ router.post('/verify-email', async (req: Request, res: Response): Promise<void> 
  *       400:
  *         description: Email requis
  */
-router.post('/request-password-reset', async (req: Request, res: Response): Promise<void> => {
+router.post('/request-password-reset', passwordResetRateLimit, async (req: Request, res: Response): Promise<void> => {
   try {
     const { email } = req.body;
 
@@ -791,13 +814,17 @@ router.post('/request-password-reset', async (req: Request, res: Response): Prom
     }
 
     const resetToken = jwt.sign(
-      { userId: user.id, type: 'password_reset' },
-      process.env.JWT_SECRET || 'fallback_secret',
+      { userId: user.getDataValue('id'), type: 'password_reset' },
+      process.env.JWT_SECRET!,
       { expiresIn: '1h' }
     );
 
-    // TODO: Envoyer email avec le token
-    // await sendPasswordResetEmail(user.email, resetToken);
+    // Envoyer l'email de réinitialisation (non-bloquant)
+    sendPasswordResetEmail({
+      to: user.getDataValue('email'),
+      firstName: user.getDataValue('firstName'),
+      token: resetToken,
+    }).catch(err => console.error('Erreur envoi email reset password:', err));
 
     res.json({ 
       message: successMessage,
@@ -855,7 +882,7 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
       return;
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
     if (decoded.type !== 'password_reset') {
       res.status(400).json({ message: 'Token invalide' });
@@ -922,7 +949,7 @@ router.post('/refresh-token', authenticateToken, async (req: AuthenticatedReques
         id: user.id, 
         email: user.email
       },
-      process.env.JWT_SECRET || 'fallback_secret',
+      process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
 
@@ -1062,5 +1089,48 @@ router.get('/facebook/callback',
     }
   }
 );
+
+/**
+ * POST /auth/set-password
+ * Valide le token de création de compte et enregistre le mot de passe choisi.
+ */
+router.post('/set-password', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      res.status(400).json({ success: false, message: 'Token et mot de passe requis' });
+      return;
+    }
+
+    if (password.length < 8) {
+      res.status(400).json({ success: false, message: 'Le mot de passe doit contenir au moins 8 caractères' });
+      return;
+    }
+
+    const user = await User.findOne({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (!user) {
+      res.status(400).json({ success: false, message: 'Lien invalide ou expiré' });
+      return;
+    }
+
+    // Le hook beforeUpdate du modèle User hashe automatiquement le password
+    await user.update({ password, resetToken: undefined, resetTokenExpiry: undefined });
+
+    const userId = user.getDataValue('id');
+    const jwtToken = generateToken(userId);
+
+    res.json({ success: true, message: 'Mot de passe défini avec succès', token: jwtToken });
+  } catch (error) {
+    console.error('POST /auth/set-password error:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
 
 export default router;

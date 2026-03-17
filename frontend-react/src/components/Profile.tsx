@@ -1,5 +1,19 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
+
+const EyeOn = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+  </svg>
+);
+const EyeOff = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>
+  </svg>
+);
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, CheckCircle, Camera } from 'lucide-react';
+import { fetchCurrentSubscription, cancelSubscription, createPortalSession } from '../services/chat.api';
 
 interface UserProfile {
   firstName: string;
@@ -9,6 +23,13 @@ interface UserProfile {
   birthDate?: string;
   plan?: string;
   createdAt?: string;
+  isOAuthAccount?: boolean;
+}
+
+interface SubscriptionInfo {
+  plan: 'premium' | 'student' | 'free';
+  status: 'active' | 'canceled';
+  stripePeriodEnd?: string;
 }
 
 const Profile: React.FC = () => {
@@ -22,6 +43,7 @@ const Profile: React.FC = () => {
     plan: 'Free',
     createdAt: '',
   });
+  const [subscription, setSubscription] = useState<SubscriptionInfo>({ plan: 'free', status: 'active' });
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<UserProfile>(user);
@@ -31,10 +53,20 @@ const Profile: React.FC = () => {
     newsletter: false,
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNext, setShowNext] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       if (!token) {
         navigate('/auth');
         return;
@@ -42,15 +74,18 @@ const Profile: React.FC = () => {
 
       try {
         const API_URL = import.meta.env.VITE_API_URL;
-        const response = await fetch(`${API_URL}/api/auth/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const [profileResponse, subResponse] = await Promise.allSettled([
+          fetch(`${API_URL}/api/auth/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }),
+          fetchCurrentSubscription()
+        ]);
 
-        if (response.ok) {
-          const data = await response.json();
+        if (profileResponse.status === 'fulfilled' && profileResponse.value.ok) {
+          const data = await profileResponse.value.json();
           const userData = data.user || data;
           const profile: UserProfile = {
             firstName: userData.firstName || userData.firstname || '',
@@ -60,12 +95,21 @@ const Profile: React.FC = () => {
             birthDate: userData.birthDate || userData.birth_date || '',
             plan: userData.plan || 'Free',
             createdAt: userData.createdAt || userData.created_at || '',
+            isOAuthAccount: userData.isOAuthAccount || false,
           };
           setUser(profile);
           setFormData(profile);
         } else {
-          localStorage.removeItem('token');
+          removeToken();
           navigate('/auth');
+          return;
+        }
+
+        if (subResponse.status === 'fulfilled') {
+          const subData = subResponse.value.data;
+          if (subData.success && subData.data) {
+            setSubscription(subData.data);
+          }
         }
       } catch (error) {
         console.error('Erreur lors du chargement du profil:', error);
@@ -90,7 +134,7 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (!token) return;
 
     try {
@@ -111,6 +155,8 @@ const Profile: React.FC = () => {
 
       if (response.ok) {
         setUser(formData);
+        localStorage.setItem('name', `${formData.firstName} ${formData.lastName}`.trim());
+        window.dispatchEvent(new Event('storage'));
         setEditMode(false);
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
@@ -120,8 +166,67 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    if (passwordForm.next !== passwordForm.confirm) {
+      setPasswordError('Les mots de passe ne correspondent pas.');
+      return;
+    }
+    if (passwordForm.next.length < 8) {
+      setPasswordError('Le mot de passe doit contenir au moins 8 caractères.');
+      return;
+    }
+    const token = getToken();
+    if (!token) return;
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/auth/change-password`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: passwordForm.current, newPassword: passwordForm.next }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setPasswordError(data.message || 'Erreur lors du changement de mot de passe.');
+        return;
+      }
+      setPasswordSuccess(true);
+      setShowPasswordForm(false);
+      setPasswordForm({ current: '', next: '', confirm: '' });
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch {
+      setPasswordError('Erreur réseau. Veuillez réessayer.');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    setDeleteError('');
+    const token = getToken();
+    if (!token) return;
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await fetch(`${API_URL}/api/users/me`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        setDeleteError(data.message || 'Erreur lors de la suppression.');
+        setDeleteLoading(false);
+        return;
+      }
+      removeToken();
+      localStorage.clear();
+      navigate('/auth');
+    } catch {
+      setDeleteError('Erreur réseau. Veuillez réessayer.');
+      setDeleteLoading(false);
+    }
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    removeToken();
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
@@ -145,7 +250,7 @@ const Profile: React.FC = () => {
       {/* Header */}
       <div className="profile-header">
         <button className="profile-header__back" onClick={() => navigate(-1)}>
-          ←
+          <ArrowLeft size={20} />
         </button>
         <div>
           <h1 className="profile-header__title">Mon Profil</h1>
@@ -159,7 +264,7 @@ const Profile: React.FC = () => {
           <div className="profile-avatar-card__avatar">
             <span>{getInitials()}</span>
             <button className="profile-avatar-card__edit-btn">
-              <span>📷</span>
+              <Camera size={14} />
             </button>
           </div>
           <div className="profile-avatar-card__info">
@@ -167,7 +272,7 @@ const Profile: React.FC = () => {
               {user.firstName} {user.lastName}
             </h2>
             <p className="profile-avatar-card__plan">
-              Membre {user.plan === 'premium' ? 'Premium' : 'Free'}
+              Membre {subscription.plan === 'premium' ? 'Premium' : subscription.plan === 'student' ? 'Campus' : 'Free'}
             </p>
             <p className="profile-avatar-card__since">
               Membre depuis {formatMemberSince(user.createdAt)}
@@ -177,7 +282,7 @@ const Profile: React.FC = () => {
 
         {saveSuccess && (
           <div className="profile-success-banner">
-            ✅ Profil mis à jour avec succès
+            <CheckCircle size={16} style={{ marginRight: 8 }} />Profil mis à jour avec succès
           </div>
         )}
 
@@ -260,19 +365,98 @@ const Profile: React.FC = () => {
           <div className="profile-card">
             <h3 className="profile-card__title">Sécurité</h3>
             <div className="profile-security">
-              <div className="profile-security__row">
-                <div>
-                  <p className="profile-security__label">Mot de passe</p>
-                  <input
-                    className="profile-form__input"
-                    type="password"
-                    value="••••••••••••••••••"
-                    disabled
-                    style={{ letterSpacing: '3px' }}
-                  />
+              {user.isOAuthAccount ? (
+                <div className="profile-security__row">
+                  <div>
+                    <p className="profile-security__label">Mot de passe</p>
+                    <p className="profile-security__oauth-note">Compte connecté via Google ou Facebook — le mot de passe est géré par votre fournisseur d'identité.</p>
+                  </div>
                 </div>
-                <button className="profile-btn profile-btn--primary profile-btn--sm">Modifier</button>
-              </div>
+              ) : !showPasswordForm ? (
+                <div className="profile-security__row">
+                  <div>
+                    <p className="profile-security__label">Mot de passe</p>
+                    <input
+                      className="profile-form__input"
+                      type="password"
+                      value="••••••••••••••••••"
+                      disabled
+                      style={{ letterSpacing: '3px' }}
+                    />
+                  </div>
+                  <button
+                    className="profile-btn profile-btn--primary profile-btn--sm"
+                    onClick={() => { setShowPasswordForm(true); setPasswordError(''); setShowCurrent(false); setShowNext(false); setShowConfirm(false); }}
+                  >
+                    Modifier
+                  </button>
+                </div>
+              ) : (
+                <div className="profile-password-form">
+                  <div className="profile-form__field">
+                    <label className="profile-form__label">Mot de passe actuel</label>
+                    <div className="auth-input-wrap">
+                      <input
+                        className="profile-form__input"
+                        type={showCurrent ? 'text' : 'password'}
+                        value={passwordForm.current}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, current: e.target.value })}
+                        placeholder="••••••••"
+                      />
+                      <button type="button" className="auth-eye" onClick={() => setShowCurrent(v => !v)} tabIndex={-1}>
+                        {showCurrent ? <EyeOff /> : <EyeOn />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="profile-form__field">
+                    <label className="profile-form__label">Nouveau mot de passe</label>
+                    <div className="auth-input-wrap">
+                      <input
+                        className="profile-form__input"
+                        type={showNext ? 'text' : 'password'}
+                        value={passwordForm.next}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })}
+                        placeholder="Min. 8 caractères"
+                      />
+                      <button type="button" className="auth-eye" onClick={() => setShowNext(v => !v)} tabIndex={-1}>
+                        {showNext ? <EyeOff /> : <EyeOn />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="profile-form__field">
+                    <label className="profile-form__label">Confirmer le mot de passe</label>
+                    <div className="auth-input-wrap">
+                      <input
+                        className="profile-form__input"
+                        type={showConfirm ? 'text' : 'password'}
+                        value={passwordForm.confirm}
+                        onChange={(e) => setPasswordForm({ ...passwordForm, confirm: e.target.value })}
+                        placeholder="••••••••"
+                      />
+                      <button type="button" className="auth-eye" onClick={() => setShowConfirm(v => !v)} tabIndex={-1}>
+                        {showConfirm ? <EyeOff /> : <EyeOn />}
+                      </button>
+                    </div>
+                  </div>
+                  {passwordError && <p className="profile-password-form__error">{passwordError}</p>}
+                  <div className="profile-form__actions">
+                    <button
+                      className="profile-btn profile-btn--outline"
+                      onClick={() => { setShowPasswordForm(false); setPasswordForm({ current: '', next: '', confirm: '' }); setPasswordError(''); setShowCurrent(false); setShowNext(false); setShowConfirm(false); }}
+                    >
+                      Annuler
+                    </button>
+                    <button className="profile-btn profile-btn--primary" onClick={handleChangePassword}>
+                      Confirmer
+                    </button>
+                  </div>
+                </div>
+              )}
+              {passwordSuccess && (
+                <div className="profile-success-banner" style={{ marginTop: '0.75rem' }}>
+                  <CheckCircle size={16} style={{ marginRight: 8 }} />Mot de passe mis à jour
+                </div>
+              )}
               <div className="profile-security__divider" />
               <div className="profile-security__row profile-security__row--2fa">
                 <span className="profile-security__label">Authentification à deux facteurs</span>
@@ -286,32 +470,56 @@ const Profile: React.FC = () => {
               <div className="profile-subscription__plan-row">
                 <div>
                   <p className="profile-subscription__plan-name">
-                    Plan {user.plan === 'premium' ? 'premium' : 'free'}
+                    Plan {subscription.plan === 'premium' ? 'Premium' : subscription.plan === 'student' ? 'Campus' : 'Free'}
                   </p>
                   <p className="profile-subscription__plan-price">
-                    {user.plan === 'premium' ? '14,99€ / Mois' : 'Gratuit'}
+                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '8€ / Mois' : 'Gratuit'}
                   </p>
+                  {subscription.stripePeriodEnd && (
+                    <p className="profile-subscription__plan-renew">
+                      Renouvellement : {new Date(subscription.stripePeriodEnd).toLocaleDateString('fr-FR')}
+                    </p>
+                  )}
                 </div>
-                <span className={`profile-subscription__badge ${user.plan === 'premium' ? 'profile-subscription__badge--premium' : ''}`}>
-                  Actif
+                <span className={`profile-subscription__badge ${subscription.plan !== 'free' ? 'profile-subscription__badge--premium' : ''}`}>
+                  {subscription.status === 'active' ? 'Actif' : 'Annulé'}
                 </span>
               </div>
               <div className="profile-subscription__actions">
                 <button className="profile-btn profile-btn--outline profile-btn--sm" onClick={() => navigate('/#title')}>
                   Changer de plan
                 </button>
-                {user.plan === 'premium' && (
-                  <button className="profile-btn profile-btn--danger profile-btn--sm">
-                    Annuler l'abonnement
-                  </button>
+                {subscription.plan !== 'free' && (
+                  <>
+                    <button
+                      className="profile-btn profile-btn--outline profile-btn--sm"
+                      onClick={async () => {
+                        try {
+                          const { data } = await createPortalSession();
+                          if (data.url) window.location.href = data.url;
+                        } catch {
+                          console.error('Erreur portail facturation');
+                        }
+                      }}
+                    >
+                      Gérer la facturation
+                    </button>
+                    <button
+                      className="profile-btn profile-btn--danger profile-btn--sm"
+                      onClick={async () => {
+                        if (!window.confirm('Confirmer l\'annulation de votre abonnement ?')) return;
+                        try {
+                          await cancelSubscription();
+                          alert('Abonnement annulé à la fin de la période en cours.');
+                        } catch {
+                          console.error('Erreur annulation abonnement');
+                        }
+                      }}
+                    >
+                      Annuler l'abonnement
+                    </button>
+                  </>
                 )}
-              </div>
-              <div className="profile-subscription__billing-row">
-                <div>
-                  <p className="profile-subscription__billing-title">Historique de facturation</p>
-                  <p className="profile-subscription__billing-sub">Téléchargez vos factures</p>
-                </div>
-                <button className="profile-btn profile-btn--primary profile-btn--sm">Voir</button>
               </div>
             </div>
           </div>
@@ -355,11 +563,41 @@ const Profile: React.FC = () => {
                 <p className="profile-account-action__title">Supprimer mon compte</p>
                 <p className="profile-account-action__sub">Cette action est irréversible</p>
               </div>
-              <button className="profile-btn profile-btn--danger">Supprimer</button>
+              <button className="profile-btn profile-btn--danger" onClick={() => { setShowDeleteModal(true); setDeleteError(''); }}>
+                Supprimer
+              </button>
             </div>
           </div>
         </div>
       </div>
+      {/* Modale suppression de compte */}
+      {showDeleteModal && (
+        <div className="profile-modal-overlay" onClick={() => !deleteLoading && setShowDeleteModal(false)}>
+          <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="profile-modal__title">Supprimer mon compte</h2>
+            <p className="profile-modal__text">
+              Cette action est <strong>définitive et irréversible</strong>. Toutes vos données seront supprimées : conversations, journal, abonnement.
+            </p>
+            {deleteError && <p className="profile-modal__error">{deleteError}</p>}
+            <div className="profile-modal__actions">
+              <button
+                className="profile-btn profile-btn--outline"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleteLoading}
+              >
+                Annuler
+              </button>
+              <button
+                className="profile-btn profile-btn--danger"
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? 'Suppression...' : 'Confirmer la suppression'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

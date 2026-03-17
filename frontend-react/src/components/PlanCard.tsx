@@ -9,31 +9,35 @@ interface PlanCardProps {
   buttonText?: string;
   buttonStyle?: 'primary' | 'secondary' | 'free' | 'campus';
   highlight?: boolean;
+  onClick?: () => void;
+  disabled?: boolean;
 }
 
-const PlanCard: React.FC<PlanCardProps> = ({ 
-  title, 
-  price, 
+const PlanCard: React.FC<PlanCardProps> = ({
+  title,
+  price,
   priceLabel = '',
-  description, 
-  features, 
-  buttonText, 
-  buttonStyle = 'primary', 
-  highlight = false 
+  description,
+  features,
+  buttonText,
+  buttonStyle = 'primary',
+  highlight = false,
+  onClick,
+  disabled = false
 }) => {
   return (
     <div className={`plan-card ${highlight ? 'highlight' : ''} ${buttonStyle}`}>
       <h2 className="plan-title">{title}</h2>
-      
+
       <div className="plan-price-container">
         <span className="plan-price">{price}</span>
         {priceLabel && <span className="plan-price-label">{priceLabel}</span>}
       </div>
-      
+
       <p className="plan-description">{description}</p>
-      
+
       <hr className="plan-divider" />
-      
+
       <ul className="plan-features">
         {features.map((feature, index) => (
           <li key={index} className={feature === '' ? 'empty-line' : feature.includes('Fonctionnalités') ? 'feature-header' : ''}>
@@ -42,9 +46,13 @@ const PlanCard: React.FC<PlanCardProps> = ({
           </li>
         ))}
       </ul>
-      
+
       {buttonText && (
-        <button className={`plan-button ${buttonStyle}`}>
+        <button
+          className={`plan-button ${buttonStyle}`}
+          onClick={onClick}
+          disabled={disabled}
+        >
           {buttonText}
         </button>
       )}

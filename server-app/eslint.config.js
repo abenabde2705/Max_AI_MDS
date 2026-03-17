@@ -17,6 +17,7 @@ export default [
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
+        fetch: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
         global: 'readonly',

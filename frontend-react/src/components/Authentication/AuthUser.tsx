@@ -1,9 +1,19 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import NavBar from '../../layout/NavBar';
-import Footer from '../../layout/Footer';
-import { colors, opacity } from '@/ui';
 import logoImg from '../../assets/img/hero/logomax.png';
+import { setToken } from '../../utils/token';
+
+const EyeOn = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+  </svg>
+);
+const EyeOff = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>
+  </svg>
+);
 
 interface FormData {
   firstName: string;
@@ -23,6 +33,8 @@ const AuthUser: React.FC = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [form, setForm] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -111,11 +123,11 @@ const AuthUser: React.FC = () => {
           return;
         }
 
-        localStorage.setItem('token', data.token);
+        setToken(data.token, form.rememberMe);
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
-      
-        navigate('/dashboard');
+
+        navigate('/profile');
       } else {
         // Calculer l'âge à partir de la date de naissance
         const birthDate = new Date(form.birthDate);
@@ -144,11 +156,11 @@ const AuthUser: React.FC = () => {
           return;
         }
 
-        localStorage.setItem('token', data.token);
+        setToken(data.token, true);
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
 
-        navigate('/dashboard');
+        navigate('/profile');
       }
     } catch (error) {
       setError('Une erreur est survenue. Veuillez réessayer.');
@@ -250,32 +262,42 @@ const AuthUser: React.FC = () => {
           
           <div className="form-group">
             <label htmlFor="password">Mot de passe</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleInputChange}
-              placeholder="Votre mot de passe"
-              className="login-input"
-              required
-            />
+            <div className="auth-input-wrap">
+              <input
+                id="password"
+                name="password"
+                type={showPwd ? 'text' : 'password'}
+                value={form.password}
+                onChange={handleInputChange}
+                placeholder="Votre mot de passe"
+                className="login-input"
+                required
+              />
+              <button type="button" className="auth-eye" onClick={() => setShowPwd(v => !v)} tabIndex={-1}>
+                {showPwd ? <EyeOff /> : <EyeOn />}
+              </button>
+            </div>
           </div>
-          
+
           {mode === 'register' && (
             <>
               <div className="form-group">
                 <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={form.confirmPassword}
-                  onChange={handleInputChange}
-                  placeholder="Confirmez votre mot de passe"
-                  className="login-input"
-                  required
-                />
+                <div className="auth-input-wrap">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirm ? 'text' : 'password'}
+                    value={form.confirmPassword}
+                    onChange={handleInputChange}
+                    placeholder="Confirmez votre mot de passe"
+                    className="login-input"
+                    required
+                  />
+                  <button type="button" className="auth-eye" onClick={() => setShowConfirm(v => !v)} tabIndex={-1}>
+                    {showConfirm ? <EyeOff /> : <EyeOn />}
+                  </button>
+                </div>
               </div>
               
               <div className="checkbox-group">
@@ -321,9 +343,17 @@ const AuthUser: React.FC = () => {
             </div>
           )}
               
-          <button 
-            type="submit" 
-            className="login-button" 
+          {mode === 'login' && (
+            <div style={{ textAlign: 'right', marginTop: '-0.25rem', marginBottom: '0.5rem' }}>
+              <Link to="/forgot-password" style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', textDecoration: 'none' }}>
+                Mot de passe oublié ?
+              </Link>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="login-button"
             disabled={loading}
           >
             {loading ? 'Chargement...' : (mode === 'login' ? 'Connexion' : 'Inscription')}

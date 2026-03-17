@@ -258,3 +258,29 @@
     font-size: 1.5rem;
   }
 }
+
+/* Delete button */
+.emotional-journal__delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0.25rem;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.emotional-journal__delete-btn:hover {
+  color: #FF6347;
+}
+
+/* Loading / Empty states */
+.emotional-journal__loading,
+.emotional-journal__empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 3rem 1rem;
+}

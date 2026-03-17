@@ -3,6 +3,7 @@ import Conversation from '../models/Conversation.js';
 import Message from '../models/Message.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { Op } from 'sequelize';
+import { summarizeAndSave } from '../services/summarize.js';
 
 const router = express.Router();
 
@@ -80,7 +81,7 @@ interface CreateConversationRequest extends AuthenticatedRequest {
  *                 example: "Discussion sur l'anxiété"
  *     responses:
  *       201:
- *         description: Conversation créée avec succès
+ *         description: Conversation crée avec succès
  *         content:
  *           application/json:
  *             schema:
@@ -110,7 +111,7 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Respon
         }
       ],
       order: [['createdAt', 'DESC']], // Triées par date (plus récente en premier)
-      attributes: ['id', 'title', 'isArchived', 'createdAt', 'updatedAt']
+      attributes: ['id', 'title', 'isArchived', 'emotionalContext', 'createdAt', 'updatedAt']
     });
 
     // Enrichir avec informations supplémentaires
@@ -120,6 +121,7 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Respon
         id: convData.id,
         title: convData.title,
         isArchived: convData.isArchived,
+        emotionalContext: convData.emotionalContext || null,
         createdAt: convData.createdAt,
         updatedAt: convData.updatedAt,
         lastMessage: convData.messages?.[0] || null,
@@ -146,12 +148,37 @@ router.post('/', authenticateToken, async (req: CreateConversationRequest, res: 
       return;
     }
 
+    // Find the most recent non-archived conversation with messages
+    const previousConversation = await Conversation.findOne({
+      where: {
+        userId: req.user.id,
+        isArchived: false,
+      },
+      order: [['createdAt', 'DESC']],
+    });
+
+    // Archive and summarize the previous conversation in the background
+    if (previousConversation) {
+      const prevId = previousConversation.getDataValue('id') as string;
+      const msgCount = await Message.count({ where: { conversationId: prevId } });
+
+      if (msgCount > 0) {
+        // Archive immediately
+        await Conversation.update({ isArchived: true }, { where: { id: prevId } });
+
+        // Fire-and-forget summarize
+        summarizeAndSave(prevId, req.user.id).catch(err =>
+          console.error('Résumé échoué:', err)
+        );
+      }
+    }
+
     const conversation = await Conversation.create({
       userId: req.user.id,
       title: req.body.title || 'Nouvelle conversation',
       isArchived: false
     });
-    
+
     res.status(201).json(conversation);
   } catch (error: unknown) {
     console.error('Erreur lors de la création de la conversation:', error);

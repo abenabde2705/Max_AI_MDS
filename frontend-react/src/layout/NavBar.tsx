@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { getToken, removeToken } from '../utils/token';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 interface MenuItem {
@@ -18,28 +19,99 @@ interface NavBarProps {
   className?: string;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ className }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [userEmail, setUserEmail] = useState<string>('');
+// Gradient stops from .gradient-bg2 : #161A4D → #470059 → #651E79
+const GRADIENT_STOPS = [
+  { pos: 0,      r: 22,  g: 26,  b: 77  },  // #161A4D
+  { pos: 0.6971, r: 71,  g: 0,   b: 89  },  // #470059
+  { pos: 1,      r: 101, g: 30,  b: 121 },  // #651E79
+];
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+function interpolateGradient(progress: number): string {
+  const p = Math.max(0, Math.min(1, progress));
+  let from = GRADIENT_STOPS[0];
+  let to = GRADIENT_STOPS[1];
+  for (let i = 0; i < GRADIENT_STOPS.length - 1; i++) {
+    if (p >= GRADIENT_STOPS[i].pos && p <= GRADIENT_STOPS[i + 1].pos) {
+      from = GRADIENT_STOPS[i];
+      to = GRADIENT_STOPS[i + 1];
+      break;
+    }
+  }
+  const range = to.pos - from.pos;
+  const t = range === 0 ? 0 : (p - from.pos) / range;
+  const r = Math.round(from.r + (to.r - from.r) * t);
+  const g = Math.round(from.g + (to.g - from.g) * t);
+  const b = Math.round(from.b + (to.b - from.b) * t);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [userDisplay, setUserDisplay] = useState<string>('');
+  const [activeSection, setActiveSection] = useState<string>('');
+  const [menuBg, setMenuBg] = useState<string>(interpolateGradient(0));
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
+
+  const refreshUser = () => {
+    const token = getToken();
     if (token) {
       setIsLoggedIn(true);
-      const userName = localStorage.getItem('userName');
+      const userName = localStorage.getItem('userName') || localStorage.getItem('name');
       const userEmailStored = localStorage.getItem('userEmail');
-      setUserEmail(userName || userEmailStored || 'Utilisateur');
+      setUserDisplay(userName || userEmailStored || 'Utilisateur');
+    } else {
+      setIsLoggedIn(false);
+      setUserDisplay('');
     }
+  };
+
+  useEffect(() => {
+    refreshUser();
+    window.addEventListener('storage', refreshUser);
+    return () => window.removeEventListener('storage', refreshUser);
   }, []);
 
-  const getInitials = useMemo<string>(() => {
-    const names = userEmail.split(' ');
-    const firstInitial = names[0]?.charAt(0).toUpperCase() || '';
-    const lastInitial = names[1]?.charAt(0).toUpperCase() || '';
-    return firstInitial + lastInitial;
-  }, [userEmail]);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth > 768) return;
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
+      setMenuBg(interpolateGradient(progress));
+    };
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = menuItems.map((item) => item.href.replace('#', ''));
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveSection(id);
+          }
+        },
+        { threshold: 0.3, rootMargin: '-80px 0px 0px 0px' }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((obs) => obs.disconnect());
+  }, []);
 
   const scrollToSection = (href: string): void => {
     const targetElement = document.querySelector(href);
@@ -48,17 +120,17 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
         behavior: 'smooth',
         block: 'start'
       });
+      setActiveSection(href.replace('#', ''));
       setIsMenuOpen(false);
     }
   };
 
-  const logout = (): void => {
-    localStorage.removeItem('token');
+  const _logout = (): void => {
+    removeToken();
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
     setIsLoggedIn(false);
-    setIsDropdownOpen(false);
     window.location.reload();
   };
 
@@ -72,14 +144,15 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
             </Link>
           </div>
           {/* Bouton hamburger pour mobile */}
-          <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          <button className={`hamburger${isMenuOpen ? ' open' : ''}`} onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Menu">
             <span className="bar"></span>
             <span className="bar"></span>
             <span className="bar"></span>
           </button>
           {/* Menu desktop */}
-          <div 
+          <div
             className={`nav-items cta mobile-menu ${isMenuOpen ? 'open' : ''}`}
+            style={isMobile ? { backgroundColor: menuBg } : undefined}
           >
             {menuItems.map((item) => (
               <a
@@ -89,7 +162,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
                   e.preventDefault();
                   scrollToSection(item.href);
                 }}
-                className="nav-link"
+                className={`nav-link${activeSection === item.href.replace('#', '') ? ' active' : ''}`}
               >
                 {item.text}
               </a>
@@ -97,62 +170,36 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
             {/* Boutons Connexion et Chat dans le menu burger */}
             <div className="mobile-buttons">
               {!isLoggedIn ? (
-                <Link  to="/auth" className="connexion-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/auth" className="connexion-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
                   Connexion
                 </Link>
               ) : (
-                <div className="user-menu-mobile">
-                  <button 
-                    className="user-icon-mobile" 
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    {getInitials}
-                  </button>
-                  {isDropdownOpen && (
-                    <div className="dropdown-mobile">
-                      <p>{userEmail}</p>
-                      <Link to="/dashboard" style={{ textDecoration: 'none', color: '#1c5372', padding: '0.5rem 1rem', display: 'block', width: '100%' }} onClick={() => setIsMenuOpen(false)}>
-                        Tableau de bord
-                      </Link>
-                      <button onClick={() => { logout(); setIsMenuOpen(false); }}>Déconnexion</button>
-                    </div>
-                  )}
-                </div>
+                <Link to="/profile" className="user-pill" onClick={() => setIsMenuOpen(false)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                  <span>{userDisplay}</span>
+                </Link>
               )}
               <Link  to="/chatbot" className="inscription-btn cta mobile-btn" onClick={() => setIsMenuOpen(false)}>
                 <span>Accéder au chat</span>
-                <span className="arrow">→</span>
+                <span className="arrow"><img src="/src/assets/img/Vector.svg" alt="Arrow" /></span>
               </Link>
             </div>
           </div>
         </div>
         <div className="website-buttons desktop-only">
           {!isLoggedIn ? (
-            <Link  to="/auth" className="connexion-btn cta">
+            <Link to="/auth" className="connexion-btn cta">
               Connexion
             </Link>
           ) : (
-            <div className="user-menu">
-              <button 
-                className="user-icon" 
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                {getInitials}
-              </button>
-              {isDropdownOpen && (
-                <div className="dropdown">
-                  <p>{userEmail}</p>
-                  <Link to="/dashboard" style={{ textDecoration: 'none', color: '#1c5372', padding: '0.5rem 1rem', display: 'block', width: '100%' }}>
-                    Tableau de bord
-                  </Link>
-                  <button onClick={logout}>Déconnexion</button>
-                </div>
-              )}
-            </div>
+            <Link to="/profile" className="user-pill">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+              <span>{userDisplay}</span>
+            </Link>
           )}
           <Link  to="/chatbot" className="inscription-btn cta">
             <span> Accéder au chat</span>
-            <span className="arrow">→</span>
+            <span className="arrow"><img src="/src/assets/img/Vector.svg" alt="Arrow" /></span>
           </Link>
         </div>
       </nav>

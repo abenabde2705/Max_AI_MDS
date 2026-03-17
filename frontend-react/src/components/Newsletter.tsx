@@ -1,4 +1,4 @@
-import React, { useState, useMemo, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useMemo, FormEvent } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
@@ -6,7 +6,7 @@ interface NewsletterProps {
   className?: string;
 }
 
-const Newsletter: React.FC<NewsletterProps> = ({ className }) => {
+const Newsletter: React.FC<NewsletterProps> = ({ className: _className }) => {
   const [email, setEmail] = useState<string>('');
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');

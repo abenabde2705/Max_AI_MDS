@@ -4,15 +4,19 @@ import { v4 as uuidv4 } from 'uuid';
 import type { SubscriptionAttributes } from '../../types/global.js';
 
 // Type pour les attributs optionnels lors de la création
-type SubscriptionCreationAttributes = Optional<SubscriptionAttributes, 'id' | 'createdAt' | 'updatedAt'>;
+type SubscriptionCreationAttributes = Optional<SubscriptionAttributes, 'id'>;
 
 // Classe du modèle Subscription avec tous les types
 class Subscription extends Model<SubscriptionAttributes, SubscriptionCreationAttributes> implements SubscriptionAttributes {
   public id!: string;
   public userId!: string;
+  public plan!: 'premium' | 'student';
   public status!: 'active' | 'canceled';
   public startDate!: Date;
   public endDate?: Date;
+  public stripeCustomerId?: string;
+  public stripeSubscriptionId?: string;
+  public stripePeriodEnd?: Date;
 }
 
 // Initialisation du modèle
@@ -29,6 +33,18 @@ Subscription.init({
     references: {
       model: 'users',
       key: 'id'
+    }
+  },
+  plan: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'premium',
+    field: 'plan',
+    validate: {
+      isIn: {
+        args: [['premium', 'student']],
+        msg: 'Le plan doit être "premium" ou "student"'
+      }
     }
   },
   status: {
@@ -50,6 +66,21 @@ Subscription.init({
     type: DataTypes.DATE,
     allowNull: true,
     field: 'end_date'
+  },
+  stripeCustomerId: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'stripe_customer_id'
+  },
+  stripeSubscriptionId: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'stripe_subscription_id'
+  },
+  stripePeriodEnd: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'stripe_period_end'
   }
 }, {
   sequelize,

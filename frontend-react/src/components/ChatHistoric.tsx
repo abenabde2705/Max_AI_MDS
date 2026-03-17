@@ -109,20 +109,19 @@ export default function ChatHistoric({
                     className="historic-item-delete"
                     onClick={(e) => {
                       e.stopPropagation();
+                      const toastId = `delete-${conv.id}`;
                       const confirmDelete = () => {
                         onDeleteConversation(conv.id);
+                        toast.dismiss(toastId);
                         toast.success('Conversation supprimée avec succès');
                       };
-                      
+
                       toast.info(
                         <div>
                           <p>Voulez-vous vraiment supprimer cette conversation ?</p>
                           <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
                             <button
-                              onClick={() => {
-                                confirmDelete();
-                                toast.dismiss();
-                              }}
+                              onClick={confirmDelete}
                               style={{
                                 padding: '6px 12px',
                                 background: '#ff3b30',
@@ -135,7 +134,7 @@ export default function ChatHistoric({
                               Supprimer
                             </button>
                             <button
-                              onClick={() => toast.dismiss()}
+                              onClick={() => toast.dismiss(toastId)}
                               style={{
                                 padding: '6px 12px',
                                 background: '#888',
@@ -150,6 +149,7 @@ export default function ChatHistoric({
                           </div>
                         </div>,
                         {
+                          toastId,
                           autoClose: false,
                           closeButton: false,
                         }

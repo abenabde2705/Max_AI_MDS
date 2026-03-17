@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserAttributes } from '../../types/global.js';
 
 // Type pour les attributs optionnels lors de la création
-type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym'>;
+type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym' | 'role' | 'stripeCustomerId' | 'resetToken' | 'resetTokenExpiry'>;
 
 // Classe du modèle User avec tous les types
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -15,12 +15,16 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public isAnonymous!: boolean;
   public pseudonym?: string;
   public isPremium!: boolean;
+  public role!: 'user' | 'admin';
+  public stripeCustomerId?: string;
   public firstName?: string;
   public lastName?: string;
   public age?: number;
   public googleId?: string;
   public facebookId?: string;
   public lastLogin?: Date;
+  public resetToken?: string;
+  public resetTokenExpiry?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -35,7 +39,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
         throw new Error('Aucun mot de passe défini pour cet utilisateur');
       }
       
-      console.log('Comparing password with hash:', hashedPassword.substring(0, 20) + '...');
       return await bcrypt.compare(candidatePassword, hashedPassword);
     } catch (error) {
       console.error('Erreur dans comparePassword:', error);
@@ -87,6 +90,22 @@ User.init({
     defaultValue: false,
     field: 'is_premium'
   },
+  role: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'user',
+    validate: {
+      isIn: {
+        args: [['user', 'admin']],
+        msg: 'Le rôle doit être "user" ou "admin"'
+      }
+    }
+  },
+  stripeCustomerId: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'stripe_customer_id'
+  },
   firstName: {
     type: DataTypes.STRING(100),
     allowNull: true
@@ -128,6 +147,16 @@ User.init({
     type: DataTypes.DATE,
     allowNull: true
   },
+  resetToken: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'reset_token',
+  },
+  resetTokenExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'reset_token_expiry',
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -151,7 +180,6 @@ User.init({
       // Hasher le mot de passe avant création
       const password = user.getDataValue('password') || user.dataValues.password;
       if (password) {
-        console.log('Hashing password for new user:', user.email);
         const hashedPassword = await bcrypt.hash(password, 12);
         user.setDataValue('password', hashedPassword);
       }
@@ -161,7 +189,6 @@ User.init({
       if (user.changed('password')) {
         const password = user.getDataValue('password');
         if (password) {
-          console.log('Hashing password for user update:', user.email);
           const hashedPassword = await bcrypt.hash(password, 12);
           user.setDataValue('password', hashedPassword);
         }
