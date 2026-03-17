@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
           <div className="footer-column">
             <h4>Contact Support</h4>
             <p>
-              <a href="mailto:Max@outlook.com">Max@outlook.com</a>
+              <a href="mailto:contact@maxai-mds.fr">contact@maxai-mds.fr</a>
             </p>
             {isLoggedIn && (
               <button 
