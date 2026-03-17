@@ -13,8 +13,8 @@ import StudentVerification from '../models/StudentVerification.js';
 let _stripe: Stripe | null = null;
 const getStripe = (): Stripe | null => {
   const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) return null;
-  if (!_stripe) _stripe = new Stripe(key, { apiVersion: '2026-02-25.clover' });
+  if (!key) { return null; }
+  if (!_stripe) { _stripe = new Stripe(key, { apiVersion: '2026-02-25.clover' }); }
   return _stripe;
 };
 
