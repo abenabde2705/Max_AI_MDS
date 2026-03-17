@@ -39,7 +39,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
         throw new Error('Aucun mot de passe défini pour cet utilisateur');
       }
       
-      console.log('Comparing password with hash:', hashedPassword.substring(0, 20) + '...');
       return await bcrypt.compare(candidatePassword, hashedPassword);
     } catch (error) {
       console.error('Erreur dans comparePassword:', error);
@@ -181,7 +180,6 @@ User.init({
       // Hasher le mot de passe avant création
       const password = user.getDataValue('password') || user.dataValues.password;
       if (password) {
-        console.log('Hashing password for new user:', user.email);
         const hashedPassword = await bcrypt.hash(password, 12);
         user.setDataValue('password', hashedPassword);
       }
@@ -191,7 +189,6 @@ User.init({
       if (user.changed('password')) {
         const password = user.getDataValue('password');
         if (password) {
-          console.log('Hashing password for user update:', user.email);
           const hashedPassword = await bcrypt.hash(password, 12);
           user.setDataValue('password', hashedPassword);
         }

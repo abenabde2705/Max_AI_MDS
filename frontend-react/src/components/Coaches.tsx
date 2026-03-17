@@ -84,6 +84,18 @@ export default function Coaches() {
       </header>
 
       <div className="coaches__container">
+        {/* Coming Soon overlay */}
+        <div className="coaches__coming-soon-wrapper">
+          <div className="coaches__coming-soon-overlay">
+            <div className="coaches__coming-soon-badge">
+              <h2 className="coaches__coming-soon-title">Bientôt disponible</h2>
+              <p className="coaches__coming-soon-text">
+                La mise en relation avec des professionnels de santé mentale arrive très prochainement.
+              </p>
+            </div>
+          </div>
+
+          <div className="coaches__coming-soon-blurred">
         {/* Recommandations personnalisées */}
         <div className="coaches__recommendations">
           <div className="coaches__recommendations-title">Recommandations personnalisées</div>
@@ -143,6 +155,8 @@ export default function Coaches() {
             </div>
           ))}
         </div>
+          </div>{/* end blurred */}
+        </div>{/* end coming-soon-wrapper */}
       </div>
     </main>
   );

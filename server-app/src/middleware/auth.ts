@@ -19,29 +19,20 @@ export const generateToken = (userId: string): string => {
     throw new Error('JWT_SECRET is not defined');
   }
   
-  console.log('Generating token for user ID:', userId);
   const payload = { id: userId };
-  console.log('Token payload:', payload);
   const options: jwt.SignOptions = { expiresIn: '24h' };
-  
-  const token = jwt.sign(payload, process.env.JWT_SECRET, options);
-  console.log('Generated token preview:', token.substring(0, 30) + '...');
-  return token;
+  return jwt.sign(payload, process.env.JWT_SECRET, options);
 };
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const authHeader = req.headers['authorization'];
-        console.log('Auth header:', authHeader);
-        
-        const token = authHeader?.startsWith('Bearer ') 
-            ? authHeader.substring(7) 
+
+        const token = authHeader?.startsWith('Bearer ')
+            ? authHeader.substring(7)
             : null;
 
-        console.log('Extracted token:', token ? `${token.substring(0, 20)}...` : 'null');
-
         if (!token) {
-            console.log('No token provided');
             res.status(401).json({ 
                 success: false, 
                 message: 'Token d\'accès manquant' 
@@ -54,13 +45,10 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
-        console.log('Decoded token:', decoded);
-        
+
         const user = await User.findByPk(decoded.id);
-        console.log('User found:', user ? `${user.getDataValue('email')} (${user.getDataValue('id')})` : 'null');
-        
+
         if (!user) {
-            console.log('User not found for ID:', decoded.id);
             res.status(401).json({ 
                 success: false, 
                 message: 'Utilisateur non trouvé' 
@@ -79,13 +67,11 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
             role: user.getDataValue('role') || 'user'
         };
 
-        console.log('Auth successful for user:', user.getDataValue('email'));
         next();
     } catch (error: unknown) {
         console.error('Erreur d\'authentification:', error);
         
         if (error instanceof jwt.JsonWebTokenError) {
-            console.log('JWT Error:', error.message);
             res.status(401).json({ 
                 success: false, 
                 message: 'Token invalide' 
@@ -94,7 +80,6 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         }
         
         if (error instanceof jwt.TokenExpiredError) {
-            console.log('JWT Expired:', error.message);
             res.status(401).json({ 
                 success: false, 
                 message: 'Token expiré' 

@@ -197,6 +197,50 @@ border-radius: 60px;
   padding: 0.6rem 1.2rem;
 }
 
+/* Coming Soon */
+.coaches__coming-soon-wrapper {
+  position: relative;
+}
+
+.coaches__coming-soon-blurred {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.6;
+}
+
+.coaches__coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coaches__coming-soon-badge {
+  background: linear-gradient(135deg, rgba(22, 26, 77, 0.95) 0%, rgba(71, 0, 89, 0.95) 100%);
+  border: 2px solid #DAE63D;
+  border-radius: 24px;
+  padding: 2rem 3rem;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(218, 230, 61, 0.25);
+  max-width: 420px;
+}
+
+.coaches__coming-soon-title {
+  color: #DAE63D;
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+}
+
+.coaches__coming-soon-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .coaches__grid {

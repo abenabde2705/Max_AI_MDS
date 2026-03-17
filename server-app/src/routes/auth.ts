@@ -166,11 +166,6 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
       isPremium: false
     });
 
-    console.log('Created user:', user);
-    console.log('User ID:', user.getDataValue('id'));
-    console.log('User dataValues:', user.dataValues);
-    console.log('User getDataValue id:', user.getDataValue('id'));
-
     // Envoyer l'email de bienvenue (non-bloquant)
     sendWelcomeEmail({ to: email.toLowerCase(), firstName }).catch(err =>
       console.error('Erreur envoi email de bienvenue:', err)
@@ -178,7 +173,6 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
 
     // Générer un token JWT
     const userId = user.getDataValue('id');
-    console.log('Using userId for token:', userId);
     const token = generateToken(userId);
 
     res.status(201).json({
@@ -303,12 +297,7 @@ router.post('/login', async (req: LoginRequest, res: Response): Promise<void> =>
     }
 
     // Vérifier le mot de passe
-    console.log('Password provided:', password);
-    console.log('Stored hash:', user.getDataValue('password'));
-    console.log('GetDataValue hash:', user.getDataValue('password'));
-    
     const isPasswordValid = await user.comparePassword(password);
-    console.log('Password comparison result:', isPasswordValid);
     
     if (!isPasswordValid) {
       res.status(401).json({
@@ -354,12 +343,7 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
       return;
     }
 
-    console.log('Profile request - req.user:', req.user);
-    console.log('Profile request - req.user.id:', req.user.id);
-    console.log('Profile request - typeof req.user.id:', typeof req.user.id);
-
     const user = await User.findByPk(req.user.id);
-    console.log('Profile request - found user:', user ? `${user.email} (${user.id})` : 'null');
     
     if (!user) {
       res.status(404).json({

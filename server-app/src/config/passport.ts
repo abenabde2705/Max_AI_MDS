@@ -102,7 +102,6 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
 // Sérialisation de l'utilisateur
 passport.serializeUser((user: any, done) => {
   const userId = user.id || user.getDataValue?.('id') || user.dataValues?.id;
-  console.log('Serializing user - userId:', userId);
   done(null, userId);
 });
 
