@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import FeedbackModal from '../components/FeedbackModal';
@@ -11,7 +12,7 @@ const Footer: React.FC = () => {
 
   useEffect(() => {
     // Vérifier si l'utilisateur est connecté
-    const token = localStorage.getItem('token');
+    const token = getToken();
     setIsLoggedIn(!!token);
   }, []);
 

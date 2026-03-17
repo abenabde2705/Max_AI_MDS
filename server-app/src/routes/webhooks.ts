@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
 import User from '../models/User.js';
 import Subscription from '../models/Subscription.js';
+import { sendSubscriptionEmail } from '../services/email.js';
 
 const router = Router();
 
@@ -98,6 +99,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
     stripeSubId = session.subscription as string;
   }
 
+  let stripePeriodEnd: Date | null = null;
+  if (stripeSubId) {
+    const stripeSub = await getStripe().subscriptions.retrieve(stripeSubId);
+    const periodEnd = (stripeSub as any).current_period_end
+      ?? stripeSub.items?.data?.[0]?.current_period_end;
+    if (periodEnd) {
+      stripePeriodEnd = new Date(periodEnd * 1000);
+    }
+  }
+
   // Activer isPremium sur l'utilisateur
   await user.update({ isPremium: true });
 
@@ -109,7 +120,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
       plan,
       stripeCustomerId: session.customer as string,
       stripeSubscriptionId: stripeSubId || undefined,
-      status: 'active'
+      status: 'active',
+      stripePeriodEnd
     });
   } else {
     await Subscription.create({
@@ -118,9 +130,17 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
       status: 'active',
       startDate: new Date(),
       stripeCustomerId: session.customer as string,
-      stripeSubscriptionId: stripeSubId || undefined
+      stripeSubscriptionId: stripeSubId || undefined,
+      stripePeriodEnd
     });
   }
+
+  // Envoyer l'email de confirmation d'abonnement (non-bloquant)
+  sendSubscriptionEmail({
+    to: user.getDataValue('email'),
+    firstName: user.getDataValue('firstName'),
+    plan,
+  }).catch(err => console.error('Erreur envoi email abonnement:', err));
 
   console.log(`✅ Abonnement ${plan} activé pour l'utilisateur ${userId}`);
 }
@@ -134,8 +154,11 @@ async function handleSubscriptionUpdated(stripeSub: Stripe.Subscription): Promis
     return;
   }
 
+  const periodEnd = (stripeSub as any).current_period_end
+    ?? stripeSub.items?.data?.[0]?.current_period_end;
   await subscription.update({
-    status: stripeSub.status === 'active' ? 'active' : 'canceled'
+    status: stripeSub.status === 'active' ? 'active' : 'canceled',
+    ...(periodEnd ? { stripePeriodEnd: new Date(periodEnd * 1000) } : {})
   });
 
   console.log(`✅ Abonnement ${stripeSubId} mis à jour: status=${stripeSub.status}`);

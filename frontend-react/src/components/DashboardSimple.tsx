@@ -1,3 +1,4 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +18,7 @@ const DashboardSimple: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       
       if (!token) {
         navigate('/auth');
@@ -40,12 +41,12 @@ const DashboardSimple: React.FC = () => {
             name: `${userData.user.firstName} ${userData.user.lastName}`
           });
         } else {
-          localStorage.removeItem('token');
+          removeToken();
           navigate('/auth');
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des données utilisateur:', error);
-        localStorage.removeItem('token');
+        removeToken();
         navigate('/auth');
       } finally {
         setLoading(false);
@@ -56,7 +57,7 @@ const DashboardSimple: React.FC = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    removeToken();
     localStorage.removeItem('name');
     localStorage.removeItem('userId');
     navigate('/');

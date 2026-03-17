@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import PlanCard from './PlanCard';
 import StudentVerifyModal from './StudentVerify';
 import { createCheckoutSession } from '../services/chat.api';
+import { usePremium } from '../context/PremiumContext';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -12,6 +13,7 @@ interface AbonnementProps {
 
 const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   const [loadingPlan, setLoadingPlan] = useState<'premium' | 'student' | null>(null);
+  const { isPremium } = usePremium();
   const [studentModalOpen, setStudentModalOpen] = useState(false);
 
   useEffect(() => {
@@ -35,6 +37,9 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   const handleStudentPlan = () => {
     setStudentModalOpen(true);
   };
+
+  const premiumButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium';
+  const studentButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant';
 
   return (
     <>
@@ -83,11 +88,11 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
                 '',
                 'Accès prioritaire aux nouvelles fonctions'
               ]}
-              buttonText={loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium'}
+              buttonText={premiumButtonText}
               buttonStyle="primary"
               highlight={true}
-              onClick={handlePremiumCheckout}
-              disabled={loadingPlan !== null}
+              onClick={isPremium ? undefined : handlePremiumCheckout}
+              disabled={isPremium || loadingPlan !== null}
             />
 
             <PlanCard
@@ -96,13 +101,13 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               priceLabel=" / mois"
               description="Tarif réduit spécial étudiants"
               features={[
-              
+
                 'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
               ]}
-              buttonText={loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant'}
+              buttonText={studentButtonText}
               buttonStyle="campus"
-              onClick={handleStudentPlan}
-              disabled={loadingPlan !== null}
+              onClick={isPremium ? undefined : handleStudentPlan}
+              disabled={isPremium || loadingPlan !== null}
             />
           </div>
         </div>

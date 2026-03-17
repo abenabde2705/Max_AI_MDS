@@ -1,9 +1,12 @@
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { Op } from 'sequelize';
 import User from '../models/User.js';
 import { authenticateToken, generateToken } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/roleAuth.js';
 import passport from '../config/passport.js';
+import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email.js';
 
 const router = express.Router();
 
@@ -167,6 +170,11 @@ router.post('/register', async (req: RegisterRequest, res: Response): Promise<vo
     console.log('User ID:', user.getDataValue('id'));
     console.log('User dataValues:', user.dataValues);
     console.log('User getDataValue id:', user.getDataValue('id'));
+
+    // Envoyer l'email de bienvenue (non-bloquant)
+    sendWelcomeEmail({ to: email.toLowerCase(), firstName }).catch(err =>
+      console.error('Erreur envoi email de bienvenue:', err)
+    );
 
     // Générer un token JWT
     const userId = user.getDataValue('id');
@@ -792,13 +800,17 @@ router.post('/request-password-reset', async (req: Request, res: Response): Prom
     }
 
     const resetToken = jwt.sign(
-      { userId: user.id, type: 'password_reset' },
+      { userId: user.getDataValue('id'), type: 'password_reset' },
       process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '1h' }
     );
 
-    // TODO: Envoyer email avec le token
-    // await sendPasswordResetEmail(user.email, resetToken);
+    // Envoyer l'email de réinitialisation (non-bloquant)
+    sendPasswordResetEmail({
+      to: user.getDataValue('email'),
+      firstName: user.getDataValue('firstName'),
+      token: resetToken,
+    }).catch(err => console.error('Erreur envoi email reset password:', err));
 
     res.json({ 
       message: successMessage,
@@ -1063,5 +1075,48 @@ router.get('/facebook/callback',
     }
   }
 );
+
+/**
+ * POST /auth/set-password
+ * Valide le token de création de compte et enregistre le mot de passe choisi.
+ */
+router.post('/set-password', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      res.status(400).json({ success: false, message: 'Token et mot de passe requis' });
+      return;
+    }
+
+    if (password.length < 8) {
+      res.status(400).json({ success: false, message: 'Le mot de passe doit contenir au moins 8 caractères' });
+      return;
+    }
+
+    const user = await User.findOne({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: { [Op.gt]: new Date() },
+      },
+    });
+
+    if (!user) {
+      res.status(400).json({ success: false, message: 'Lien invalide ou expiré' });
+      return;
+    }
+
+    // Le hook beforeUpdate du modèle User hashe automatiquement le password
+    await user.update({ password, resetToken: undefined, resetTokenExpiry: undefined });
+
+    const userId = user.getDataValue('id');
+    const jwtToken = generateToken(userId);
+
+    res.json({ success: true, message: 'Mot de passe défini avec succès', token: jwtToken });
+  } catch (error) {
+    console.error('POST /auth/set-password error:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
 
 export default router;

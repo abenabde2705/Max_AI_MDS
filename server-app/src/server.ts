@@ -15,6 +15,7 @@ import journalRoutes from './routes/journal.js';
 import subscriptionRoutes from './routes/subscriptions.js';
 import stripeWebhookRouter from './routes/webhooks.js';
 import studentVerificationRoutes from './routes/studentVerification.js';
+import adminRoutes from './routes/admin.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
 import './config/passport.js';
 import { up as migration001 } from './migrations/001-add-performance-indexes.js';
@@ -24,6 +25,8 @@ import { up as migration004 } from './migrations/004-extend-emotional-journal.js
 import { up as migration005 } from './migrations/005-extend-subscriptions.js';
 import { up as migration006 } from './migrations/006-create-student-verifications.js';
 import { up as migration007 } from './migrations/007-add-user-role-and-stripe.js';
+import { up as migration008 } from './migrations/008-create-crisis-alerts.js';
+import { up as migration009 } from './migrations/009-add-reset-token.js';
 
 // Monitoring imports
 import pino from 'pino';
@@ -128,6 +131,8 @@ const runMigrations = async (): Promise<void> => {
         { name: '005', fn: () => migration005(qi, sequelize.constructor as any) },
         { name: '006', fn: () => migration006(qi, sequelize.constructor as any) },
         { name: '007', fn: () => migration007(qi, sequelize.constructor as any) },
+        { name: '008', fn: () => migration008(qi, sequelize.constructor as any) },
+        { name: '009', fn: () => migration009(qi, sequelize.constructor as any) },
     ];
 
     for (const migration of migrations) {
@@ -238,6 +243,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/journal', journalRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api', studentVerificationRoutes);
+app.use('/api', adminRoutes);
 
 // Route de test avec métrique custom
 app.get('/api/health', (req: Request, res: Response): void => {

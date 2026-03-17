@@ -1,5 +1,7 @@
+import { getToken, removeToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, CheckCircle, Camera } from 'lucide-react';
 import { fetchCurrentSubscription, cancelSubscription, createPortalSession } from '../services/chat.api';
 
 interface UserProfile {
@@ -42,7 +44,7 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       if (!token) {
         navigate('/auth');
         return;
@@ -75,7 +77,7 @@ const Profile: React.FC = () => {
           setUser(profile);
           setFormData(profile);
         } else {
-          localStorage.removeItem('token');
+          removeToken();
           navigate('/auth');
           return;
         }
@@ -109,7 +111,7 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (!token) return;
 
     try {
@@ -130,6 +132,8 @@ const Profile: React.FC = () => {
 
       if (response.ok) {
         setUser(formData);
+        localStorage.setItem('name', `${formData.firstName} ${formData.lastName}`.trim());
+        window.dispatchEvent(new Event('storage'));
         setEditMode(false);
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
@@ -140,7 +144,7 @@ const Profile: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    removeToken();
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
@@ -164,7 +168,7 @@ const Profile: React.FC = () => {
       {/* Header */}
       <div className="profile-header">
         <button className="profile-header__back" onClick={() => navigate(-1)}>
-          ←
+          <ArrowLeft size={20} />
         </button>
         <div>
           <h1 className="profile-header__title">Mon Profil</h1>
@@ -178,7 +182,7 @@ const Profile: React.FC = () => {
           <div className="profile-avatar-card__avatar">
             <span>{getInitials()}</span>
             <button className="profile-avatar-card__edit-btn">
-              <span>📷</span>
+              <Camera size={14} />
             </button>
           </div>
           <div className="profile-avatar-card__info">
@@ -196,7 +200,7 @@ const Profile: React.FC = () => {
 
         {saveSuccess && (
           <div className="profile-success-banner">
-            ✅ Profil mis à jour avec succès
+            <CheckCircle size={16} style={{ marginRight: 8 }} />Profil mis à jour avec succès
           </div>
         )}
 

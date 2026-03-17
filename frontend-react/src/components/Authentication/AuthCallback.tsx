@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { setToken } from '../../utils/token';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const AuthCallback = () => {
@@ -17,7 +18,7 @@ const AuthCallback = () => {
 
     if (token) {
       // Stocker le token
-      localStorage.setItem('token', token);
+      setToken(token, true); // OAuth → toujours persistant
       
       // Récupérer les informations de l'utilisateur
       const API_URL = import.meta.env.VITE_API_URL;

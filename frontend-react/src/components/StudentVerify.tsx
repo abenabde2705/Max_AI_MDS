@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { X, Check, FileText, GraduationCap } from 'lucide-react';
 import {
   submitStudentVerification,
   fetchStudentVerificationStatus,
@@ -114,12 +115,12 @@ const StudentVerifyModal: React.FC<StudentVerifyModalProps> = ({ isOpen, onClose
       <div className="sv-modal" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="sv-header">
-          <div className="sv-header__icon">🎓</div>
+          <div className="sv-header__icon"><GraduationCap size={28} /></div>
           <div>
             <h2 className="sv-title">Vérification Étudiante</h2>
             <p className="sv-subtitle">Tarif Campus à 8€/mois</p>
           </div>
-          <button className="sv-close" onClick={onClose} aria-label="Fermer">✕</button>
+          <button className="sv-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
         </div>
 
         <div className="sv-body">
@@ -164,13 +165,13 @@ const StudentVerifyModal: React.FC<StudentVerifyModalProps> = ({ isOpen, onClose
               >
                 {selectedFile ? (
                   <>
-                    <span className="sv-dropzone__icon">✓</span>
+                    <span className="sv-dropzone__icon"><Check size={24} /></span>
                     <span className="sv-dropzone__name">{selectedFile.name}</span>
                     <span className="sv-dropzone__hint">Cliquez pour changer</span>
                   </>
                 ) : (
                   <>
-                    <span className="sv-dropzone__icon">📄</span>
+                    <span className="sv-dropzone__icon"><FileText size={32} /></span>
                     <span>Cliquez ou glissez votre carte étudiante</span>
                     <span className="sv-dropzone__hint">JPEG, PNG, WebP ou PDF — max 5 Mo</span>
                   </>

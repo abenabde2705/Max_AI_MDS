@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserAttributes } from '../../types/global.js';
 
 // Type pour les attributs optionnels lors de la création
-type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym' | 'role' | 'stripeCustomerId'>;
+type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym' | 'role' | 'stripeCustomerId' | 'resetToken' | 'resetTokenExpiry'>;
 
 // Classe du modèle User avec tous les types
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -23,6 +23,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public googleId?: string;
   public facebookId?: string;
   public lastLogin?: Date;
+  public resetToken?: string;
+  public resetTokenExpiry?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -145,6 +147,16 @@ User.init({
   lastLogin: {
     type: DataTypes.DATE,
     allowNull: true
+  },
+  resetToken: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'reset_token',
+  },
+  resetTokenExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'reset_token_expiry',
   },
   createdAt: {
     type: DataTypes.DATE,
