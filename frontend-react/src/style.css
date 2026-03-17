@@ -6478,3 +6478,135 @@ color: #F2F5FF;
   align-items: center;
 }
 .adm-btn--add:hover { background: rgba(218, 230, 61, 0.25); }
+
+/* ─── Set Password Page ───────────────────────────────────────────────────────── */
+
+.set-pwd__root {
+  min-height: 100vh;
+  background: #0d0626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.set-pwd__card {
+  background: linear-gradient(180deg, #161a4d 0%, #470059 69%, #651e79 100%);
+  border: 1.5px solid #dae63d;
+  border-radius: 32px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.set-pwd__logo {
+  height: 44px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
+.set-pwd__title {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #dae63d;
+  margin: 0;
+  text-align: center;
+}
+
+.set-pwd__subtitle {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.set-pwd__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.set-pwd__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.set-pwd__field label {
+  color: #dae63d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.set-pwd__field input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 40px;
+  padding: 14px 20px;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.set-pwd__field input:focus { border-color: #dae63d; }
+.set-pwd__field input::placeholder { color: rgba(255, 255, 255, 0.35); }
+.set-pwd__field input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.set-pwd__error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  text-align: center;
+  margin: 0;
+}
+
+.set-pwd__btn {
+  background: #dae63d;
+  color: #161a4d;
+  border: none;
+  border-radius: 50px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Ubuntu', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.set-pwd__btn:hover:not(:disabled) { opacity: 0.85; }
+.set-pwd__btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.set-pwd__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.set-pwd__check {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #dae63d;
+  color: #161a4d;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.set-pwd__success h2 { color: #dae63d; margin: 0; font-size: 1.4rem; }
+.set-pwd__success p  { color: rgba(255, 255, 255, 0.6); margin: 0; }

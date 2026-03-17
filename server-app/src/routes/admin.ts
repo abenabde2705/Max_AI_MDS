@@ -8,7 +8,8 @@ import Subscription from '../models/Subscription.js';
 import Message from '../models/Message.js';
 import Conversation from '../models/Conversation.js';
 import CrisisAlert from '../models/CrisisAlert.js';
-import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import { sendSetPasswordEmail } from '../services/email.js';
 
 const router = Router();
 
@@ -134,17 +135,18 @@ router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request
       age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
     }
 
-    const tempPassword = Math.random().toString(36).slice(-10) + 'A1!';
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    const resetToken = uuidv4();
+    const resetTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
     const user = await User.create({
       firstName,
       lastName,
       email: email.toLowerCase(),
-      password: hashedPassword,
       age: age ?? 18,
       isAnonymous: false,
       isPremium: false,
+      resetToken,
+      resetTokenExpiry,
     });
 
     const userId = user.getDataValue('id');
@@ -158,9 +160,15 @@ router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request
       });
     }
 
+    try {
+      await sendSetPasswordEmail({ to: email.toLowerCase(), firstName, token: resetToken });
+    } catch (emailErr) {
+      console.error('Email set-password non envoyé:', emailErr);
+    }
+
     res.status(201).json({
       success: true,
-      message: 'Utilisateur créé avec succès',
+      message: 'Utilisateur créé — un email a été envoyé pour définir le mot de passe',
       data: { id: userId, email: email.toLowerCase(), firstName, lastName },
     });
   } catch (error: unknown) {

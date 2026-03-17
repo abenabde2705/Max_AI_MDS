@@ -20,6 +20,7 @@ import Statistics from './components/Statistics';
 import Coaches from './components/Coaches';
 import ChatLayout from './components/ChatLayout';
 import AdminPage from './components/AdminPage';
+import SetPassword from './components/SetPassword';
 
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
@@ -62,6 +63,7 @@ const App: React.FC = () => {
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
         <Route path="/admin" element={<ProtectedRoute element={<AdminPage />} />} />
 
+        <Route path="/set-password" element={<SetPassword />} />
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
         <Route path="/politics/politique-confidentialites" element={<PolitiqueConfidentialites />} />

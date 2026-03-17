@@ -26,6 +26,7 @@ import { up as migration005 } from './migrations/005-extend-subscriptions.js';
 import { up as migration006 } from './migrations/006-create-student-verifications.js';
 import { up as migration007 } from './migrations/007-add-user-role-and-stripe.js';
 import { up as migration008 } from './migrations/008-create-crisis-alerts.js';
+import { up as migration009 } from './migrations/009-add-reset-token.js';
 
 // Monitoring imports
 import pino from 'pino';
@@ -131,6 +132,7 @@ const runMigrations = async (): Promise<void> => {
         { name: '006', fn: () => migration006(qi, sequelize.constructor as any) },
         { name: '007', fn: () => migration007(qi, sequelize.constructor as any) },
         { name: '008', fn: () => migration008(qi, sequelize.constructor as any) },
+        { name: '009', fn: () => migration009(qi, sequelize.constructor as any) },
     ];
 
     for (const migration of migrations) {

@@ -36,6 +36,8 @@ export interface UserAttributes {
   lastLogin?: Date;
   googleId?: string;
   facebookId?: string;
+  resetToken?: string;
+  resetTokenExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
