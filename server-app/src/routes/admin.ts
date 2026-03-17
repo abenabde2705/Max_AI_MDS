@@ -43,7 +43,7 @@ router.get('/admin/users', authenticateToken, requireAdmin, async (req: Request,
     const convIdsByUser = new Map<string, string[]>();
     for (const conv of allConvs) {
       const uid = conv.getDataValue('userId');
-      if (!convIdsByUser.has(uid)) convIdsByUser.set(uid, []);
+      if (!convIdsByUser.has(uid)) { convIdsByUser.set(uid, []); }
       convIdsByUser.get(uid)!.push(conv.getDataValue('id'));
     }
 
@@ -244,8 +244,8 @@ router.get('/admin/crisis-alerts', authenticateToken, requireAdmin, async (req: 
   try {
     const filter = (req.query.filter as string) || 'all';
     const whereClause: any = {};
-    if (filter === 'unread') whereClause.status = 'unread';
-    if (filter === 'urgent') whereClause.severity = 'urgent';
+    if (filter === 'unread') { whereClause.status = 'unread'; }
+    if (filter === 'urgent') { whereClause.severity = 'urgent'; }
 
     const alerts = await CrisisAlert.findAll({
       where: whereClause,

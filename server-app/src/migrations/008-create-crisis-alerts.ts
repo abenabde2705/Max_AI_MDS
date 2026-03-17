@@ -64,11 +64,7 @@ const createCrisisAlerts = async (queryInterface: QueryInterface, _Sequelize: ty
 
 const revertCrisisAlerts = async (queryInterface: QueryInterface, _Sequelize: typeof DataTypes): Promise<void> => {
   await queryInterface.sequelize.transaction(async (transaction: Transaction) => {
-    try {
-      await queryInterface.dropTable('crisis_alerts', { transaction } as any);
-    } catch (error) {
-      throw error;
-    }
+    await queryInterface.dropTable('crisis_alerts', { transaction } as any);
   });
 };
 

@@ -38,8 +38,8 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
     setStudentModalOpen(true);
   };
 
-  const premiumButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'premium' ? 'Chargement...' : "S'abonner Premium";
-  const studentButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'student' ? 'Chargement...' : "S'abonner en tant qu'étudiant";
+  const premiumButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium';
+  const studentButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant';
 
   return (
     <>

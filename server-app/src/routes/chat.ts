@@ -78,7 +78,7 @@ router.post('/', chatRateLimit, authenticateToken, checkMessageLimit, async (req
 
     // Détection de messages de crise
     const URGENT_KEYWORDS = ['envie de mourir', 'veux mourir', 'me suicider', 'suicid', 'en finir avec ma vie', 'en finir avec tout', 'me tuer'];
-    const MODERATE_KEYWORDS = ["n'en peux plus", 'ne peux plus', 'désespoir', 'sans espoir', 'ça ne sert à rien', 'ca ne sert a rien', 'sans issue', 'plus envie de rien'];
+    const MODERATE_KEYWORDS = ['n\'en peux plus', 'ne peux plus', 'désespoir', 'sans espoir', 'ça ne sert à rien', 'ca ne sert a rien', 'sans issue', 'plus envie de rien'];
     const lowerMsg = trimmedMessage.toLowerCase();
     const isUrgent = URGENT_KEYWORDS.some((kw) => lowerMsg.includes(kw));
     const isModerate = !isUrgent && MODERATE_KEYWORDS.some((kw) => lowerMsg.includes(kw));
