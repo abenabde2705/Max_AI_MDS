@@ -23,6 +23,7 @@ import AdminPage from './components/AdminPage';
 import SetPassword from './components/SetPassword';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
+import CookieBanner from './components/CookieBanner';
 import { getToken } from './utils/token';
 
 
@@ -52,6 +53,7 @@ const App: React.FC = () => {
         pauseOnHover
         theme="dark"
       />
+      <CookieBanner />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route element={<ProtectedRoute element={<PremiumProvider><ChatLayout /></PremiumProvider>} />}>

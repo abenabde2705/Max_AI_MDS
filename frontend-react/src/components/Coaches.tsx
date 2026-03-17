@@ -84,65 +84,79 @@ export default function Coaches() {
       </header>
 
       <div className="coaches__container">
-        {/* Recommandations personnalisées */}
-        <div className="coaches__recommendations">
-          <div className="coaches__recommendations-title">Recommandations personnalisées</div>
-          <p className="coaches__recommendations-text">
-              Des professionnels sont sélectionnés en fonction de votre profil émotionnel et de vos besoins. L'IA ne remplace pas un professionnel, mais peut vous orienter vers le bon accompagnement.
-          </p>
-        </div>
-
-        {/* Grille de coachs */}
-        <div className="coaches__grid">
-          {coaches.map((coach) => (
-            <div
-              key={coach.id}
-              className={`coaches__card ${coach.featured ? 'coaches__card--featured' : ''}`}
-            >
-              <div className="coaches__card-header">
-                <div className="coaches__coach-info">
-                  <h3 className="coaches__coach-name">{coach.name}</h3>
-                  <p className="coaches__coach-specialty">{coach.specialty} 
-                    <span className="coaches__rating-star"> ★</span>
-                    <span className="coaches__rating-value">{coach.rating}</span>
-                  </p>
-                    
-                </div>
-              </div>
-
-              <p className="coaches__description">{coach.description}</p>
-
-              <div className="coaches__details">
-                <div className="coaches__detail-row">
-                  <span className="coaches__detail-icon">📍</span>
-                  <span className="coaches__detail-text">{coach.location}</span>
-                </div>
-                <div className="coaches__detail-row">
-                  <span className="coaches__detail-icon">📅</span>
-                  <span className="coaches__detail-text">{coach.availability}</span>
-                </div>
-              </div>
-
-              <div className="coaches__specializations">
-                {coach.specializations.map((spec, index) => (
-                  <span key={index} className="coaches__tag">
-                    {spec}
-                  </span>
-                ))}
-              </div>
-
-              <div className="coaches__footer">
-                <div className="coaches__price">
-                  <span className="coaches__price-label">Tarif</span>
-                  <span className="coaches__price-value">{coach.price}</span>
-                </div>
-                <Button className="coaches__button" variant="primary">
-                    prendre rendez-vous
-                </Button>
-              </div>
+        {/* Coming Soon overlay */}
+        <div className="coaches__coming-soon-wrapper">
+          <div className="coaches__coming-soon-overlay">
+            <div className="coaches__coming-soon-badge">
+              <h2 className="coaches__coming-soon-title">Bientôt disponible</h2>
+              <p className="coaches__coming-soon-text">
+                La mise en relation avec des professionnels de santé mentale arrive très prochainement.
+              </p>
             </div>
-          ))}
-        </div>
+          </div>
+
+          <div className="coaches__coming-soon-blurred">
+            {/* Recommandations personnalisées */}
+            <div className="coaches__recommendations">
+              <div className="coaches__recommendations-title">Recommandations personnalisées</div>
+              <p className="coaches__recommendations-text">
+                Des professionnels sont sélectionnés en fonction de votre profil émotionnel et de vos besoins. L'IA ne remplace pas un professionnel, mais peut vous orienter vers le bon accompagnement.
+              </p>
+            </div>
+
+            {/* Grille de coachs */}
+            <div className="coaches__grid">
+              {coaches.map((coach) => (
+                <div
+                  key={coach.id}
+                  className={`coaches__card ${coach.featured ? 'coaches__card--featured' : ''}`}
+                >
+                  <div className="coaches__card-header">
+                    <div className="coaches__coach-info">
+                      <h3 className="coaches__coach-name">{coach.name}</h3>
+                      <p className="coaches__coach-specialty">{coach.specialty}
+                        <span className="coaches__rating-star"> ★</span>
+                        <span className="coaches__rating-value">{coach.rating}</span>
+                      </p>
+
+                    </div>
+                  </div>
+
+                  <p className="coaches__description">{coach.description}</p>
+
+                  <div className="coaches__details">
+                    <div className="coaches__detail-row">
+                      <span className="coaches__detail-icon">📍</span>
+                      <span className="coaches__detail-text">{coach.location}</span>
+                    </div>
+                    <div className="coaches__detail-row">
+                      <span className="coaches__detail-icon">📅</span>
+                      <span className="coaches__detail-text">{coach.availability}</span>
+                    </div>
+                  </div>
+
+                  <div className="coaches__specializations">
+                    {coach.specializations.map((spec, index) => (
+                      <span key={index} className="coaches__tag">
+                        {spec}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="coaches__footer">
+                    <div className="coaches__price">
+                      <span className="coaches__price-label">Tarif</span>
+                      <span className="coaches__price-value">{coach.price}</span>
+                    </div>
+                    <Button className="coaches__button" variant="primary">
+                      prendre rendez-vous
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>{/* end blurred */}
+        </div>{/* end coming-soon-wrapper */}
       </div>
     </main>
   );

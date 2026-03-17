@@ -81,7 +81,7 @@ interface CreateConversationRequest extends AuthenticatedRequest {
  *                 example: "Discussion sur l'anxiété"
  *     responses:
  *       201:
- *         description: Conversation créée avec succès
+ *         description: Conversation crée avec succès
  *         content:
  *           application/json:
  *             schema:

@@ -54,7 +54,7 @@ const createCrisisAlerts = async (queryInterface: QueryInterface, _Sequelize: ty
       await queryInterface.addIndex('crisis_alerts', ['user_id'], { transaction } as any);
       await queryInterface.addIndex('crisis_alerts', ['status'], { transaction } as any);
 
-      console.log('✅ Table crisis_alerts créée avec succès');
+      console.log('✅ Table crisis_alerts crée avec succès');
     } catch (error) {
       console.error('❌ Erreur lors de la création de crisis_alerts:', error);
       throw error;
