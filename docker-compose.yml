@@ -45,6 +45,8 @@ services:
       - default
     ports:
       - "5173:5173"
+    labels:
+      - "traefik.enable=true"
 
   ollama:
     image: ollama/ollama
