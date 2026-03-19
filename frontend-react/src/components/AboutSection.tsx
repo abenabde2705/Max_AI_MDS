@@ -18,7 +18,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, className }) => {
 
         <div className="feature-text">
           <h2  className="about-title">UNE ÉCOUTE SIMPLE,<br />DES RÉPONSES CLAIRES</h2>
-          <p>Je m'adapte à vous, à votre personnalité et à vos besoins.Je retiens ce que vous partagez avec moi et j'évolue à vos côtés. Vous choisissez comment je communique : bienveillant, direct ou neutre, c'est vous qui décidez.  Besoin d'un avis ? Envoyez-moi une photo ou décrivez une <br />situation, je suis là pour vous guider et vous conseiller. </p>
+          <p>Je m'adapte à vous, à votre personnalité et à vos besoins.Je retiens ce que vous partagez avec moi et j'évolue à vos côtés. Vous choisissez comment je communique : bienveillant, direct ou neutre, c'est vous qui décidez.  Besoin d'un avis ? Décrivez une <br />situation, je suis là pour vous guider et vous conseiller. </p>
         </div>
       </div>
     </section>

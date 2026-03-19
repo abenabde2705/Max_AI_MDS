@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
+import { Check, X } from 'lucide-react';
+import '../FeedbackModal.css';
 
 interface TestimonialsPopupProps {
   isOpen: boolean;
@@ -9,76 +12,35 @@ interface TestimonialsPopupProps {
 }
 
 const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, onSubmitted }) => {
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [age, setAge] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [testimonialText, setTestimonialText] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [age, setAge] = useState('');
+  const [email, setEmail] = useState('');
+  const [testimonialText, setTestimonialText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const closePopup = () => {
+    if (isSubmitting) return;
+    setFirstName(''); setLastName(''); setAge(''); setEmail(''); setTestimonialText('');
+    setStatus(null);
     onClose();
-    // Reset form state
-    setFirstName('');
-    setLastName('');
-    setAge('');
-    setEmail('');
-    setTestimonialText('');
-    setErrorMessage('');
-    setSuccessMessage('');
   };
 
-  const validateEmail = (email: string): boolean => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
+  const validateEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 
-  const submitTestimonial = async () => {
-    // Form validation
-    if (!firstName.trim()) {
-      setErrorMessage('Veuillez entrer votre prénom');
-      return;
-    }
-    
-    if (!lastName.trim()) {
-      setErrorMessage('Veuillez entrer votre nom');
-      return;
-    }
-    
-    if (!age) {
-      setErrorMessage('Veuillez entrer votre âge');
-      return;
-    }
-    
-    if (isNaN(Number(age)) || Number(age) <= 0) {
-      setErrorMessage('Veuillez entrer un âge valide');
-      return;
-    }
-    
-    if (!email.trim()) {
-      setErrorMessage('Veuillez entrer votre email');
-      return;
-    }
-    
-    if (!validateEmail(email)) {
-      setErrorMessage('Veuillez entrer un email valide');
-      return;
-    }
-    
-    if (!testimonialText.trim()) {
-      setErrorMessage('Veuillez entrer un témoignage');
-      return;
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firstName.trim()) return setStatus({ type: 'error', message: 'Veuillez entrer votre prénom' });
+    if (!lastName.trim()) return setStatus({ type: 'error', message: 'Veuillez entrer votre nom' });
+    if (!age || isNaN(Number(age)) || Number(age) <= 0) return setStatus({ type: 'error', message: 'Veuillez entrer un âge valide' });
+    if (!validateEmail(email)) return setStatus({ type: 'error', message: 'Veuillez entrer un email valide' });
+    if (!testimonialText.trim()) return setStatus({ type: 'error', message: 'Veuillez entrer votre témoignage' });
 
     try {
       setIsSubmitting(true);
-      setErrorMessage('');
-      
-      // Add to Firestore
-      const testimonialsRef = collection(db, 'testimonials');
-      await addDoc(testimonialsRef, {
+      setStatus(null);
+      await addDoc(collection(db, 'testimonials'), {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         age: Number(age),
@@ -86,26 +48,11 @@ const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, 
         text: testimonialText.trim(),
         createdAt: serverTimestamp(),
       });
-      
-      setSuccessMessage('Merci pour votre témoignage !');
-      
-      // Reset form fields
-      setFirstName('');
-      setLastName('');
-      setAge('');
-      setEmail('');
-      setTestimonialText('');
-      
-      // Close popup after 2 seconds
-      setTimeout(() => {
-        onSubmitted();
-        closePopup();
-      }, 2000);
-      
+      setStatus({ type: 'success', message: 'Merci pour votre témoignage !' });
+      setTimeout(() => { onSubmitted(); closePopup(); }, 2000);
     } catch (error: unknown) {
-      console.error('Erreur lors de l\'envoi du témoignage:', error);
-      const firebaseError = error as Error;
-      setErrorMessage(`Une erreur est survenue: ${firebaseError.message}`);
+      const msg = error instanceof Error ? error.message : 'Erreur inconnue';
+      setStatus({ type: 'error', message: `Une erreur est survenue : ${msg}` });
     } finally {
       setIsSubmitting(false);
     }
@@ -113,100 +60,118 @@ const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, 
 
   if (!isOpen) return null;
 
-  return (
-    <div className="popup-overlay" onClick={closePopup}>
-      <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-        <div className="popup-header">
-          <h2>Partagez votre expérience</h2>
-          <button className="close-button" onClick={closePopup}>×</button>
+  return createPortal(
+    <div className="feedback-overlay" onClick={closePopup}>
+      <div className="feedback-modal" onClick={(e) => e.stopPropagation()}>
+
+        <div className="feedback-header">
+          <div className="feedback-header-info">
+            <span className="feedback-header-eyebrow">Max</span>
+            <h2>Donnez votre avis</h2>
+          </div>
+          <button className="feedback-close-btn" onClick={closePopup} disabled={isSubmitting}>
+            &times;
+          </button>
         </div>
-        
-        <div className="popup-body">
-          {errorMessage && (
-            <div className="error-message">{errorMessage}</div>
-          )}
-          {successMessage && (
-            <div className="success-message">{successMessage}</div>
-          )}
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="firstName">Prénom</label>
+
+        <form onSubmit={handleSubmit} className="feedback-form">
+          <div className="feedback-form-row">
+            <div className="feedback-field">
+              <label className="feedback-label" htmlFor="tp-firstName">Prénom <span>*</span></label>
               <input
-                id="firstName"
+                className="feedback-input"
+                id="tp-firstName"
+                type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                type="text"
                 placeholder="Votre prénom"
                 disabled={isSubmitting}
               />
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="lastName">Nom</label>
+            <div className="feedback-field">
+              <label className="feedback-label" htmlFor="tp-lastName">Nom <span>*</span></label>
               <input
-                id="lastName"
+                className="feedback-input"
+                id="tp-lastName"
+                type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                type="text"
                 placeholder="Votre nom"
                 disabled={isSubmitting}
               />
             </div>
           </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="age">Âge</label>
+
+          <div className="feedback-form-row">
+            <div className="feedback-field">
+              <label className="feedback-label" htmlFor="tp-age">Âge <span>*</span></label>
               <input
-                id="age"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
+                className="feedback-input"
+                id="tp-age"
                 type="number"
                 min="1"
                 max="120"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
                 placeholder="Votre âge"
                 disabled={isSubmitting}
               />
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
+            <div className="feedback-field">
+              <label className="feedback-label" htmlFor="tp-email">Email <span>*</span></label>
               <input
-                id="email"
+                className="feedback-input"
+                id="tp-email"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                type="email"
                 placeholder="Votre email"
                 disabled={isSubmitting}
               />
             </div>
           </div>
-          
-          <div className="form-group">
-            <label htmlFor="testimonial">Votre témoignage</label>
-            <textarea 
-              id="testimonial" 
+
+          <div className="feedback-field">
+            <label className="feedback-label" htmlFor="tp-testimonial">Votre témoignage <span>*</span></label>
+            <textarea
+              className="feedback-textarea"
+              id="tp-testimonial"
               value={testimonialText}
               onChange={(e) => setTestimonialText(e.target.value)}
-              placeholder="Partagez votre expérience avec MAX..."
+              placeholder="Partagez votre expérience avec MAX…"
               rows={4}
               disabled={isSubmitting}
             />
           </div>
-          
-          <div className="form-actions">
-            <button 
-              className="submit-button" 
-              onClick={submitTestimonial} 
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Envoi en cours...' : 'Envoyer'}
+
+          <div className="feedback-actions">
+            <button type="button" className="btn-cancel" onClick={closePopup} disabled={isSubmitting}>
+              Annuler
+            </button>
+            <button type="submit" className="btn-submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="btn-submit-loading">
+                  <span className="btn-spinner" />
+                  Envoi…
+                </span>
+              ) : 'Envoyer'}
             </button>
           </div>
-        </div>
+        </form>
+
+        {status && (
+          <div className={`feedback-status ${status.type}`}>
+            <span className="feedback-status-icon">
+              {status.type === 'success' ? <Check size={20} /> : <X size={20} />}
+            </span>
+            <h3>{status.type === 'success' ? 'Témoignage envoyé !' : 'Erreur'}</h3>
+            <p>{status.message}</p>
+          </div>
+        )}
+
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

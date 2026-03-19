@@ -17,7 +17,7 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   const [studentModalOpen, setStudentModalOpen] = useState(false);
   const [prices, setPrices] = useState<{ premium: string; student: string }>({
     premium: '14,99 €',
-    student: '8,00 €',
+    student: '7,99 €',
   });
 
   useEffect(() => {

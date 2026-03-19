@@ -1180,15 +1180,17 @@ button {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(5px);
+  background: rgba(22, 26, 77, 0.7);
+  backdrop-filter: blur(6px);
 }
 
 .popup-content {
-  background-color: white;
-  border-radius: 8px;
+  background: linear-gradient(160deg, #161a4d 0%, #470059 69%, #651e79 100%);
+  border: 1px solid #DAE63D;
+  border-radius: 28px;
   width: 90%;
-  max-width: 600px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 580px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   animation: popup-appear 0.3s ease-out;
 }
@@ -1196,7 +1198,7 @@ button {
 @keyframes popup-appear {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.93);
   }
   to {
     opacity: 1;
@@ -1208,38 +1210,40 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background-color: #1C5372;
-  color: white;
+  padding: 1.5rem 1.75rem 1rem;
 }
 
 .popup-header h2 {
-  font-size: 1.25rem;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #DAE63D;
   margin: 0;
 }
 
 .close-button {
   background: none;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   cursor: pointer;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  transition: background-color 0.2s;
+  width: 32px;
+  height: 32px;
+  transition: border-color 0.2s, background 0.2s;
   border-radius: 50%;
 }
 
 .close-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #DAE63D;
 }
 
 .popup-body {
-  padding: 20px;
+  padding: 0 1.75rem 1.75rem;
 }
 
 .form-row {
@@ -1259,76 +1263,93 @@ button {
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
-  font-weight: 400;
-font-size: 24px;
-color: #DAE63D;
+  margin-bottom: 6px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #DAE63D;
+  letter-spacing: 0.03em;
 }
 
 input, textarea {
   width: 100%;
-  padding: 12px;
-  background: #FFFFFF;
-  border: 1px solid #ddd;
-border-radius: 45px;
-  font-weight: 400;
-font-size: 24px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(218, 230, 61, 0.35);
+  border-radius: 12px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 0.95rem;
+  color: #ffffff;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
 }
 
 textarea {
   resize: vertical;
+  border-radius: 12px;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 input:focus, textarea:focus {
   outline: none;
-  border-color: #1C5372;
-  box-shadow: 0 0 0 2px rgba(28, 83, 114, 0.2);
+  border-color: #DAE63D;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 input:disabled, textarea:disabled {
-  background-color: #f7f7f7;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
+  margin-top: 8px;
 }
 
 .submit-button {
-  background-color: #1C5372;
-  color: white;
+  background: #DAE63D;
+  color: #161A4D;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 10px 28px;
+  border-radius: 54px;
+  font-family: 'Ubuntu', sans-serif;
   font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s;
 }
 
 .submit-button:hover {
-  background-color: #164259;
+  background: #BBC600;
 }
 
 .submit-button:disabled {
-  background-color: #94a3b8;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .error-message {
-  padding: 10px;
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border-radius: 4px;
+  padding: 10px 14px;
+  background: rgba(185, 28, 28, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(185, 28, 28, 0.4);
+  border-radius: 10px;
   margin-bottom: 16px;
+  font-size: 0.9rem;
 }
 
 .success-message {
-  padding: 10px;
-  background-color: #dcfce7;
-  color: #166534;
-  border-radius: 4px;
+  padding: 10px 14px;
+  background: rgba(21, 128, 61, 0.2);
+  color: #86efac;
+  border: 1px solid rgba(21, 128, 61, 0.4);
+  border-radius: 10px;
   margin-bottom: 16px;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 600px) {
@@ -1791,13 +1812,14 @@ color: #FFFFFF;
 /* Abonnement Component */
 #app {
   text-align: center;
-  padding: 20px;
 }
 
 /* Abonnement Section */
 .Abonnement {
-  padding: 4rem 2rem;
+  padding: 4rem 0;
   min-height: 600px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .Abonnement .title {
@@ -1826,37 +1848,43 @@ color: #FFFFFF;
   flex-wrap: wrap;
   justify-content: center;
   align-items: stretch;
-  gap: 3rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  gap: 6rem;
+  width: 100%;
+  padding: 0 2rem;
+  margin-top: 7rem;
 }
 
 /* PlanCard Component */
 .plan-card {
-  border-radius: 30px;
-  padding: 2.5rem 2rem;
-  width: 350px;
-  min-height: 550px;
+  border-radius: 78px;
+  padding: 3rem 2.5rem;
+  flex: 1;
+  min-width: 260px;
+  max-width: 448px;
+  min-height: 480px;
+  max-height: 760px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
   text-align: center;
   position: relative;
   background: transparent;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   color: #ffffff;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16),
-   0 3px 6px rgba(0,0,0,0.23),
-    0 0 5px #651E79 inset;
 }
 
 .plan-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 30px;
-  padding: 3px;
-  background: linear-gradient(to bottom, #161A4D, transparent);
+  border-radius: 78px;
+  padding: 2px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.18) 40%,
+    rgba(255, 255, 255, 0.05) 60%,
+    rgba(255, 255, 255, 0.25) 100%
+  );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -1865,16 +1893,12 @@ color: #FFFFFF;
 }
 
 .plan-card.highlight {
+  background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
+  border: 4px solid #DAE63D;
+  border-radius: 78px;
+  transform: scale(1.18);
 
-background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
-  border: 3px solid transparent;
-  background-image: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%), linear-gradient(to bottom, #DAE63D, #161A4D);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  border-radius: 30px;
-  box-shadow: 0 12px 40px rgba(80, 200, 220, 0.3);
-  transform: scale(1.05);
-
+  box-shadow: 0 0 40px rgba(218, 230, 61, 0.15);
 }
 
 .plan-card:hover {
@@ -1883,14 +1907,16 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 }
 
 .plan-card.highlight:hover {
-  transform: translateY(-8px) scale(1.07);
+  transform: translateY(-8px) scale(1.19);
 }
 
 .plan-title {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 900;
   margin-bottom: 1.5rem;
   color: #ffffff;
+  -webkit-text-stroke: 0.7px #ffffff;
+  letter-spacing: 0.02em;
 }
 
 .plan-price-container {
@@ -1902,7 +1928,7 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 }
 
 .plan-price {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #ffffff;
 }
@@ -1911,7 +1937,7 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   font-size: 1.2rem;
   color: #ffffff;
   margin-left: 0.3rem;
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .plan-description {
@@ -1919,13 +1945,12 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   color: #ffffff;
   margin-bottom: 1.5rem;
   line-height: 1.6;
-  min-height: 48px;
 }
 
 .plan-divider {
   border: none;
   border-top: 2px solid rgba(255, 255, 255, 0.3);
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   width: 80%;
   align-self: center;
 }
@@ -2026,9 +2051,6 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
     gap: 2rem;
   }
 
-  .plan-card {
-    width: 300px;
-  }
 }
 
 @media (max-width: 900px) {
@@ -2109,13 +2131,13 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 
 /* Testimonials Section */
 .testimonials-section {
-  padding: 4rem 1rem;
+  padding: 4rem 0;
 }
 
 .testimonials-section h2,
 .testimonials-title {
   font-family: 'Ubuntu', sans-serif;
-  text-align: left;
+  text-align: center;
   color: #DAE63D;
   font-style: normal;
   font-weight: 700;
@@ -2134,9 +2156,25 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 .testimonials-container {
   display: flex;
   flex-direction: column;
-  max-width: 1290px;
-  margin: 0 auto;
+  width: 100%;
   gap: 2rem;
+}
+
+.testimonials-container > h2 {
+  max-width: 1290px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.testimonials-button-container {
+  max-width: 1290px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .testimonials-button-container {
@@ -2257,6 +2295,72 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   .voir-plus-btn {
     font-size: 0.9rem;
     padding: 0.8rem 1.5rem;
+  }
+}
+
+/* Testimonials Carousel */
+.testimonials-carousel-viewport {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+.testimonials-carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  will-change: transform;
+}
+
+.testimonial-card {
+  position: relative;
+  flex: 0 0 380px;
+  height: 420px;
+  border-radius: 28px;
+  border: 1px solid #DAE63D;
+  overflow: hidden;
+}
+
+.testimonial-card__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testimonial-card__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(101, 30, 121, 0) 30%, #470059 100%);
+}
+
+.testimonial-card__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.75rem;
+}
+
+.testimonial-card__quote {
+  font-family: 'Ubuntu', sans-serif;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.testimonial-card__author {
+  font-family: 'Ubuntu', sans-serif;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .testimonial-card {
+    flex: 0 0 280px;
+    height: 360px;
   }
 }
 

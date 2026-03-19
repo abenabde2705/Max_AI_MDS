@@ -64,7 +64,7 @@ const ConditionsUtilisation: React.FC = () => {
               {[
                 { name: 'Gratuit', price: '0 €', desc: '10 messages par jour, accès limité aux fonctionnalités.' },
                 { name: 'Premium', price: '14,99 € / mois', desc: 'Messages illimités, journal émotionnel, statistiques avancées, accès aux coachs.' },
-                { name: 'Campus (étudiant)', price: '8,00 € / mois', desc: 'Mêmes avantages que Premium, sous réserve de vérification du statut étudiant.' },
+                { name: 'Campus (étudiant)', price: '7,99 € / mois', desc: 'Mêmes avantages que Premium, sous réserve de vérification du statut étudiant.' },
               ].map(plan => (
                 <div key={plan.name} style={{ padding: '0.875rem 1.1rem', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
