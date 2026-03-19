@@ -2,7 +2,7 @@ import React from 'react';
 import image1 from '../assets/img/valeurs/toujours_vos_cotes.png';
 import image2 from '../assets/img/valeurs/aide.png';
 import image3 from '../assets/img/valeurs/securite.png';
-import image4 from '../assets/img/valeurs/confidentialite.png';
+import image4 from '../assets/img/valeurs/confidentialité.png';
 
 interface Feature {
   title: string;
