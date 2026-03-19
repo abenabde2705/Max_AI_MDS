@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { authenticateToken } from '../middleware/auth.js';
+import { sendStudentVerificationStatusEmail } from '../services/email.js';
 import { requireAdmin } from '../middleware/roleAuth.js';
 import StudentVerification from '../models/StudentVerification.js';
 import User from '../models/User.js';
@@ -199,6 +200,17 @@ router.patch('/admin/student-verifications/:id', authenticateToken, requireAdmin
       reviewedBy: (req.user as any).id,
       rejectionReason: status === 'rejected' ? rejectionReason : null
     });
+
+    // Notifier l'utilisateur par email (non-bloquant)
+    const user = await User.findByPk(verification.getDataValue('userId'));
+    if (user) {
+      sendStudentVerificationStatusEmail({
+        to: user.getDataValue('email'),
+        firstName: user.getDataValue('firstName'),
+        status,
+        rejectionReason: status === 'rejected' ? rejectionReason : undefined,
+      }).catch(err => console.error('Erreur envoi email vérification étudiant:', err));
+    }
 
     res.json({
       success: true,

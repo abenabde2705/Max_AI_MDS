@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
 import User from '../models/User.js';
 import Subscription from '../models/Subscription.js';
-import { sendSubscriptionEmail } from '../services/email.js';
+import { sendSubscriptionEmail, sendPaymentFailedEmail, sendSubscriptionCancelledEmail } from '../services/email.js';
 
 const router = Router();
 
@@ -62,7 +62,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
-        console.warn('Paiement échoué pour le client:', invoice.customer);
+        await handlePaymentFailed(invoice);
         break;
       }
 
@@ -164,6 +164,28 @@ async function handleSubscriptionUpdated(stripeSub: Stripe.Subscription): Promis
   console.log(`✅ Abonnement ${stripeSubId} mis à jour: status=${stripeSub.status}`);
 }
 
+async function handlePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
+  const stripeCustomerId = invoice.customer as string;
+
+  const subscription = await Subscription.findOne({ where: { stripeCustomerId, status: 'active' } });
+  if (!subscription) {
+    console.warn(`invoice.payment_failed: pas d'abonnement actif pour ${stripeCustomerId}`);
+    return;
+  }
+
+  const userId = subscription.getDataValue('userId');
+  const user = await User.findByPk(userId);
+
+  if (user) {
+    sendPaymentFailedEmail({
+      to: user.getDataValue('email'),
+      firstName: user.getDataValue('firstName'),
+    }).catch(err => console.error('Erreur envoi email paiement échoué:', err));
+  }
+
+  console.warn(`⚠️ Paiement échoué pour l'utilisateur ${userId} (customer: ${stripeCustomerId})`);
+}
+
 async function handleSubscriptionDeleted(stripeSub: Stripe.Subscription): Promise<void> {
   const stripeSubId = stripeSub.id;
 
@@ -179,6 +201,10 @@ async function handleSubscriptionDeleted(stripeSub: Stripe.Subscription): Promis
   const user = await User.findByPk(userId);
   if (user) {
     await user.update({ isPremium: false });
+    sendSubscriptionCancelledEmail({
+      to: user.getDataValue('email'),
+      firstName: user.getDataValue('firstName'),
+    }).catch(err => console.error('Erreur envoi email annulation:', err));
   }
 
   console.log(`✅ Abonnement ${stripeSubId} annulé, isPremium=false pour l'utilisateur ${userId}`);
