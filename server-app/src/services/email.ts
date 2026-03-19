@@ -159,6 +159,89 @@ export const sendPasswordResetEmail = async (opts: {
 };
 
 /**
+ * Email envoyé quand un chargeback/litige est ouvert par l'utilisateur.
+ */
+export const sendDisputeOpenedEmail = async (opts: { to: string; firstName: string }) => {
+  await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: 'Litige détecté sur votre compte Max — accès suspendu',
+    html: `
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+          <tr><td align="center">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #ff4d4d;border-radius:24px;padding:48px 40px;">
+              <tr><td>
+                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                  Bonjour ${opts.firstName}
+                </h2>
+                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 16px;">
+                  Un <strong style="color:#ff4d4d;">litige (chargeback)</strong> a été ouvert auprès de votre banque concernant un paiement <strong style="color:#DAE63D;">Max AI</strong>.
+                </p>
+                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Votre accès premium a été <strong>suspendu</strong> le temps de la résolution du litige. Si vous pensez qu'il s'agit d'une erreur, contactez-nous en répondant à cet email.
+                </p>
+                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                  Votre accès sera rétabli automatiquement si le litige est résolu en votre faveur.
+                </p>
+              </td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </body>
+      </html>
+    `,
+  });
+};
+
+/**
+ * Email envoyé quand un litige est résolu (gagné = accès rétabli).
+ */
+export const sendDisputeResolvedEmail = async (opts: { to: string; firstName: string }) => {
+  await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: 'Litige résolu — votre accès Max est rétabli',
+    html: `
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+          <tr><td align="center">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+              <tr><td>
+                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                  Bonjour ${opts.firstName} 👋
+                </h2>
+                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Le litige sur votre compte a été résolu. Votre accès <strong style="color:#DAE63D;">Max AI</strong> est désormais <strong>rétabli</strong>.
+                </p>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr><td align="center" style="padding:0 0 32px;">
+                    <a href="${FRONTEND_URL}/chatbot"
+                       style="display:inline-block;background:#DAE63D;color:#161a4d;text-decoration:none;
+                              font-weight:700;font-size:1rem;padding:14px 36px;border-radius:50px;">
+                      Accéder à Max
+                    </a>
+                  </td></tr>
+                </table>
+              </td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </body>
+      </html>
+    `,
+  });
+};
+
+/**
  * Email envoyé quand un paiement échoue (renouvellement).
  */
 export const sendPaymentFailedEmail = async (opts: { to: string; firstName: string }) => {

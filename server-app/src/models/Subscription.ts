@@ -11,7 +11,7 @@ class Subscription extends Model<SubscriptionAttributes, SubscriptionCreationAtt
   public id!: string;
   public userId!: string;
   public plan!: 'premium' | 'student';
-  public status!: 'active' | 'canceled';
+  public status!: 'active' | 'canceled' | 'disputed';
   public startDate!: Date;
   public endDate?: Date;
   public stripeCustomerId?: string;
@@ -52,8 +52,8 @@ Subscription.init({
     allowNull: false,
     validate: {
       isIn: {
-        args: [['active', 'canceled']],
-        msg: 'Le statut doit être "active" ou "canceled"'
+        args: [['active', 'canceled', 'disputed']],
+        msg: 'Le statut doit être "active", "canceled" ou "disputed"'
       }
     }
   },

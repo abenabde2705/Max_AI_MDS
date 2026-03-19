@@ -2,7 +2,8 @@ import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
 import User from '../models/User.js';
 import Subscription from '../models/Subscription.js';
-import { sendSubscriptionEmail, sendPaymentFailedEmail, sendSubscriptionCancelledEmail } from '../services/email.js';
+import { sendSubscriptionEmail, sendPaymentFailedEmail, sendSubscriptionCancelledEmail, sendDisputeOpenedEmail, sendDisputeResolvedEmail } from '../services/email.js';
+import { sequelize } from '../config/db.js';
 
 const router = Router();
 
@@ -40,6 +41,19 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
+  // Déduplication — ignorer les events déjà traités
+  try {
+    await sequelize.query(
+      'INSERT INTO stripe_webhook_events (event_id, processed_at) VALUES (:eventId, NOW())',
+      { replacements: { eventId: event.id } }
+    );
+  } catch {
+    // Violation de clé primaire = event déjà traité
+    console.log(`Webhook Stripe dupliqué ignoré: ${event.id}`);
+    res.json({ received: true });
+    return;
+  }
+
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
@@ -63,6 +77,18 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
         await handlePaymentFailed(invoice);
+        break;
+      }
+
+      case 'charge.dispute.created': {
+        const dispute = event.data.object as Stripe.Dispute;
+        await handleDisputeCreated(dispute);
+        break;
+      }
+
+      case 'charge.dispute.closed': {
+        const dispute = event.data.object as Stripe.Dispute;
+        await handleDisputeClosed(dispute);
         break;
       }
 
@@ -208,6 +234,77 @@ async function handleSubscriptionDeleted(stripeSub: Stripe.Subscription): Promis
   }
 
   console.log(`✅ Abonnement ${stripeSubId} annulé, isPremium=false pour l'utilisateur ${userId}`);
+}
+
+async function handleDisputeCreated(dispute: Stripe.Dispute): Promise<void> {
+  const stripeCustomerId = dispute.payment_intent
+    ? (await getStripe().paymentIntents.retrieve(dispute.payment_intent as string)).customer as string
+    : null;
+
+  if (!stripeCustomerId) {
+    console.warn(`charge.dispute.created: impossible de résoudre le customer pour la dispute ${dispute.id}`);
+    return;
+  }
+
+  const subscription = await Subscription.findOne({ where: { stripeCustomerId } });
+  if (!subscription) {
+    console.warn(`charge.dispute.created: aucun abonnement trouvé pour customer ${stripeCustomerId}`);
+    return;
+  }
+
+  const userId = subscription.getDataValue('userId');
+  await subscription.update({ status: 'disputed' });
+
+  const user = await User.findByPk(userId);
+  if (user) {
+    await user.update({ isPremium: false });
+    sendDisputeOpenedEmail({
+      to: user.getDataValue('email'),
+      firstName: user.getDataValue('firstName'),
+    }).catch(err => console.error('Erreur envoi email litige ouvert:', err));
+  }
+
+  console.warn(`⚠️ Litige ouvert — accès suspendu pour userId=${userId} (dispute: ${dispute.id})`);
+}
+
+async function handleDisputeClosed(dispute: Stripe.Dispute): Promise<void> {
+  const stripeCustomerId = dispute.payment_intent
+    ? (await getStripe().paymentIntents.retrieve(dispute.payment_intent as string)).customer as string
+    : null;
+
+  if (!stripeCustomerId) {
+    console.warn(`charge.dispute.closed: impossible de résoudre le customer pour la dispute ${dispute.id}`);
+    return;
+  }
+
+  const subscription = await Subscription.findOne({ where: { stripeCustomerId, status: 'disputed' } });
+  if (!subscription) {
+    console.warn(`charge.dispute.closed: aucun abonnement en litige pour customer ${stripeCustomerId}`);
+    return;
+  }
+
+  const userId = subscription.getDataValue('userId');
+  const user = await User.findByPk(userId);
+
+  if (dispute.status === 'won') {
+    // Litige gagné → on réactive l'abonnement
+    await subscription.update({ status: 'active' });
+    if (user) {
+      await user.update({ isPremium: true });
+      sendDisputeResolvedEmail({
+        to: user.getDataValue('email'),
+        firstName: user.getDataValue('firstName'),
+      }).catch(err => console.error('Erreur envoi email litige résolu:', err));
+    }
+    console.log(`✅ Litige résolu (gagné) — accès rétabli pour userId=${userId}`);
+  } else {
+    // Litige perdu ou warning_closed → abonnement annulé définitivement
+    await subscription.update({ status: 'canceled' });
+    if (user) {
+      await user.update({ isPremium: false });
+    }
+    console.warn(`⚠️ Litige résolu (${dispute.status}) — abonnement annulé pour userId=${userId}`);
+  }
 }
 
 export default router;
