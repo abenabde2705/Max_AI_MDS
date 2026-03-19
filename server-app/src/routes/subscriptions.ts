@@ -18,6 +18,43 @@ const getStripe = (): Stripe => {
 };
 
 /**
+ * GET /api/subscriptions/prices
+ * Retourne les prix Stripe pour les plans premium et student
+ */
+router.get('/prices', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const premiumPriceId = process.env.STRIPE_PREMIUM_PRICE_ID;
+    const studentPriceId = process.env.STRIPE_STUDENT_PRICE_ID;
+
+    if (!premiumPriceId || !studentPriceId) {
+      res.status(500).json({ success: false, message: 'Configuration Stripe manquante (PRICE_ID)' });
+      return;
+    }
+
+    const [premiumPrice, studentPrice] = await Promise.all([
+      getStripe().prices.retrieve(premiumPriceId),
+      getStripe().prices.retrieve(studentPriceId),
+    ]);
+
+    const format = (price: { unit_amount: number | null; currency: string }) => {
+      const amount = (price.unit_amount ?? 0) / 100;
+      return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: price.currency }).format(amount);
+    };
+
+    res.json({
+      success: true,
+      data: {
+        premium: format(premiumPrice as any),
+        student: format(studentPrice as any),
+      },
+    });
+  } catch (error: unknown) {
+    console.error('Erreur récupération prix Stripe:', error);
+    res.status(500).json({ success: false, message: 'Erreur lors de la récupération des prix' });
+  }
+});
+
+/**
  * POST /api/subscriptions/checkout
  * Crée une Stripe Checkout Session (query param: ?plan=premium|student)
  */

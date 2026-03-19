@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import PlanCard from './PlanCard';
 import StudentVerifyModal from './StudentVerify';
-import { createCheckoutSession } from '../services/chat.api';
+import { createCheckoutSession, fetchSubscriptionPrices } from '../services/chat.api';
 import { usePremium } from '../context/PremiumContext';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -15,9 +15,18 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   const [loadingPlan, setLoadingPlan] = useState<'premium' | 'student' | null>(null);
   const { isPremium } = usePremium();
   const [studentModalOpen, setStudentModalOpen] = useState(false);
+  const [prices, setPrices] = useState<{ premium: string; student: string }>({
+    premium: '14,99 €',
+    student: '8,00 €',
+  });
 
   useEffect(() => {
     AOS.init();
+    fetchSubscriptionPrices()
+      .then(({ data }) => {
+        if (data.success) setPrices(data.data);
+      })
+      .catch(() => { /* garde les prix par défaut */ });
   }, []);
 
   const handlePremiumCheckout = async () => {
@@ -70,7 +79,7 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
 
             <PlanCard
               title="Plan Premium"
-              price="14,99€"
+              price={prices.premium}
               priceLabel=" / mois"
               description="Accompagnement complet sans engagement"
               features={[
@@ -97,7 +106,7 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
 
             <PlanCard
               title="Plan Campus"
-              price="8€"
+              price={prices.student}
               priceLabel=" / mois"
               description="Tarif réduit spécial étudiants"
               features={[
