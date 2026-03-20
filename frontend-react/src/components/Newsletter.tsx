@@ -99,7 +99,7 @@ const Newsletter: React.FC<NewsletterProps> = ({ className: _className }) => {
           )}
           
           <p className="privacy-notice">
-            Nous prenons soin de vos données dans notre <a href="#" className="privacy-link">politique de confidentialité</a>
+            Nous prenons soin de vos données dans notre <a href="/politics/politique-confidentialites" className="privacy-link">politique de confidentialité</a>
           </p>
         </div>
       </div>

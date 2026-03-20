@@ -105,7 +105,7 @@ export interface SubscriptionAttributes {
   id: string;
   userId: string;
   plan: 'premium' | 'student';
-  status: 'active' | 'canceled';
+  status: 'active' | 'canceled' | 'disputed';
   startDate: Date;
   endDate?: Date;
   stripeCustomerId?: string;

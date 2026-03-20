@@ -21,7 +21,6 @@ const BackgroundShapes: React.FC = () => {
   const star1Ref   = useRef<SVGSVGElement>(null);
   const star2Ref   = useRef<SVGSVGElement>(null);
   const sparkleRef = useRef<SVGSVGElement>(null);
-  const ringRef    = useRef<SVGSVGElement>(null);
   const dotGroupRef = useRef<SVGSVGElement>(null);
   // Rising bubbles — each is its own SVG so GSAP can move them freely
   const bub1 = useRef<SVGSVGElement>(null);
@@ -206,41 +205,6 @@ const BackgroundShapes: React.FC = () => {
         });
       }
 
-      // ── DOUBLE RING ─────────────────────────────────────────────────
-
-      if (ringRef.current) {
-        // Outer ring spins one way
-        const outerCircle = ringRef.current.querySelector('.ring-outer');
-        const innerCircle = ringRef.current.querySelector('.ring-inner');
-        if (outerCircle) {
-          gsap.to(outerCircle, {
-            rotation: 360,
-            duration: 22,
-            repeat: -1,
-            ease: 'none',
-            transformOrigin: '100px 100px',
-          });
-        }
-        // Inner ring spins the other way
-        if (innerCircle) {
-          gsap.to(innerCircle, {
-            rotation: -360,
-            duration: 14,
-            repeat: -1,
-            ease: 'none',
-            transformOrigin: '100px 100px',
-          });
-        }
-        // Whole ring scales gently
-        gsap.to(ringRef.current, {
-          scale: 1.12,
-          duration: 5,
-          yoyo: true,
-          repeat: -1,
-          ease: 'sine.inOut',
-          transformOrigin: '50% 50%',
-        });
-      }
 
       // ── RISING BUBBLES ──────────────────────────────────────────────
 
@@ -358,14 +322,6 @@ const BackgroundShapes: React.FC = () => {
         <polygon fill="#DAE63D" points={SPARKLE} />
       </svg>
 
-      {/* ── DOUBLE SPINNING RING ── */}
-      <svg ref={ringRef} width="230" height="230" viewBox="0 0 200 200"
-        style={{ position: 'absolute', top: '28%', left: '36%', opacity: 0.18 }}>
-        <circle className="ring-outer" cx="100" cy="100" r="88" fill="none"
-          stroke="#DAE63D" strokeWidth="2.5" strokeDasharray="18 10" />
-        <circle className="ring-inner" cx="100" cy="100" r="64" fill="none"
-          stroke="#c070e0" strokeWidth="1.5" strokeDasharray="8 16" />
-      </svg>
 
       {/* ── RISING BUBBLES ── */}
       <svg ref={bub1} width="16" height="16" viewBox="0 0 16 16"

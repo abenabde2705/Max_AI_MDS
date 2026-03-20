@@ -12,29 +12,42 @@ const SuccessPage: React.FC = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const confirmSubscription = async () => {
+    if (!sessionId) {
+      setLoading(false);
+      setError(true);
+      return;
+    }
+
+    let attempts = 0;
+    const MAX_ATTEMPTS = 8;
+    const INTERVAL_MS = 1500;
+    let timerId: ReturnType<typeof setTimeout>;
+
+    const poll = async () => {
       try {
         const { data } = await fetchCurrentSubscription();
         if (data.success && data.data?.plan) {
           setPlan(data.data.plan);
-        } else {
-          setError(true);
+          setLoading(false);
+          return;
         }
       } catch {
+        // continue polling
+      }
+
+      attempts += 1;
+      if (attempts < MAX_ATTEMPTS) {
+        timerId = setTimeout(poll, INTERVAL_MS);
+      } else {
+        // Webhook lent — afficher le message de confirmation générique
         setError(true);
-      } finally {
         setLoading(false);
       }
     };
 
-    if (sessionId) {
-      // Attendre un court instant pour que le webhook Stripe ait le temps de traiter
-      const timer = setTimeout(confirmSubscription, 2000);
-      return () => clearTimeout(timer);
-    } else {
-      setLoading(false);
-      setError(true);
-    }
+    // Premier essai après 1.5s pour laisser le temps au webhook
+    timerId = setTimeout(poll, INTERVAL_MS);
+    return () => clearTimeout(timerId);
   }, [sessionId]);
 
   if (loading) {

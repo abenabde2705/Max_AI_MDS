@@ -70,6 +70,9 @@ export const cancelSubscription = () =>
 export const fetchCurrentSubscription = () =>
   axios.get(`${API_BASE}/subscriptions/current`, { headers: getAuthHeaders() });
 
+export const fetchSubscriptionPrices = () =>
+  axios.get(`${API_BASE}/subscriptions/prices`);
+
 // ─── Student Verification ─────────────────────────────────────────────────────
 
 export const submitStudentVerification = (formData: FormData) =>
