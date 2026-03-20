@@ -64,15 +64,14 @@ const Footer: React.FC = () => {
             <p>
               <a href="mailto:contact@maxai-mds.fr">contact@maxai-mds.fr</a>
             </p>
-            {isLoggedIn && (
-              <button 
-                onClick={() => setIsFeedbackOpen(true)}
-                className="feedback-footer-btn"
-                title="Envoyer un feedback"
-              >
+            <button
+              onClick={() => isLoggedIn && setIsFeedbackOpen(true)}
+              className={`feedback-footer-btn${!isLoggedIn ? ' feedback-footer-btn--disabled' : ''}`}
+              title={isLoggedIn ? 'Envoyer un feedback' : 'Connectez-vous pour envoyer un feedback'}
+              disabled={!isLoggedIn}
+            >
               Envoyer un Feedback
-              </button>
-            )}
+            </button>
           </div>
 
           {/* Colonne : Téléchargement */}

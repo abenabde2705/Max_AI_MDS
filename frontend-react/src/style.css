@@ -900,6 +900,34 @@ border: 1px solid #DAE63D;
   color: #DAE63D;
 }
 
+.feedback-footer-btn:disabled,
+.feedback-footer-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.feedback-footer-btn:disabled::after {
+  content: 'Connectez-vous pour envoyer un feedback';
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(22, 26, 77, 0.95);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.feedback-footer-btn:disabled:hover::after {
+  opacity: 1;
+}
+
 .store-logo {
   width: 24px;
   height: 24px;
@@ -2265,6 +2293,34 @@ color: #FFFFFF;
 .voir-plus-btn:hover {
   background: #BBC600;
   transition: all 0.3s ease;
+}
+
+.voir-plus-btn--disabled,
+.voir-plus-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.voir-plus-btn:disabled::after {
+  content: 'Connectez-vous pour participer';
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(22, 26, 77, 0.95);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.voir-plus-btn:disabled:hover::after {
+  opacity: 1;
 }
 
 /* Testimonials Responsive Styles */
@@ -4859,8 +4915,21 @@ padding-top: 6rem;
 }
 
 .ui-input::placeholder { color: rgba(22, 26, 77, 0.55); }
-.ui-input:focus-visible { box-shadow: 0 0 0 3px rgba(218, 230, 61, 0.4); border-color: rgba(218, 230, 61, 0.7); }
+.ui-input:focus,
+.ui-input:focus-visible {
+  background: rgba(255, 255, 255, 0.98);
+  color: #161A4D;
+  box-shadow: 0 0 0 3px rgba(218, 230, 61, 0.4);
+  border-color: rgba(218, 230, 61, 0.7);
+}
 .ui-input:disabled { opacity: 0.6; cursor: not-allowed; }
+.ui-input:-webkit-autofill,
+.ui-input:-webkit-autofill:hover,
+.ui-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #161A4D;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.95) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
 
 /* =============================================
    Chat React component (MaxAIChat)

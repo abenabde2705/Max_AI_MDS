@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import TestimonialsPopup from './Modals/TestimonialsPopup';
+import { getToken } from '../utils/token';
 import testi1 from '../assets/img/valeurs/testi1.png';
 import testi3 from '../assets/img/valeurs/testi3.png';
 import jour1 from '../assets/img/valeurs/JOUR_1.webp';
@@ -44,6 +45,7 @@ const loopedTestimonials = [...testimonials, ...testimonials];
 
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const isLoggedIn = !!getToken();
   const trackRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number | null>(null);
   const posRef = useRef(0);
@@ -97,7 +99,12 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
         </div>
 
         <div className="testimonials-button-container">
-          <button onClick={() => setIsPopupOpen(true)} className="voir-plus-btn">
+          <button
+            onClick={() => isLoggedIn && setIsPopupOpen(true)}
+            className={`voir-plus-btn${!isLoggedIn ? ' voir-plus-btn--disabled' : ''}`}
+            disabled={!isLoggedIn}
+            title={!isLoggedIn ? 'Connectez-vous pour donner votre avis' : undefined}
+          >
             Donnez votre avis
           </button>
         </div>
