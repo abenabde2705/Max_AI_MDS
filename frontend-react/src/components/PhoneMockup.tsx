@@ -6,11 +6,11 @@ interface Message {
 }
 
 const conversation: Message[] = [
-  { from: 'max', text: 'Bonjour 👋 Comment tu te sens aujourd\'hui ?' },
-  { from: 'user', text: 'Pas très bien... je suis stressé.' },
-  { from: 'max', text: 'Je suis là pour toi. Tu veux m\'en parler ?' },
-  { from: 'user', text: 'Oui, j\'ai beaucoup de pression au travail.' },
-  { from: 'max', text: 'C\'est difficile. Essayons une technique de respiration 🌿' },
+  { from: 'max', text: 'Bonjour 👋 Comment tu vas aujourd\'hui ?' },
+  { from: 'user', text: 'Pas terrible... du mal à dormir en ce moment.' },
+  { from: 'max', text: 'Je t\'écoute. Qu\'est-ce qui te tient éveillé ?' },
+  { from: 'user', text: 'Trop de pensées, je me sens débordé.' },
+  { from: 'max', text: 'C\'est épuisant. Essayons une respiration ensemble 🌿' },
 ];
 
 const PhoneMockup: React.FC = () => {

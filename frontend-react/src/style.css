@@ -4343,7 +4343,7 @@ padding-top: 6rem;
 .phone-mockup {
   width: 260px;
   height: 520px;
-  background: #0e0e1a;
+  background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   border-radius: 42px;
   border: 2px solid rgba(255,255,255,0.12);
   box-shadow:
@@ -4360,7 +4360,7 @@ padding-top: 6rem;
 .phone-notch {
   width: 90px;
   height: 22px;
-  background: #0e0e1a;
+  background: #161A4D;
   border-radius: 0 0 16px 16px;
   margin: 0 auto;
   position: relative;
@@ -4373,8 +4373,8 @@ padding-top: 6rem;
   align-items: center;
   gap: 10px;
   padding: 8px 16px 10px;
-  background: #13132a;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(22, 26, 77, 0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
 
@@ -4427,16 +4427,17 @@ padding-top: 6rem;
 }
 
 .phone-bubble--max {
-  background: #1e1e3a;
-  color: #e8e8ff;
+  background: #DAE63D;
+  color: #161A4D;
   border-bottom-left-radius: 4px;
   align-self: flex-start;
 }
 
 .phone-bubble--user {
-  background: linear-gradient(135deg, #DAE63D, #b8c432);
-  color: #0e0e1a;
-  font-weight: 500;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 400;
   border-bottom-right-radius: 4px;
   align-self: flex-end;
 }
@@ -4470,8 +4471,8 @@ padding-top: 6rem;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: #13132a;
-  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(22, 26, 77, 0.6);
+  border-top: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
 
