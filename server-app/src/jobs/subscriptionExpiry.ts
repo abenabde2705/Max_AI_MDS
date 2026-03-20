@@ -19,7 +19,7 @@ const deactivateExpiredSubscriptions = async (): Promise<void> => {
     },
   });
 
-  if (expired.length === 0) return;
+  if (expired.length === 0) { return; }
 
   for (const sub of expired) {
     const userId = sub.getDataValue('userId');
@@ -39,7 +39,7 @@ export const startSubscriptionExpiryJob = (): void => {
     console.error('Erreur job expiration abonnements:', err)
   );
 
-  setInterval(() => {
+  global.setInterval(() => {
     deactivateExpiredSubscriptions().catch(err =>
       console.error('Erreur job expiration abonnements:', err)
     );
