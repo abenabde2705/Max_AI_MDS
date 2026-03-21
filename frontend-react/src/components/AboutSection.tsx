@@ -15,7 +15,6 @@ const AboutSection: React.FC<AboutSectionProps> = ({ id, className }) => {
         data-aos="fade-up"
         data-aos-duration="200"
         data-aos-delay="100"
-        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4rem', width: '100%' }}
       >
 
         <div className="about-text-col" style={{ flex: '1 1 0', minWidth: 0 }}>
