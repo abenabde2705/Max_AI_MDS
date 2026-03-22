@@ -6430,6 +6430,14 @@ color: #F2F5FF;
   align-items: flex-start;
 }
 
+.adm-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 80;
+  display: none;
+}
+
 /* ── Sidebar ── */
 .adm-sidebar {
   width: 260px;
@@ -6467,6 +6475,41 @@ color: #F2F5FF;
   flex: 1;
   padding: 40px 48px;
   overflow-y: auto;
+}
+
+.adm-mobile-topbar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.adm-mobile-topbar__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #dae63d;
+}
+
+.adm-burger {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(218, 230, 61, 0.65);
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.adm-burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: #dae63d;
 }
 
 .adm-section__header {
@@ -6996,6 +7039,136 @@ color: #F2F5FF;
   align-items: center;
 }
 .adm-btn--add:hover { background: rgba(218, 230, 61, 0.25); }
+
+@media (max-width: 1024px) {
+  .adm-root {
+    min-height: 100dvh;
+  }
+
+  .adm-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100dvh;
+    width: min(84vw, 320px);
+    min-width: 0;
+    margin: 0;
+    border-radius: 0 26px 26px 0;
+    z-index: 110;
+    background: linear-gradient(180deg, #161a4d 0%, #470059 69.71%, #651e79 100%);
+    transform: translateX(-110%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .adm-sidebar--open {
+    transform: translateX(0);
+  }
+
+  .adm-sidebar-overlay {
+    display: block;
+  }
+
+  .adm-main {
+    width: 100%;
+    padding: 18px 16px 24px;
+  }
+
+  .adm-mobile-topbar {
+    display: flex;
+  }
+
+  .adm-section__header h1 {
+    font-size: 1.35rem;
+  }
+
+  .adm-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .adm-search {
+    max-width: none;
+    min-width: 100%;
+  }
+
+  .adm-distribution__row {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .adm-table-wrap {
+    overflow-x: auto;
+  }
+
+  .adm-table {
+    min-width: 680px;
+  }
+
+  .adm-toast {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+    text-align: center;
+  }
+
+  .adm-add-user-modal {
+    border-radius: 26px;
+    padding: 26px 20px;
+  }
+
+  .adm-add-user-modal__title {
+    font-size: 1.5rem;
+  }
+
+  .adm-add-user-modal__row {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .adm-stats-row {
+    flex-direction: column;
+  }
+
+  .adm-stat-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .adm-tabs {
+    flex-wrap: wrap;
+  }
+
+  .adm-tab {
+    width: 100%;
+    text-align: center;
+  }
+
+  .adm-modal {
+    padding: 24px 18px;
+  }
+
+  .adm-modal__actions {
+    flex-direction: column;
+  }
+
+  .adm-btn {
+    width: 100%;
+  }
+
+  .adm-alert-card {
+    padding: 16px;
+  }
+
+  .adm-alert-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
 
 /* ─── Set Password Page ───────────────────────────────────────────────────────── */
 

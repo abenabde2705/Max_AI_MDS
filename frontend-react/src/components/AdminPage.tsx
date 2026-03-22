@@ -103,6 +103,7 @@ const AdminPage: React.FC = () => {
   const [alertStats, setAlertStats] = useState({ total: 0, unread: 0, urgent: 0, resolved: 0 });
   const [alertFilter, setAlertFilter] = useState<AlertFilter>('all');
   const [alertsLoading, setAlertsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Sidebar indicator
   const navSections: Section[] = ['users', 'subscriptions', 'alerts'];
@@ -184,6 +185,10 @@ const AdminPage: React.FC = () => {
     }
   }, [section, authError, loadSubscriptions, loadVerifications]);
   useEffect(() => { if (!authError && section === 'alerts') loadAlerts(); }, [section, authError, loadAlerts]);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [section]);
 
   const handleDeleteUser = async (id: string) => {
     try {
@@ -300,6 +305,8 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className="adm-root">
+      {sidebarOpen && <div className="adm-sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
+
       {/* Toast */}
       {toast && <div className={`adm-toast adm-toast--${toast.type}`}>{toast.msg}</div>}
 
@@ -413,7 +420,7 @@ const AdminPage: React.FC = () => {
       )}
 
       {/* Sidebar */}
-      <aside className="adm-sidebar">
+      <aside className={`adm-sidebar${sidebarOpen ? ' adm-sidebar--open' : ''}`}>
         <div className="max-chat__logo">
           <button className="max-chat__logo-icon" onClick={() => navigate('/')} title="Retour à l'accueil">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DAE63D" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -452,6 +459,19 @@ const AdminPage: React.FC = () => {
 
       {/* Main content */}
       <main className="adm-main">
+        <div className="adm-mobile-topbar">
+          <button
+            type="button"
+            className="adm-burger"
+            aria-label="Ouvrir le menu"
+            onClick={() => setSidebarOpen(prev => !prev)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+          <span className="adm-mobile-topbar__title">Dashboard Admin</span>
+        </div>
 
         {/* ── USERS ── */}
         {section === 'users' && (
