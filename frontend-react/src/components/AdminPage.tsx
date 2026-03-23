@@ -89,6 +89,7 @@ const AdminPage: React.FC = () => {
   const [authError, setAuthError] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
   const [pendingTestimonials, setPendingTestimonials] = useState<TestimonialDoc[]>([]);
+  const [approvedTestimonials, setApprovedTestimonials] = useState<TestimonialDoc[]>([]);
   const [testimonialsLoading, setTestimonialsLoading] = useState(false);
 
   // Users
@@ -210,8 +211,14 @@ const AdminPage: React.FC = () => {
     setSidebarOpen(false);
     if (!authError && section === 'testimonials') {
       setTestimonialsLoading(true);
-      getDocs(query(collection(db, 'testimonials'), where('approved', '==', false)))
-        .then(snap => setPendingTestimonials(snap.docs.map(d => ({ id: d.id, ...d.data() as Omit<TestimonialDoc, 'id'> }))))
+      Promise.all([
+        getDocs(query(collection(db, 'testimonials'), where('approved', '==', false))),
+        getDocs(query(collection(db, 'testimonials'), where('approved', '==', true))),
+      ])
+        .then(([pendingSnap, approvedSnap]) => {
+          setPendingTestimonials(pendingSnap.docs.map(d => ({ id: d.id, ...d.data() as Omit<TestimonialDoc, 'id'> })));
+          setApprovedTestimonials(approvedSnap.docs.map(d => ({ id: d.id, ...d.data() as Omit<TestimonialDoc, 'id'> })));
+        })
         .catch((err) => console.error('Testimonials fetch error:', err))
         .finally(() => setTestimonialsLoading(false));
     }
@@ -219,12 +226,21 @@ const AdminPage: React.FC = () => {
 
   const handleApproveTestimonial = async (id: string) => {
     await updateDoc(doc(db, 'testimonials', id), { approved: true });
+    const approved = pendingTestimonials.find(t => t.id === id);
     setPendingTestimonials(prev => prev.filter(t => t.id !== id));
+    if (approved) { setApprovedTestimonials(prev => [approved, ...prev]); }
   };
 
   const handleRejectTestimonial = async (id: string) => {
     await deleteDoc(doc(db, 'testimonials', id));
     setPendingTestimonials(prev => prev.filter(t => t.id !== id));
+  };
+
+  const handleRemoveTestimonial = async (id: string) => {
+    await updateDoc(doc(db, 'testimonials', id), { approved: false });
+    const removed = approvedTestimonials.find(t => t.id === id);
+    setApprovedTestimonials(prev => prev.filter(t => t.id !== id));
+    if (removed) { setPendingTestimonials(prev => [removed, ...prev]); }
   };
 
   const handleDeleteUser = async (id: string) => {
@@ -1007,31 +1023,63 @@ const AdminPage: React.FC = () => {
             </div>
             {testimonialsLoading ? (
               <div className="adm-spinner" />
-            ) : pendingTestimonials.length === 0 ? (
-              <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '2rem' }}>Aucun témoignage en attente de validation.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-                {pendingTestimonials.map(t => (
-                  <div key={t.id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                    {t.photoUrl ? (
-                      <img src={t.photoUrl} alt={t.firstName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #DAE63D' }} />
-                    ) : (
-                      <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#161a4d,#470059)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DAE63D', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
-                        {`${t.firstName?.[0] || '?'}${t.lastName?.[0] || ''}`.toUpperCase()}
+              <>
+                <h3 style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: 1, margin: '1.5rem 0 0.75rem' }}>En attente ({pendingTestimonials.length})</h3>
+                {pendingTestimonials.length === 0 ? (
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>Aucun témoignage en attente.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {pendingTestimonials.map(t => (
+                      <div key={t.id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                        {t.photoUrl ? (
+                          <img src={t.photoUrl} alt={t.firstName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #DAE63D' }} />
+                        ) : (
+                          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#161a4d,#470059)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DAE63D', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
+                            {`${t.firstName?.[0] || '?'}${t.lastName?.[0] || ''}`.toUpperCase()}
+                          </div>
+                        )}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, color: '#fff' }}>{t.firstName} {t.lastName} — {t.age} ans</div>
+                          <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem' }}>{t.email}</div>
+                          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>"{t.text.slice(0, 200)}{t.text.length > 200 ? '…' : ''}"</p>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flexShrink: 0 }}>
+                          <button className="adm-btn adm-btn--resolve" onClick={() => handleApproveTestimonial(t.id)}>Approuver</button>
+                          <button className="adm-btn adm-btn--danger" onClick={() => handleRejectTestimonial(t.id)}>Rejeter</button>
+                        </div>
                       </div>
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: '#fff' }}>{t.firstName} {t.lastName} — {t.age} ans</div>
-                      <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem' }}>{t.email}</div>
-                      <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>"{t.text.slice(0, 200)}{t.text.length > 200 ? '…' : ''}"</p>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flexShrink: 0 }}>
-                      <button className="adm-btn adm-btn--resolve" onClick={() => handleApproveTestimonial(t.id)}>Approuver</button>
-                      <button className="adm-btn adm-btn--danger" onClick={() => handleRejectTestimonial(t.id)}>Rejeter</button>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )}
+
+                <h3 style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: 1, margin: '2rem 0 0.75rem' }}>Publiés ({approvedTestimonials.length})</h3>
+                {approvedTestimonials.length === 0 ? (
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>Aucun témoignage publié.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {approvedTestimonials.map(t => (
+                      <div key={t.id} style={{ background: 'rgba(218,230,61,0.04)', border: '1px solid rgba(218,230,61,0.2)', borderRadius: 12, padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                        {t.photoUrl ? (
+                          <img src={t.photoUrl} alt={t.firstName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #DAE63D' }} />
+                        ) : (
+                          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#161a4d,#470059)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DAE63D', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
+                            {`${t.firstName?.[0] || '?'}${t.lastName?.[0] || ''}`.toUpperCase()}
+                          </div>
+                        )}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 600, color: '#fff' }}>{t.firstName} {t.lastName} — {t.age} ans</div>
+                          <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem' }}>{t.email}</div>
+                          <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>"{t.text.slice(0, 200)}{t.text.length > 200 ? '…' : ''}"</p>
+                        </div>
+                        <div style={{ flexShrink: 0 }}>
+                          <button className="adm-btn adm-btn--danger" onClick={() => handleRemoveTestimonial(t.id)}>Retirer</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
