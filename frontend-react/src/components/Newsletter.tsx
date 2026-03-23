@@ -48,7 +48,7 @@ const Newsletter: React.FC<NewsletterProps> = ({ className: _className }) => {
       <div className="newsletter-content">
         <div className="newsletter-left">
           <h2 className="newsletter-title">Restez informé</h2>
-          <p className="newsletter-subtitle">Conseils bien-être, nouveautés Max et ressources santé mentale — directement dans votre boîte mail.</p>
+          <p className="newsletter-subtitle">Découvrez comment Max évolue pour mieux vous comprendre</p>
         </div>
 
         <div className="newsletter-right">
