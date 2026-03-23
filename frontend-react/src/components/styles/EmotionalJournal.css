@@ -227,6 +227,9 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .emotional-emotional-journal__tags {
+      justify-content: space-evenly;
+  }
   .emotional-journal__container {
     padding: 1rem;
   }
