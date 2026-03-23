@@ -110,3 +110,14 @@ export const fetchAdminCrisisAlerts = (filter?: string) =>
 
 export const resolveAdminCrisisAlert = (id: string) =>
   axios.patch(`${API_BASE}/admin/crisis-alerts/${id}/resolve`, {}, { headers: getAuthHeaders() });
+
+// ─── Newsletter ───────────────────────────────────────────────────────────────
+
+export const subscribeNewsletter = (email: string) =>
+  axios.post(`${API_BASE}/newsletter/subscribe`, { email });
+
+export const unsubscribeNewsletter = () =>
+  axios.post(`${API_BASE}/newsletter/unsubscribe`, {}, { headers: getAuthHeaders() });
+
+export const fetchNewsletterStatus = () =>
+  axios.get(`${API_BASE}/newsletter/status`, { headers: getAuthHeaders() });

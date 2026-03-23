@@ -13,7 +13,7 @@ const EyeOff = () => (
 );
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
-import { fetchCurrentSubscription, cancelSubscription, createPortalSession } from '../services/chat.api';
+import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus } from '../services/chat.api';
 
 interface UserProfile {
   firstName: string;
@@ -51,6 +51,7 @@ const Profile: React.FC = () => {
     email: true,
     newsletter: false,
   });
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -109,6 +110,13 @@ const Profile: React.FC = () => {
           if (subData.success && subData.data) {
             setSubscription(subData.data);
           }
+        }
+
+        try {
+          const { data: nlData } = await fetchNewsletterStatus();
+          setNotifications(prev => ({ ...prev, newsletter: nlData.subscribed }));
+        } catch {
+          // silently ignore
         }
       } catch (error) {
         console.error('Erreur lors du chargement du profil:', error);
@@ -233,8 +241,25 @@ const Profile: React.FC = () => {
     navigate('/auth');
   };
 
-  const toggleNotification = (key: keyof typeof notifications) => {
-    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleNotification = async (key: keyof typeof notifications) => {
+    if (key === 'newsletter') {
+      setNewsletterLoading(true);
+      const newValue = !notifications.newsletter;
+      try {
+        if (newValue) {
+          await subscribeNewsletter(user.email);
+        } else {
+          await unsubscribeNewsletter();
+        }
+        setNotifications(prev => ({ ...prev, newsletter: newValue }));
+      } catch {
+        // silently ignore, keep current state
+      } finally {
+        setNewsletterLoading(false);
+      }
+    } else {
+      setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+    }
   };
 
   if (loading) {
@@ -529,6 +554,7 @@ const Profile: React.FC = () => {
                   <button
                     className={`profile-toggle ${notifications[key] ? 'profile-toggle--on' : ''}`}
                     onClick={() => toggleNotification(key)}
+                    disabled={key === 'newsletter' && newsletterLoading}
                   >
                     <span className="profile-toggle__thumb" />
                   </button>
