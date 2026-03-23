@@ -5604,7 +5604,7 @@ border-radius: 70px 0px 0px 70px;
   .max-chat__action-button { width: 100%; font-size: 14px; }
   .max-chat__messages { padding: 12px; gap: 10px; }
   .max-chat__message-row { gap: 8px; }
-  .max-chat__bubble { max-width: 100%; padding: 10px 14px; font-size: 14px; }
+  .max-chat__bubble { max-width: 90%; padding: 10px 14px; font-size: 14px; }
   .max-chat__badge { width: 30px; height: 30px; }
   .max-chat__badge-logo { width: 18px; height: 18px; }
   .max-chat__user-avatar { width: 30px; height: 30px; font-size: 12px; }
@@ -5661,7 +5661,7 @@ border-radius: 70px 0px 0px 70px;
   .max-chat__action-button { width: 100%; min-width: 0; font-size: 12px; padding: 8px 12px; height: auto; }
   .max-chat__messages { padding: 10px; gap: 8px; flex: 1; overflow-y: auto; }
   .max-chat__message-row { gap: 6px; }
-  .max-chat__bubble { max-width: 100%; padding: 10px 12px; font-size: 13px; }
+  .max-chat__bubble { max-width: 85%; padding: 10px 12px; font-size: 13px; }
   .max-chat__bubble-text { margin: 0; }
   .max-chat__bubble-time { font-size: 10px; margin-top: 4px; }
   .max-chat__badge { width: 28px; height: 28px; border-radius: 50% 50% 0 50%; }
