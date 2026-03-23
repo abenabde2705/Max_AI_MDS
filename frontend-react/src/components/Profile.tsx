@@ -12,7 +12,7 @@ const EyeOff = () => (
   </svg>
 );
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Camera } from 'lucide-react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { fetchCurrentSubscription, cancelSubscription, createPortalSession } from '../services/chat.api';
 
 interface UserProfile {
@@ -49,7 +49,6 @@ const Profile: React.FC = () => {
   const [formData, setFormData] = useState<UserProfile>(user);
   const [notifications, setNotifications] = useState({
     email: true,
-    sms: true,
     newsletter: false,
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -264,9 +263,6 @@ const Profile: React.FC = () => {
         <div className="profile-avatar-card">
           <div className="profile-avatar-card__avatar">
             <span>{getInitials()}</span>
-            <button className="profile-avatar-card__edit-btn">
-              <Camera size={14} />
-            </button>
           </div>
           <div className="profile-avatar-card__info">
             <h2 className="profile-avatar-card__name">
@@ -458,11 +454,6 @@ const Profile: React.FC = () => {
                   <CheckCircle size={16} style={{ marginRight: 8 }} />Mot de passe mis à jour
                 </div>
               )}
-              <div className="profile-security__divider" />
-              <div className="profile-security__row profile-security__row--2fa">
-                <span className="profile-security__label">Authentification à deux facteurs</span>
-                <button className="profile-btn profile-btn--outline profile-btn--sm">Activer</button>
-              </div>
             </div>
 
             {/* Abonnement */}
@@ -531,7 +522,6 @@ const Profile: React.FC = () => {
             <div className="profile-notifications">
               {[
                 { key: 'email' as const, label: 'Notifications par email' },
-                { key: 'sms' as const, label: 'Notifications SMS' },
                 { key: 'newsletter' as const, label: 'Newsletter MAX' },
               ].map(({ key, label }) => (
                 <div key={key} className="profile-notifications__row">
