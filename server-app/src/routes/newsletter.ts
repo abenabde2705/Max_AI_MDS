@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { authenticateToken } from '../middleware/auth.js';
 import { subscribeContact, unsubscribeContact, getContactStatus } from '../services/newsletter.js';
+import { sendNewsletterWelcomeEmail } from '../services/email.js';
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ router.post('/subscribe', async (req: Request, res: Response): Promise<void> => 
   }
   try {
     await subscribeContact(email);
+    sendNewsletterWelcomeEmail({ to: email }).catch(() => {});
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ message: err.message || 'Erreur serveur' });

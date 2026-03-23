@@ -22,18 +22,18 @@ export const sendSetPasswordEmail = async (opts: {
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Bonjour ${opts.firstName} 👋
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
-                  Un compte a été créé pour vous sur <strong style="color:#DAE63D;">Max AI</strong>.<br/>
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Un compte a été créé pour vous sur <strong style="color:#161a4d;">Max AI</strong>.<br/>
                   Cliquez sur le bouton ci-dessous pour définir votre mot de passe et accéder à votre espace.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -45,7 +45,7 @@ export const sendSetPasswordEmail = async (opts: {
                     </a>
                   </td></tr>
                 </table>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Ce lien expire dans 24h. Si vous n'attendiez pas ce mail, ignorez-le.
                 </p>
               </td></tr>
@@ -69,18 +69,18 @@ export const sendWelcomeEmail = async (opts: { to: string; firstName: string }) 
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Bienvenue ${opts.firstName} 🎉
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
-                  Votre compte <strong style="color:#DAE63D;">Max AI</strong> est prêt.<br/>
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Votre compte <strong style="color:#161a4d;">Max AI</strong> est prêt.<br/>
                   Max est votre compagnon de bien-être mental, disponible 24h/24, 7j/7, sans jugement.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -92,7 +92,7 @@ export const sendWelcomeEmail = async (opts: { to: string; firstName: string }) 
                     </a>
                   </td></tr>
                 </table>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Besoin d'aide ? Répondez à cet email, nous sommes là.
                 </p>
               </td></tr>
@@ -122,18 +122,18 @@ export const sendPasswordResetEmail = async (opts: {
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Bonjour ${opts.firstName} 👋
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
-                  Vous avez demandé à réinitialiser votre mot de passe <strong style="color:#DAE63D;">Max AI</strong>.<br/>
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Vous avez demandé à réinitialiser votre mot de passe <strong style="color:#161a4d;">Max AI</strong>.<br/>
                   Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -145,7 +145,7 @@ export const sendPasswordResetEmail = async (opts: {
                     </a>
                   </td></tr>
                 </table>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Ce lien expire dans 1h. Si vous n'avez pas fait cette demande, ignorez cet email.
                 </p>
               </td></tr>
@@ -169,23 +169,23 @@ export const sendDisputeOpenedEmail = async (opts: { to: string; firstName: stri
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #ff4d4d;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #ff4d4d;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Bonjour ${opts.firstName}
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 16px;">
-                  Un <strong style="color:#ff4d4d;">litige (chargeback)</strong> a été ouvert auprès de votre banque concernant un paiement <strong style="color:#DAE63D;">Max AI</strong>.
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 16px;">
+                  Un <strong style="color:#ff4d4d;">litige (chargeback)</strong> a été ouvert auprès de votre banque concernant un paiement <strong style="color:#161a4d;">Max AI</strong>.
                 </p>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
                   Votre accès premium a été <strong>suspendu</strong> le temps de la résolution du litige. Si vous pensez qu'il s'agit d'une erreur, contactez-nous en répondant à cet email.
                 </p>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Votre accès sera rétabli automatiquement si le litige est résolu en votre faveur.
                 </p>
               </td></tr>
@@ -209,18 +209,18 @@ export const sendDisputeResolvedEmail = async (opts: { to: string; firstName: st
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Bonjour ${opts.firstName} 👋
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
-                  Le litige sur votre compte a été résolu. Votre accès <strong style="color:#DAE63D;">Max AI</strong> est désormais <strong>rétabli</strong>.
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Le litige sur votre compte a été résolu. Votre accès <strong style="color:#161a4d;">Max AI</strong> est désormais <strong>rétabli</strong>.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr><td align="center" style="padding:0 0 32px;">
@@ -252,20 +252,20 @@ export const sendPaymentFailedEmail = async (opts: { to: string; firstName: stri
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #ff4d4d;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #ff4d4d;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Bonjour ${opts.firstName} 👋
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 16px;">
-                  Nous n'avons pas pu encaisser le paiement de votre abonnement <strong style="color:#DAE63D;">Max AI</strong>.
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 16px;">
+                  Nous n'avons pas pu encaisser le paiement de votre abonnement <strong style="color:#161a4d;">Max AI</strong>.
                 </p>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
                   Veuillez mettre à jour votre moyen de paiement pour continuer à profiter de votre abonnement.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -277,7 +277,7 @@ export const sendPaymentFailedEmail = async (opts: { to: string; firstName: stri
                     </a>
                   </td></tr>
                 </table>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Si vous avez des questions, répondez à cet email.
                 </p>
               </td></tr>
@@ -301,20 +301,20 @@ export const sendSubscriptionCancelledEmail = async (opts: { to: string; firstNa
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Abonnement annulé, ${opts.firstName}
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 16px;">
-                  Votre abonnement <strong style="color:#DAE63D;">Max AI</strong> a bien été annulé.
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 16px;">
+                  Votre abonnement <strong style="color:#161a4d;">Max AI</strong> a bien été annulé.
                 </p>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
                   Vous conservez l'accès au plan gratuit (10 messages/jour). Vous pouvez vous réabonner à tout moment depuis votre profil.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -326,7 +326,7 @@ export const sendSubscriptionCancelledEmail = async (opts: { to: string; firstNa
                     </a>
                   </td></tr>
                 </table>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Besoin d'aide ? Répondez à cet email.
                 </p>
               </td></tr>
@@ -360,21 +360,21 @@ export const sendStudentVerificationStatusEmail = async (opts: {
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
             <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid ${isApproved ? '#DAE63D' : '#ff4d4d'};border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
                   Bonjour ${opts.firstName} 👋
                 </h2>
                 ${isApproved ? `
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 16px;">
-                  Bonne nouvelle ! Votre carte étudiante a été <strong style="color:#DAE63D;">vérifiée et approuvée</strong>.
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 16px;">
+                  Bonne nouvelle ! Votre carte étudiante a été <strong style="color:#161a4d;">vérifiée et approuvée</strong>.
                 </p>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
                   Vous pouvez maintenant finaliser votre abonnement Campus à 8€/mois.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -387,15 +387,15 @@ export const sendStudentVerificationStatusEmail = async (opts: {
                   </td></tr>
                 </table>
                 ` : `
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 16px;">
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 16px;">
                   Votre demande de vérification étudiante a été <strong style="color:#ff4d4d;">refusée</strong>.
                 </p>
                 ${opts.rejectionReason ? `
-                <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;line-height:1.6;margin:0 0 24px;padding:16px;background:rgba(255,77,77,0.1);border-radius:8px;border-left:3px solid #ff4d4d;">
+                <p style="color:#666666;font-size:0.9rem;line-height:1.6;margin:0 0 24px;padding:16px;background:rgba(255,77,77,0.1);border-radius:8px;border-left:3px solid #ff4d4d;">
                   Motif : ${opts.rejectionReason}
                 </p>
                 ` : ''}
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
                   Vous pouvez soumettre une nouvelle carte depuis votre espace abonnement.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -408,8 +408,54 @@ export const sendStudentVerificationStatusEmail = async (opts: {
                   </td></tr>
                 </table>
                 `}
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Besoin d'aide ? Répondez à cet email.
+                </p>
+              </td></tr>
+            </table>
+          </td></tr>
+        </table>
+      </body>
+      </html>
+    `,
+  });
+};
+
+/**
+ * Email de confirmation d'inscription à la newsletter.
+ */
+export const sendNewsletterWelcomeEmail = async (opts: { to: string }) => {
+  await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: 'Vous êtes inscrit(e) à la newsletter Max',
+    html: `
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
+          <tr><td align="center">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+              <tr><td>
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 24px;font-weight:400;">
+                  Bienvenue dans la newsletter Max !
+                </h2>
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                  Vous recevrez bientôt nos conseils bien-être, les dernières nouveautés de <strong style="color:#161a4d;">Max</strong> et des ressources en santé mentale — directement dans votre boîte mail.
+                </p>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr><td align="center" style="padding:0 0 32px;">
+                    <a href="${FRONTEND_URL}"
+                       style="display:inline-block;background:#DAE63D;color:#161a4d;text-decoration:none;
+                              font-weight:700;font-size:1rem;padding:14px 36px;border-radius:50px;">
+                      Découvrir Max
+                    </a>
+                  </td></tr>
+                </table>
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
+                  Pour vous désinscrire, rendez-vous dans les paramètres de votre profil.
                 </p>
               </td></tr>
             </table>
@@ -441,20 +487,20 @@ export const sendSubscriptionEmail = async (opts: {
     html: `
       <!DOCTYPE html>
       <html lang="fr">
-      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
-      <body style="margin:0;padding:0;background:#0d0626;font-family:'Ubuntu',Arial,sans-serif;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0626;padding:40px 0;">
+      <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="color-scheme" content="light" /><meta name="supported-color-schemes" content="light" /><style>:root{color-scheme:light;}</style></head>
+      <body style="margin:0;padding:0;background:#f4f4f7;font-family:'Ubuntu',Arial,sans-serif;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:40px 0;">
           <tr><td align="center">
-            <table width="560" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#161a4d 0%,#470059 100%);border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
+            <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1.5px solid #DAE63D;border-radius:24px;padding:48px 40px;">
               <tr><td>
-                <h1 style="color:#DAE63D;font-size:2rem;margin:0 0 8px;">max</h1>
-                <h2 style="color:#fff;font-size:1.4rem;margin:0 0 16px;font-weight:400;">
+                <h1 style="color:#161a4d;font-size:2rem;margin:0 0 8px;">max</h1>
+                <h2 style="color:#161a4d;font-size:1.4rem;margin:0 0 16px;font-weight:400;">
                   Merci ${opts.firstName} ! 🙌
                 </h2>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 16px;">
-                  Votre abonnement <strong style="color:#DAE63D;">${planLabel}</strong> est maintenant actif.
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 16px;">
+                  Votre abonnement <strong style="color:#161a4d;">${planLabel}</strong> est maintenant actif.
                 </p>
-                <p style="color:rgba(255,255,255,0.8);font-size:1rem;line-height:1.6;margin:0 0 32px;">
+                <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
                   ${planPerks}
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -466,7 +512,7 @@ export const sendSubscriptionEmail = async (opts: {
                     </a>
                   </td></tr>
                 </table>
-                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin:0;text-align:center;">
+                <p style="color:#999999;font-size:0.8rem;margin:0;text-align:center;">
                   Vous pouvez gérer votre abonnement depuis votre profil.
                 </p>
               </td></tr>
