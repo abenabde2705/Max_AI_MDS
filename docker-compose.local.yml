@@ -1,0 +1,80 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: maxai-postgres
+    environment:
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: password
+     POSTGRES_DB: maxai
+    volumes:
+     - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+     test: ["CMD-SHELL", "pg_isready -U postgres"]
+     interval: 10s
+     timeout: 5s
+     retries: 5
+    networks:
+     - web
+     - default
+  backend:
+    build: ./server-app
+    container_name: maxai-backend
+    env_file: ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: node dist/server.js
+    environment:
+      - DB_HOST=postgres
+      - CHAT_API_URL=http://chat_api:8000
+    ports:
+      - "3000:3000"
+    networks:
+      - web
+      - default
+
+  web:
+    build: ./frontend-react
+    container_name: maxai-frontend-react
+    env_file: ./.env
+    command: npm run dev -- --host
+    depends_on: [ backend ]
+    networks:
+      - web
+      - default
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend-react:/app
+      - /app/node_modules
+
+  adminer:
+    image: adminer
+    container_name: maxai-adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - default
+
+  chat_api:
+    build:
+      context: ./chat_api
+    container_name: maxai-chat-api
+    env_file: ./.env
+    restart: always
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+
+volumes:
+  postgres_data:
+
+networks:
+  web:
+    external: true

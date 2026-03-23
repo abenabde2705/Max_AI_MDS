@@ -1,20 +1,94 @@
-version: '3.8'
-
 services:
-  frontend:
-    build:
-      context: ./max
+  postgres:
+    image: postgres:15
+    container_name: maxai-postgres
+    environment:
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: password
+     POSTGRES_DB: maxai
+    volumes:
+     - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+     test: ["CMD-SHELL", "pg_isready -U postgres"]
+     interval: 10s
+     timeout: 5s
+     retries: 5
+    networks:
+     - web
+     - default
+  backend:
+    build: ./server-app
+    container_name: maxai-backend
+    env_file: ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: node dist/server.js
+    environment:
+      - DB_HOST=postgres
+      - CHAT_API_URL=http://chat_api:8000
+      - NODE_ENV=production
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - web
+      - default
+
+  web:
+    build: ./frontend-react
+    container_name: maxai-frontend-react
+    env_file: ./.env
+    command: npm run dev -- --host
+    depends_on: [ backend ]
+    networks:
+      - web
+      - default
     ports:
       - "5173:5173"
+    labels:
+      - "traefik.enable=true"
+
+  ollama:
+    image: ollama/ollama
+    container_name: maxai-ollama
     restart: always
-    depends_on:
-      - chat_api
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"   # Accessible uniquement via SSH tunnel, jamais public
+    networks:
+      - default
 
   chat_api:
     build:
       context: ./chat_api
-    ports:
-      - "8000:8000"
+    container_name: maxai-chat-api
+    env_file: ./.env
     restart: always
     environment:
-      - MISTRAL_KEY=P896w2DBvu1lvS5eeF8yn0Paz1TWMBKH
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      - ollama
+     # Lié à 127.0.0.1 uniquement — accessible via SSH tunnel pour le dev local, jamais public
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - default
+
+  adminer:
+    image: adminer
+    container_name: maxai-adminer
+    restart: always
+    ports:
+      - "127.0.0.1:8080:8080"   # Uniquement local, jamais public
+    networks:
+      - default
+
+volumes:
+  postgres_data:
+  ollama_data:
+  uploads_data:
+
+networks:
+  web:
+    external: true

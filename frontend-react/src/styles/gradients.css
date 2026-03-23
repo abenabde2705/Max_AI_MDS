@@ -1,0 +1,122 @@
+.gradient-vertical {
+  background: linear-gradient(104.32deg, #1C5372 0%, #90DBF5 57.67%, #FFD2C7 95.58%);
+}
+
+.gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    104.32deg,
+    rgba(255,255,255,0.1) 0%,
+    rgba(255,255,255,0.05) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  pointer-events: none;
+}
+
+/* Unified landing-page gradients (single gradient for all main sections)
+   Colors from designer: #514A9D -> #24C6DC */
+.gradient-bg,
+.gradient-bg2,
+.gradient-bg3 {
+  /* Use the same diagonal gradient for visual unity */
+background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
+  }
+
+/* About section background using public image */
+.about-section--bg {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  position: relative;
+  color: #fff;
+}
+
+.about-section--bg > div {
+  position: relative;
+  z-index: 1;
+  padding: 0 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+  .about-section--bg > div {
+    padding: 50px;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-section--bg > div {
+    padding: 40px 20px;
+    gap: 2rem;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-section--bg > div {
+    padding: 20px;
+    gap: 1.5rem;
+  }
+}
+
+.about-title {
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 48px;
+  letter-spacing: 1px;
+  color: #ffffff;
+  margin: 0 0 20px 0;
+  position: relative;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 32px;
+    letter-spacing: 0.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-title {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+}
+
+
+
+.about-description p {
+  color: rgba(255,255,255,0.95);
+  line-height: 1.7;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.feature-text p {
+  color: rgba(255,255,255,0.95);
+  line-height: 1.7;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .feature-text p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .feature-text p {
+    font-size: 14px;
+  }
+}
+

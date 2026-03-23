@@ -1,0 +1,83 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { PremiumProvider, usePremium } from './context/PremiumContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Import des composants
+import LandingPage from './components/LandingPage';
+import Chat from './components/Chat';
+import AuthUser from './components/Authentication/AuthUser';
+import AuthCallback from './components/Authentication/AuthCallback';
+import SuccessPage from './components/SuccessPage';
+import ConditionsUtilisation from './components/Politics/ConditionsUtilisation';
+import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite';
+import NotFound from './components/NotFound';
+import Dashboard from './components/DashboardSimple';
+import Profile from './components/Profile';
+import EmotionalJournal from './components/EmotionalJournal';
+import Statistics from './components/Statistics';
+import Coaches from './components/Coaches';
+import ChatLayout from './components/ChatLayout';
+import AdminPage from './components/AdminPage';
+import SetPassword from './components/SetPassword';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
+import CookieBanner from './components/CookieBanner';
+import { getToken } from './utils/token';
+
+
+const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
+  const token = getToken();
+  return token ? element : <Navigate to="/auth" replace />;
+};
+
+const PremiumRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
+  const { isPremium, loading } = usePremium();
+  if (loading) return null;
+  return isPremium ? element : <Navigate to="/chatbot" replace />;
+};
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <CookieBanner />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route element={<ProtectedRoute element={<PremiumProvider><ChatLayout /></PremiumProvider>} />}>
+          <Route path="/chatbot" element={<Chat />} />
+          <Route path="/journal" element={<PremiumRoute element={<EmotionalJournal />} />} />
+          <Route path="/statistics" element={<PremiumRoute element={<Statistics />} />} />
+          <Route path="/coaches" element={<PremiumRoute element={<Coaches />} />} />
+        </Route>
+        <Route path="/auth" element={<AuthUser />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+        <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+        <Route path="/admin" element={<ProtectedRoute element={<AdminPage />} />} />
+
+        <Route path="/set-password" element={<SetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
+        <Route path="/politics/politique-confidentialites" element={<PolitiqueConfidentialites />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+export default App;

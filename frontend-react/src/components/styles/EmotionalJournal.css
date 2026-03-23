@@ -1,0 +1,289 @@
+/* ============================================
+   EMOTIONAL JOURNAL STYLES
+   ============================================ */
+
+.emotional-journal__container {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.emotional-journal__entries {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Entry Card */
+.emotional-journal__entry {
+ border: 3px solid transparent;
+  background-image: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%), linear-gradient(to bottom, #DAE63D, #161A4D);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+    border-radius: 70px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.emotional-journal__entry:hover {
+  border-color: rgba(255, 215, 0, 0.8);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.emotional-journal__entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.emotional-journal__mood-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emotional-journal__mood-emoji {
+  font-size: 2rem;
+}
+
+.emotional-journal__mood-label {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.emotional-journal__date {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.emotional-journal__description {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Tags */
+.emotional-journal__tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.emotional-journal__tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1.5px solid #ffd700;
+  border-radius: 20px;
+  color: #ffd700;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Modal */
+.emotional-journal__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.emotional-journal__modal {
+  background: linear-gradient(135deg, #2a1a4a 0%, #1a0f2e 100%);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.emotional-journal__modal-title {
+  font-size: 1.75rem;
+  color: #ffd700;
+  margin-bottom: 2rem;
+  font-weight: bold;
+}
+
+.emotional-journal__form-group {
+  margin-bottom: 1.5rem;
+}
+
+.emotional-journal__form-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.emotional-journal__mood-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+
+.emotional-journal__mood-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: transparent;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.emotional-journal__mood-option:hover {
+  border-color: rgba(255, 215, 0, 0.6);
+  color: #ffd700;
+}
+
+.emotional-journal__mood-option--active {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: #ffd700;
+  color: #ffd700;
+}
+
+.emotional-journal__mood-option span:first-child {
+  font-size: 1.5rem;
+}
+
+.emotional-journal__textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.emotional-journal__textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.emotional-journal__textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.emotional-journal__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.emotional-journal__input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.emotional-journal__input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.emotional-journal__modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: flex-end;
+}
+
+.emotional-journal__modal-button {
+  min-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .emotional-emotional-journal__tags {
+      justify-content: space-evenly;
+  }
+  .emotional-journal__container {
+    padding: 1rem;
+  }
+
+  .emotional-journal__entries {
+    gap: 1rem;
+  }
+
+  .emotional-journal__entry {
+    padding: 1rem;
+  }
+
+  .emotional-journal__entry-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .emotional-journal__mood-selector {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .emotional-journal__modal {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .emotional-journal__modal-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Delete button */
+.emotional-journal__delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0.25rem;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.emotional-journal__delete-btn:hover {
+  color: #FF6347;
+}
+
+/* Loading / Empty states */
+.emotional-journal__loading,
+.emotional-journal__empty {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 3rem 1rem;
+}

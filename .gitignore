@@ -1,0 +1,61 @@
+# Docker data
+docker-data/
+
+# Dependencies
+node_modules/
+**/node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+*/package-lock.json
+**/package-lock.json
+.vite
+# Python cache
+__pycache__/
+**/__pycache__/
+*/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment files (tous les .env)
+.env
+**/.env
+*/.env
+/.env
+.env.local
+.env.*.local
+# Fichiers de sauvegarde
+**/.env.backup
+
+# Build outputs
+dist/
+*/dist/
+**/dist/
+build/
+*/build/
+**/build/
+
+# Coverage reports
+coverage/
+*/coverage/
+**/coverage/
+*.lcov
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+README-PERFORMANCE.md

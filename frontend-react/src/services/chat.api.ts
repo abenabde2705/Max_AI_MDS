@@ -1,0 +1,123 @@
+import axios from 'axios';
+import { getToken } from '../utils/token';
+
+const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
+
+export const getAuthHeaders = () => {
+  const token = getToken();
+  return {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+};
+
+export const fetchConversations = () =>
+  axios.get(`${API_BASE}/conversations`, { headers: getAuthHeaders() });
+
+export const fetchUserProfile = () =>
+  axios.get(`${API_BASE}/users/me`, { headers: getAuthHeaders() });
+
+export const fetchMessages = (conversationId: string) =>
+  axios.get(`${API_BASE}/messages?conversation_id=${conversationId}`, {
+    headers: getAuthHeaders(),
+  });
+
+export const createConversation = () =>
+  axios.post(`${API_BASE}/conversations`, {}, { headers: getAuthHeaders() });
+
+/**
+ * Envoie un message au backend qui proxy vers le Chat API interne.
+ * Sauvegarde le message utilisateur ET la réponse IA côté serveur.
+ * Aucune clé API n'est exposée au client.
+ */
+export const sendChatMessage = (
+  conversationId: string,
+  message: string,
+  signal?: AbortSignal
+) =>
+  axios.post(
+    `${API_BASE}/chat`,
+    { conversation_id: conversationId, message },
+    { headers: getAuthHeaders(), signal }
+  );
+
+export const deleteConversation = (conversationId: string) =>
+  axios.delete(`${API_BASE}/conversations/${conversationId}`, { headers: getAuthHeaders() });
+
+export const fetchMessageCount = () =>
+  axios.get(`${API_BASE}/users/me/message-count`, { headers: getAuthHeaders() });
+
+export const fetchConversationStats = () =>
+  axios.get(`${API_BASE}/conversations/stats/summary`, { headers: getAuthHeaders() });
+
+export const fetchJournalEntries = () =>
+  axios.get(`${API_BASE}/journal`, { headers: getAuthHeaders() });
+
+export const deleteJournalEntry = (id: string) =>
+  axios.delete(`${API_BASE}/journal/${id}`, { headers: getAuthHeaders() });
+
+// ─── Subscriptions ───────────────────────────────────────────────────────────
+
+export const createCheckoutSession = (plan: 'premium' | 'student') =>
+  axios.post(`${API_BASE}/subscriptions/checkout`, { plan }, { headers: getAuthHeaders() });
+
+export const createPortalSession = () =>
+  axios.post(`${API_BASE}/subscriptions/portal`, {}, { headers: getAuthHeaders() });
+
+export const cancelSubscription = () =>
+  axios.post(`${API_BASE}/subscriptions/cancel`, {}, { headers: getAuthHeaders() });
+
+export const fetchCurrentSubscription = () =>
+  axios.get(`${API_BASE}/subscriptions/current`, { headers: getAuthHeaders() });
+
+export const fetchSubscriptionPrices = () =>
+  axios.get(`${API_BASE}/subscriptions/prices`);
+
+// ─── Student Verification ─────────────────────────────────────────────────────
+
+export const submitStudentVerification = (formData: FormData) =>
+  axios.post(`${API_BASE}/student-verification/submit`, formData, {
+    headers: { ...getAuthHeaders(), 'Content-Type': 'multipart/form-data' }
+  });
+
+export const fetchStudentVerificationStatus = () =>
+  axios.get(`${API_BASE}/student-verification/status`, { headers: getAuthHeaders() });
+
+// Admin
+export const fetchAdminVerifications = (status: 'pending' | 'approved' | 'rejected' | 'all' = 'all') =>
+  axios.get(`${API_BASE}/admin/student-verifications?status=${status}`, { headers: getAuthHeaders() });
+
+export const reviewStudentVerification = (id: string, status: 'approved' | 'rejected', rejectionReason?: string) =>
+  axios.patch(`${API_BASE}/admin/student-verifications/${id}`, { status, rejectionReason }, { headers: getAuthHeaders() });
+
+export const fetchAdminUsers = (search?: string) =>
+  axios.get(`${API_BASE}/admin/users${search ? `?search=${encodeURIComponent(search)}` : ''}`, { headers: getAuthHeaders() });
+
+export const deleteAdminUser = (id: string) =>
+  axios.delete(`${API_BASE}/admin/users/${id}`, { headers: getAuthHeaders() });
+
+export const createAdminUser = (data: { firstName: string; lastName: string; email: string; dateOfBirth?: string; plan: string }) =>
+  axios.post(`${API_BASE}/admin/users`, data, { headers: getAuthHeaders() });
+
+export const updateAdminUser = (id: string, data: { firstName?: string; lastName?: string; email?: string; role?: string; plan?: string }) =>
+  axios.patch(`${API_BASE}/admin/users/${id}`, data, { headers: getAuthHeaders() });
+
+export const fetchAdminSubscriptions = () =>
+  axios.get(`${API_BASE}/admin/subscriptions`, { headers: getAuthHeaders() });
+
+export const fetchAdminCrisisAlerts = (filter?: string) =>
+  axios.get(`${API_BASE}/admin/crisis-alerts${filter && filter !== 'all' ? `?filter=${filter}` : ''}`, { headers: getAuthHeaders() });
+
+export const resolveAdminCrisisAlert = (id: string) =>
+  axios.patch(`${API_BASE}/admin/crisis-alerts/${id}/resolve`, {}, { headers: getAuthHeaders() });
+
+// ─── Newsletter ───────────────────────────────────────────────────────────────
+
+export const subscribeNewsletter = (email: string) =>
+  axios.post(`${API_BASE}/newsletter/subscribe`, { email });
+
+export const unsubscribeNewsletter = () =>
+  axios.post(`${API_BASE}/newsletter/unsubscribe`, {}, { headers: getAuthHeaders() });
+
+export const fetchNewsletterStatus = () =>
+  axios.get(`${API_BASE}/newsletter/status`, { headers: getAuthHeaders() });
