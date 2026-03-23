@@ -62,7 +62,8 @@ router.get('/admin/users', authenticateToken, requireAdmin, async (req: Request,
       const uid = user.getDataValue('id');
       const userConvIds = convIdsByUser.get(uid) || [];
       const msgCount = userConvIds.reduce((sum, cid) => sum + (msgCountByConv.get(cid) || 0), 0);
-      const plan = subsMap.get(uid) || 'free';
+      const subPlan = subsMap.get(uid);
+      const plan = subPlan || (user.getDataValue('isPremium') ? 'premium' : 'free');
       return {
         id: uid,
         email: user.getDataValue('email'),
@@ -173,6 +174,45 @@ router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request
     });
   } catch (error: unknown) {
     console.error('Admin POST /users error:', error);
+    res.status(500).json({ success: false, message: 'Erreur serveur' });
+  }
+});
+
+router.patch('/admin/users/:id', authenticateToken, requireAdmin, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { firstName, lastName, email, role, plan } = req.body;
+
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
+      return;
+    }
+
+    const updates: any = {};
+    if (firstName !== undefined) updates.firstName = firstName;
+    if (lastName !== undefined) updates.lastName = lastName;
+    if (email !== undefined) updates.email = email.toLowerCase();
+    if (role !== undefined) updates.role = role;
+    if (plan !== undefined) updates.isPremium = plan !== 'free';
+    await user.update(updates);
+
+    if (plan !== undefined) {
+      const existingSub = await Subscription.findOne({ where: { userId: id, status: 'active' } });
+      if (plan === 'free') {
+        if (existingSub) await existingSub.update({ status: 'canceled', endDate: new Date() });
+      } else {
+        if (existingSub) {
+          await existingSub.update({ plan });
+        } else {
+          await Subscription.create({ userId: id, plan, status: 'active', startDate: new Date() });
+        }
+      }
+    }
+
+    res.json({ success: true, message: 'Utilisateur mis à jour' });
+  } catch (error: unknown) {
+    console.error('Admin PATCH /users/:id error:', error);
     res.status(500).json({ success: false, message: 'Erreur serveur' });
   }
 });

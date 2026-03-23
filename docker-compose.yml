@@ -75,6 +75,15 @@ services:
     networks:
       - default
 
+  adminer:
+    image: adminer
+    container_name: maxai-adminer
+    restart: always
+    ports:
+      - "127.0.0.1:8080:8080"   # Uniquement local, jamais public
+    networks:
+      - default
+
 volumes:
   postgres_data:
   ollama_data:

@@ -99,6 +99,9 @@ export const deleteAdminUser = (id: string) =>
 export const createAdminUser = (data: { firstName: string; lastName: string; email: string; dateOfBirth?: string; plan: string }) =>
   axios.post(`${API_BASE}/admin/users`, data, { headers: getAuthHeaders() });
 
+export const updateAdminUser = (id: string, data: { firstName?: string; lastName?: string; email?: string; role?: string; plan?: string }) =>
+  axios.patch(`${API_BASE}/admin/users/${id}`, data, { headers: getAuthHeaders() });
+
 export const fetchAdminSubscriptions = () =>
   axios.get(`${API_BASE}/admin/subscriptions`, { headers: getAuthHeaders() });
 

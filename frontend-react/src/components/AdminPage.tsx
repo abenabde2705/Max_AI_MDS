@@ -9,6 +9,7 @@ import {
   fetchAdminUsers,
   deleteAdminUser,
   createAdminUser,
+  updateAdminUser,
   fetchAdminSubscriptions,
   fetchAdminCrisisAlerts,
   resolveAdminCrisisAlert,
@@ -85,6 +86,11 @@ const AdminPage: React.FC = () => {
   const [showAddUser, setShowAddUser] = useState(false);
   const [addUserForm, setAddUserForm] = useState({ firstName: '', lastName: '', email: '', dateOfBirth: '', phone: '', plan: 'free' });
   const [addUserLoading, setAddUserLoading] = useState(false);
+
+  // Edit user
+  const [editUser, setEditUser] = useState<AdminUser | null>(null);
+  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', email: '', role: 'user', plan: 'free' });
+  const [editLoading, setEditLoading] = useState(false);
 
   // Subscriptions
   const [subTab, setSubTab] = useState<SubTab>('all');
@@ -226,6 +232,26 @@ const AdminPage: React.FC = () => {
     } catch { showToast('Erreur résolution alerte', 'err'); }
   };
 
+  const openEditUser = (user: AdminUser) => {
+    setEditUser(user);
+    setEditForm({ firstName: user.firstName || '', lastName: user.lastName || '', email: user.email, role: user.role || 'user', plan: user.plan });
+  };
+
+  const handleEditUser = async () => {
+    if (!editUser) return;
+    setEditLoading(true);
+    try {
+      await updateAdminUser(editUser.id, editForm);
+      showToast('Utilisateur mis à jour', 'ok');
+      setEditUser(null);
+      loadUsers();
+    } catch (err: any) {
+      showToast(err?.response?.data?.message || 'Erreur mise à jour', 'err');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
   const handleAddUser = async () => {
     if (!addUserForm.firstName.trim() || !addUserForm.email) {
       showToast('Prénom et email sont requis', 'err');
@@ -308,6 +334,77 @@ const AdminPage: React.FC = () => {
         <div className="adm-lightbox" onClick={() => setPreviewUrl(null)}>
           <button className="adm-lightbox__close" onClick={() => setPreviewUrl(null)}>✕</button>
           <img src={previewUrl} alt="Carte étudiante" onClick={e => e.stopPropagation()} />
+        </div>
+      )}
+
+      {/* Edit user modal */}
+      {editUser && (
+        <div className="adm-modal-overlay" onClick={() => setEditUser(null)}>
+          <div className="adm-add-user-modal" onClick={e => e.stopPropagation()}>
+            <div className="adm-add-user-modal__header">
+              <h2 className="adm-add-user-modal__title">Modifier l'utilisateur</h2>
+              <button className="adm-add-user-modal__close" onClick={() => setEditUser(null)}>✕</button>
+            </div>
+
+            <div className="adm-add-user-modal__row">
+              <div className="adm-add-user-modal__field">
+                <label>Prénom</label>
+                <input
+                  type="text"
+                  value={editForm.firstName}
+                  onChange={e => setEditForm(f => ({ ...f, firstName: e.target.value }))}
+                />
+              </div>
+              <div className="adm-add-user-modal__field">
+                <label>Nom</label>
+                <input
+                  type="text"
+                  value={editForm.lastName}
+                  onChange={e => setEditForm(f => ({ ...f, lastName: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="adm-add-user-modal__field">
+              <label>E-mail</label>
+              <input
+                type="email"
+                value={editForm.email}
+                onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+
+            <div className="adm-add-user-modal__row">
+              <div className="adm-add-user-modal__field">
+                <label>Rôle</label>
+                <select value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))}>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div className="adm-add-user-modal__field">
+                <label>Plan</label>
+                <select value={editForm.plan} onChange={e => setEditForm(f => ({ ...f, plan: e.target.value }))}>
+                  <option value="free">Free</option>
+                  <option value="premium">Premium</option>
+                  <option value="student">Campus</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="adm-add-user-modal__actions">
+              <button className="adm-add-user-modal__btn adm-add-user-modal__btn--cancel" onClick={() => setEditUser(null)}>
+                Annuler
+              </button>
+              <button
+                className="adm-add-user-modal__btn adm-add-user-modal__btn--create"
+                onClick={handleEditUser}
+                disabled={editLoading}
+              >
+                {editLoading ? '…' : 'Enregistrer'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -540,6 +637,16 @@ const AdminPage: React.FC = () => {
                       <td>{formatDate(user.createdAt)}</td>
                       <td>
                         <div className="adm-actions">
+                          <button
+                            className="adm-icon-btn"
+                            title="Modifier"
+                            onClick={() => openEditUser(user)}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                          </button>
                           <button
                             className="adm-icon-btn adm-icon-btn--danger"
                             title="Supprimer"
