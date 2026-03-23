@@ -2144,6 +2144,12 @@ color: #FFFFFF;
 }
 
 @media (max-width: 768px) {
+  .plan-card::before {
+    border-radius: 36px;
+  }
+  .plan-card.highlight {
+    border-radius: 40px;
+  }
   .Abonnement {
     padding: 3rem 1rem;
   }
@@ -2360,7 +2366,7 @@ color: #FFFFFF;
 
   .testimonials-section h2,
   .testimonials-title {
-    text-align: left;
+    text-align: center;
     margin-left: 0;
     font-size: 1.8rem;
   }
@@ -4375,11 +4381,12 @@ padding-top: 6rem;
 /* About two-column layout */
 .about-inner {
   display: flex;
-  flex-direction: row;
+    flex-direction: row;
+    align-items: center;
+    gap: 4rem;
+    width: 100%;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 4rem;
-  width: 100%;
 }
 
 .about-text-col {
@@ -4406,7 +4413,7 @@ padding-top: 6rem;
 
 @media (max-width: 768px) {
   .about-inner {
-    flex-direction: column;
+    flex-direction: column !important;
     gap: 2.5rem;
   }
   .about-phone-col {
