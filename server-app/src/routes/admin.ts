@@ -190,17 +190,17 @@ router.patch('/admin/users/:id', authenticateToken, requireAdmin, async (req: Re
     }
 
     const updates: any = {};
-    if (firstName !== undefined) updates.firstName = firstName;
-    if (lastName !== undefined) updates.lastName = lastName;
-    if (email !== undefined) updates.email = email.toLowerCase();
-    if (role !== undefined) updates.role = role;
-    if (plan !== undefined) updates.isPremium = plan !== 'free';
+    if (firstName !== undefined) { updates.firstName = firstName; }
+    if (lastName !== undefined) { updates.lastName = lastName; }
+    if (email !== undefined) { updates.email = email.toLowerCase(); }
+    if (role !== undefined) { updates.role = role; }
+    if (plan !== undefined) { updates.isPremium = plan !== 'free'; }
     await user.update(updates);
 
     if (plan !== undefined) {
       const existingSub = await Subscription.findOne({ where: { userId: id, status: 'active' } });
       if (plan === 'free') {
-        if (existingSub) await existingSub.update({ status: 'canceled', endDate: new Date() });
+        if (existingSub) { await existingSub.update({ status: 'canceled', endDate: new Date() }); }
       } else {
         if (existingSub) {
           await existingSub.update({ plan });
