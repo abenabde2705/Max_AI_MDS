@@ -4,8 +4,11 @@ import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => {
-  // Charger les variables d'environnement depuis la racine
-  const env = loadEnv(mode, path.resolve(__dirname, '../'), '');
+  const envFromFile = loadEnv(mode, path.resolve(__dirname, '../'), '');
+  const envFromProcess = Object.fromEntries(
+    Object.entries(process.env).filter(([k]) => k.startsWith('VITE_'))
+  );
+  const env = { ...envFromFile, ...envFromProcess };
   
   return {
     plugins: [react()],

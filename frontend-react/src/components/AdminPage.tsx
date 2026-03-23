@@ -1,4 +1,6 @@
 import { getToken, removeToken } from '../utils/token';
+import { collection, query, where, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoMax from '../assets/img/logomax.png';
@@ -15,7 +17,7 @@ import {
   resolveAdminCrisisAlert,
 } from '../services/chat.api';
 
-type Section = 'users' | 'subscriptions' | 'alerts';
+type Section = 'users' | 'subscriptions' | 'alerts' | 'testimonials';
 type SubTab = 'all' | 'student';
 type AlertFilter = 'all' | 'unread' | 'urgent';
 
@@ -69,6 +71,16 @@ interface CrisisAlertItem {
   resolvedAt: string | null;
 }
 
+interface TestimonialDoc {
+  id: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  email: string;
+  text: string;
+  photoUrl: string | null;
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPage: React.FC = () => {
@@ -76,6 +88,8 @@ const AdminPage: React.FC = () => {
   const [section, setSection] = useState<Section>('users');
   const [authError, setAuthError] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
+  const [pendingTestimonials, setPendingTestimonials] = useState<TestimonialDoc[]>([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(false);
 
   // Users
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -111,7 +125,7 @@ const AdminPage: React.FC = () => {
   const [alertsLoading, setAlertsLoading] = useState(false);
 
   // Sidebar indicator
-  const navSections: Section[] = ['users', 'subscriptions', 'alerts'];
+  const navSections: Section[] = ['users', 'subscriptions', 'alerts', 'testimonials'];
   const activeIndex = navSections.indexOf(section);
   const navRef = useRef<HTMLDivElement>(null);
   const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -190,6 +204,26 @@ const AdminPage: React.FC = () => {
     }
   }, [section, authError, loadSubscriptions, loadVerifications]);
   useEffect(() => { if (!authError && section === 'alerts') loadAlerts(); }, [section, authError, loadAlerts]);
+
+  useEffect(() => {
+    if (!authError && section === 'testimonials') {
+      setTestimonialsLoading(true);
+      getDocs(query(collection(db, 'testimonials'), where('approved', '==', false)))
+        .then(snap => setPendingTestimonials(snap.docs.map(d => ({ id: d.id, ...d.data() as Omit<TestimonialDoc, 'id'> }))))
+        .catch((err) => console.error('Testimonials fetch error:', err))
+        .finally(() => setTestimonialsLoading(false));
+    }
+  }, [section, authError]);
+
+  const handleApproveTestimonial = async (id: string) => {
+    await updateDoc(doc(db, 'testimonials', id), { approved: true });
+    setPendingTestimonials(prev => prev.filter(t => t.id !== id));
+  };
+
+  const handleRejectTestimonial = async (id: string) => {
+    await deleteDoc(doc(db, 'testimonials', id));
+    setPendingTestimonials(prev => prev.filter(t => t.id !== id));
+  };
 
   const handleDeleteUser = async (id: string) => {
     try {
@@ -530,14 +564,14 @@ const AdminPage: React.FC = () => {
             className="max-chat__nav-indicator"
             style={{ transform: `translateY(${indicatorTop}px)`, opacity: indicatorReady ? 1 : 0 }}
           />
-          {(['users', 'subscriptions', 'alerts'] as Section[]).map((s, i) => (
+          {(['users', 'subscriptions', 'alerts', 'testimonials'] as Section[]).map((s, i) => (
             <button
               key={s}
               ref={el => { btnRefs.current[i] = el; }}
               className={`max-chat__nav-button${section === s ? ' max-chat__nav-button--active' : ''}`}
               onClick={() => setSection(s)}
             >
-              {s === 'users' ? 'Utilisateurs' : s === 'subscriptions' ? 'Abonnements' : 'Alertes Crise'}
+              {s === 'users' ? 'Utilisateurs' : s === 'subscriptions' ? 'Abonnements' : s === 'alerts' ? 'Alertes Crise' : 'Témoignages'}
             </button>
           ))}
         </nav>
@@ -941,6 +975,42 @@ const AdminPage: React.FC = () => {
                     <div className="adm-alert-card__time">{formatDateTime(alert.detectedAt)}</div>
                     <div className="adm-alert-card__message">
                       "{alert.messageContent.slice(0, 120)}{alert.messageContent.length > 120 ? '...' : ''}"
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {/* ── TESTIMONIALS ── */}
+        {section === 'testimonials' && (
+          <div className="adm-section">
+            <div className="adm-section__header">
+              <h2>Témoignages en attente</h2>
+            </div>
+            {testimonialsLoading ? (
+              <div className="adm-spinner" />
+            ) : pendingTestimonials.length === 0 ? (
+              <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '2rem' }}>Aucun témoignage en attente de validation.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+                {pendingTestimonials.map(t => (
+                  <div key={t.id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                    {t.photoUrl ? (
+                      <img src={t.photoUrl} alt={t.firstName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #DAE63D' }} />
+                    ) : (
+                      <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#161a4d,#470059)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DAE63D', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
+                        {`${t.firstName?.[0] || '?'}${t.lastName?.[0] || ''}`.toUpperCase()}
+                      </div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, color: '#fff' }}>{t.firstName} {t.lastName} — {t.age} ans</div>
+                      <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem' }}>{t.email}</div>
+                      <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>"{t.text.slice(0, 200)}{t.text.length > 200 ? '…' : ''}"</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flexShrink: 0 }}>
+                      <button className="adm-btn adm-btn--resolve" onClick={() => handleApproveTestimonial(t.id)}>Approuver</button>
+                      <button className="adm-btn adm-btn--danger" onClick={() => handleRejectTestimonial(t.id)}>Rejeter</button>
                     </div>
                   </div>
                 ))}

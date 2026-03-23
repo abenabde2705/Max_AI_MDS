@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 import TestimonialsPopup from './Modals/TestimonialsPopup';
 import { getToken } from '../utils/token';
 import testi1 from '../assets/img/valeurs/testi1.png';
@@ -9,7 +11,8 @@ import jour2 from '../assets/img/valeurs/JOUR_2.webp';
 interface Testimonial {
   quote: string;
   author: string;
-  image: string;
+  photoUrl: string | null;
+  initials: string;
 }
 
 interface TestimonialsSectionProps {
@@ -17,50 +20,55 @@ interface TestimonialsSectionProps {
   className?: string;
 }
 
-const testimonials: Testimonial[] = [
-  {
-    quote: 'Max a changé la manière dont je gère mon anxiété. Je me sens enfin écouté.',
-    author: 'Sophie, 20 ans',
-    image: testi1
-  },
-  {
-    quote: 'Grâce à Max, je ne me sens plus seul dans les moments difficiles.',
-    author: 'Lucas, 28 ans',
-    image: jour1
-  },
-  {
-    quote: 'Avec Max, j\'ai enfin trouvé une oreille attentive, sans jugement. Ça change tout.',
-    author: 'Emma, 18 ans',
-    image: testi3
-  },
-  {
-    quote: 'Max est toujours là, même quand personne d\'autre ne peut l\'être. C\'est rassurant.',
-    author: 'Thomas, 23 ans',
-    image: jour2
-  }
+const FALLBACK: Testimonial[] = [
+  { quote: 'Max a changé la manière dont je gère mon anxiété. Je me sens enfin écouté.', author: 'Sophie, 20 ans', photoUrl: testi1, initials: 'SL' },
+  { quote: 'Grâce à Max, je ne me sens plus seul dans les moments difficiles.', author: 'Lucas, 28 ans', photoUrl: jour1, initials: 'LB' },
+  { quote: 'Avec Max, j\'ai enfin trouvé une oreille attentive, sans jugement. Ça change tout.', author: 'Emma, 18 ans', photoUrl: testi3, initials: 'EM' },
+  { quote: 'Max est toujours là, même quand personne d\'autre ne peut l\'être. C\'est rassurant.', author: 'Thomas, 23 ans', photoUrl: jour2, initials: 'TM' },
 ];
-
-// Duplicate for seamless infinite loop
-const loopedTestimonials = [...testimonials, ...testimonials];
 
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(FALLBACK);
   const isLoggedIn = !!getToken();
   const trackRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number | null>(null);
   const posRef = useRef(0);
-  const speedRef = useRef(0.5); // px per frame
+  const speedRef = useRef(0.5);
+
+  useEffect(() => {
+    getDocs(query(collection(db, 'testimonials'), where('approved', '==', true)))
+      .then(snap => {
+        if (snap.empty) return;
+        setTestimonials(snap.docs.map(doc => {
+          const d = doc.data();
+          return {
+            quote: d.text,
+            author: `${d.firstName}, ${d.age} ans`,
+            photoUrl: d.photoUrl || null,
+            initials: `${d.firstName?.[0] || '?'}${d.lastName?.[0] || ''}`.toUpperCase(),
+          };
+        }));
+      })
+      .catch(() => {});
+  }, []);
+
+  const loopedTestimonials = useMemo(() => {
+    // Ensure at least 4 unique cards before doubling to avoid visible duplicates
+    let base = [...testimonials];
+    while (base.length < 4) base = [...base, ...testimonials];
+    return [...base, ...base];
+  }, [testimonials]);
 
   useEffect(() => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || loopedTestimonials.length === 0) return;
+    posRef.current = 0;
 
     const animate = () => {
       posRef.current += speedRef.current;
       const halfWidth = track.scrollWidth / 2;
-      if (posRef.current >= halfWidth) {
-        posRef.current = 0;
-      }
+      if (posRef.current >= halfWidth) posRef.current = 0;
       track.style.transform = `translateX(-${posRef.current}px)`;
       animFrameRef.current = requestAnimationFrame(animate);
     };
@@ -69,7 +77,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, []);
+  }, [loopedTestimonials.length]);
 
   const handleMouseEnter = () => { speedRef.current = 0; };
   const handleMouseLeave = () => { speedRef.current = 0.5; };
@@ -87,7 +95,11 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
           <div className="testimonials-carousel-track" ref={trackRef}>
             {loopedTestimonials.map((t, i) => (
               <div key={`${t.author}-${i}`} className="testimonial-card">
-                <img src={t.image} alt={t.author} className="testimonial-card__bg" />
+                {t.photoUrl ? (
+                  <img src={t.photoUrl} alt={t.author} className="testimonial-card__bg" />
+                ) : (
+                  <div className="testimonial-avatar-initials">{t.initials}</div>
+                )}
                 <div className="testimonial-card__gradient" />
                 <div className="testimonial-card__content">
                   <p className="testimonial-card__quote">"{t.quote}"</p>
