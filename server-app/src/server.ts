@@ -16,6 +16,7 @@ import subscriptionRoutes from './routes/subscriptions.js';
 import stripeWebhookRouter from './routes/webhooks.js';
 import studentVerificationRoutes from './routes/studentVerification.js';
 import adminRoutes from './routes/admin.js';
+import newsletterRoutes from './routes/newsletter.js';
 import { swaggerSpec, swaggerUi } from './config/swagger.js';
 import './config/passport.js';
 import { up as migration001 } from './migrations/001-add-performance-indexes.js';
@@ -264,6 +265,7 @@ app.use('/api/journal', journalRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api', studentVerificationRoutes);
 app.use('/api', adminRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // Route de test avec métrique custom
 app.get('/api/health', (req: Request, res: Response): void => {

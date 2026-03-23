@@ -1,4 +1,6 @@
 import { getToken, removeToken } from '../utils/token';
+import { collection, query, where, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LogoMax from '../assets/img/logomax.png';
@@ -9,12 +11,13 @@ import {
   fetchAdminUsers,
   deleteAdminUser,
   createAdminUser,
+  updateAdminUser,
   fetchAdminSubscriptions,
   fetchAdminCrisisAlerts,
   resolveAdminCrisisAlert,
 } from '../services/chat.api';
 
-type Section = 'users' | 'subscriptions' | 'alerts';
+type Section = 'users' | 'subscriptions' | 'alerts' | 'testimonials';
 type SubTab = 'all' | 'student';
 type AlertFilter = 'all' | 'unread' | 'urgent';
 
@@ -68,6 +71,16 @@ interface CrisisAlertItem {
   resolvedAt: string | null;
 }
 
+interface TestimonialDoc {
+  id: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  email: string;
+  text: string;
+  photoUrl: string | null;
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const AdminPage: React.FC = () => {
@@ -75,6 +88,8 @@ const AdminPage: React.FC = () => {
   const [section, setSection] = useState<Section>('users');
   const [authError, setAuthError] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
+  const [pendingTestimonials, setPendingTestimonials] = useState<TestimonialDoc[]>([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(false);
 
   // Users
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -85,6 +100,11 @@ const AdminPage: React.FC = () => {
   const [showAddUser, setShowAddUser] = useState(false);
   const [addUserForm, setAddUserForm] = useState({ firstName: '', lastName: '', email: '', dateOfBirth: '', phone: '', plan: 'free' });
   const [addUserLoading, setAddUserLoading] = useState(false);
+
+  // Edit user
+  const [editUser, setEditUser] = useState<AdminUser | null>(null);
+  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', email: '', role: 'user', plan: 'free' });
+  const [editLoading, setEditLoading] = useState(false);
 
   // Subscriptions
   const [subTab, setSubTab] = useState<SubTab>('all');
@@ -106,7 +126,7 @@ const AdminPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Sidebar indicator
-  const navSections: Section[] = ['users', 'subscriptions', 'alerts'];
+  const navSections: Section[] = ['users', 'subscriptions', 'alerts', 'testimonials'];
   const activeIndex = navSections.indexOf(section);
   const navRef = useRef<HTMLDivElement>(null);
   const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -188,7 +208,24 @@ const AdminPage: React.FC = () => {
 
   useEffect(() => {
     setSidebarOpen(false);
-  }, [section]);
+    if (!authError && section === 'testimonials') {
+      setTestimonialsLoading(true);
+      getDocs(query(collection(db, 'testimonials'), where('approved', '==', false)))
+        .then(snap => setPendingTestimonials(snap.docs.map(d => ({ id: d.id, ...d.data() as Omit<TestimonialDoc, 'id'> }))))
+        .catch((err) => console.error('Testimonials fetch error:', err))
+        .finally(() => setTestimonialsLoading(false));
+    }
+  }, [section, authError]);
+
+  const handleApproveTestimonial = async (id: string) => {
+    await updateDoc(doc(db, 'testimonials', id), { approved: true });
+    setPendingTestimonials(prev => prev.filter(t => t.id !== id));
+  };
+
+  const handleRejectTestimonial = async (id: string) => {
+    await deleteDoc(doc(db, 'testimonials', id));
+    setPendingTestimonials(prev => prev.filter(t => t.id !== id));
+  };
 
   const handleDeleteUser = async (id: string) => {
     try {
@@ -229,6 +266,26 @@ const AdminPage: React.FC = () => {
       showToast('Alerte résolue', 'ok');
       loadAlerts();
     } catch { showToast('Erreur résolution alerte', 'err'); }
+  };
+
+  const openEditUser = (user: AdminUser) => {
+    setEditUser(user);
+    setEditForm({ firstName: user.firstName || '', lastName: user.lastName || '', email: user.email, role: user.role || 'user', plan: user.plan });
+  };
+
+  const handleEditUser = async () => {
+    if (!editUser) return;
+    setEditLoading(true);
+    try {
+      await updateAdminUser(editUser.id, editForm);
+      showToast('Utilisateur mis à jour', 'ok');
+      setEditUser(null);
+      loadUsers();
+    } catch (err: any) {
+      showToast(err?.response?.data?.message || 'Erreur mise à jour', 'err');
+    } finally {
+      setEditLoading(false);
+    }
   };
 
   const handleAddUser = async () => {
@@ -315,6 +372,77 @@ const AdminPage: React.FC = () => {
         <div className="adm-lightbox" onClick={() => setPreviewUrl(null)}>
           <button className="adm-lightbox__close" onClick={() => setPreviewUrl(null)}>✕</button>
           <img src={previewUrl} alt="Carte étudiante" onClick={e => e.stopPropagation()} />
+        </div>
+      )}
+
+      {/* Edit user modal */}
+      {editUser && (
+        <div className="adm-modal-overlay" onClick={() => setEditUser(null)}>
+          <div className="adm-add-user-modal" onClick={e => e.stopPropagation()}>
+            <div className="adm-add-user-modal__header">
+              <h2 className="adm-add-user-modal__title">Modifier l'utilisateur</h2>
+              <button className="adm-add-user-modal__close" onClick={() => setEditUser(null)}>✕</button>
+            </div>
+
+            <div className="adm-add-user-modal__row">
+              <div className="adm-add-user-modal__field">
+                <label>Prénom</label>
+                <input
+                  type="text"
+                  value={editForm.firstName}
+                  onChange={e => setEditForm(f => ({ ...f, firstName: e.target.value }))}
+                />
+              </div>
+              <div className="adm-add-user-modal__field">
+                <label>Nom</label>
+                <input
+                  type="text"
+                  value={editForm.lastName}
+                  onChange={e => setEditForm(f => ({ ...f, lastName: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="adm-add-user-modal__field">
+              <label>E-mail</label>
+              <input
+                type="email"
+                value={editForm.email}
+                onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+
+            <div className="adm-add-user-modal__row">
+              <div className="adm-add-user-modal__field">
+                <label>Rôle</label>
+                <select value={editForm.role} onChange={e => setEditForm(f => ({ ...f, role: e.target.value }))}>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div className="adm-add-user-modal__field">
+                <label>Plan</label>
+                <select value={editForm.plan} onChange={e => setEditForm(f => ({ ...f, plan: e.target.value }))}>
+                  <option value="free">Free</option>
+                  <option value="premium">Premium</option>
+                  <option value="student">Campus</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="adm-add-user-modal__actions">
+              <button className="adm-add-user-modal__btn adm-add-user-modal__btn--cancel" onClick={() => setEditUser(null)}>
+                Annuler
+              </button>
+              <button
+                className="adm-add-user-modal__btn adm-add-user-modal__btn--create"
+                onClick={handleEditUser}
+                disabled={editLoading}
+              >
+                {editLoading ? '…' : 'Enregistrer'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -440,14 +568,14 @@ const AdminPage: React.FC = () => {
             className="max-chat__nav-indicator"
             style={{ transform: `translateY(${indicatorTop}px)`, opacity: indicatorReady ? 1 : 0 }}
           />
-          {(['users', 'subscriptions', 'alerts'] as Section[]).map((s, i) => (
+          {(['users', 'subscriptions', 'alerts', 'testimonials'] as Section[]).map((s, i) => (
             <button
               key={s}
               ref={el => { btnRefs.current[i] = el; }}
               className={`max-chat__nav-button${section === s ? ' max-chat__nav-button--active' : ''}`}
               onClick={() => setSection(s)}
             >
-              {s === 'users' ? 'Utilisateurs' : s === 'subscriptions' ? 'Abonnements' : 'Alertes Crise'}
+              {s === 'users' ? 'Utilisateurs' : s === 'subscriptions' ? 'Abonnements' : s === 'alerts' ? 'Alertes Crise' : 'Témoignages'}
             </button>
           ))}
         </nav>
@@ -560,6 +688,16 @@ const AdminPage: React.FC = () => {
                       <td>{formatDate(user.createdAt)}</td>
                       <td>
                         <div className="adm-actions">
+                          <button
+                            className="adm-icon-btn"
+                            title="Modifier"
+                            onClick={() => openEditUser(user)}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                          </button>
                           <button
                             className="adm-icon-btn adm-icon-btn--danger"
                             title="Supprimer"
@@ -854,6 +992,42 @@ const AdminPage: React.FC = () => {
                     <div className="adm-alert-card__time">{formatDateTime(alert.detectedAt)}</div>
                     <div className="adm-alert-card__message">
                       "{alert.messageContent.slice(0, 120)}{alert.messageContent.length > 120 ? '...' : ''}"
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {/* ── TESTIMONIALS ── */}
+        {section === 'testimonials' && (
+          <div className="adm-section">
+            <div className="adm-section__header">
+              <h2>Témoignages en attente</h2>
+            </div>
+            {testimonialsLoading ? (
+              <div className="adm-spinner" />
+            ) : pendingTestimonials.length === 0 ? (
+              <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '2rem' }}>Aucun témoignage en attente de validation.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+                {pendingTestimonials.map(t => (
+                  <div key={t.id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                    {t.photoUrl ? (
+                      <img src={t.photoUrl} alt={t.firstName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #DAE63D' }} />
+                    ) : (
+                      <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#161a4d,#470059)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DAE63D', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
+                        {`${t.firstName?.[0] || '?'}${t.lastName?.[0] || ''}`.toUpperCase()}
+                      </div>
+                    )}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, color: '#fff' }}>{t.firstName} {t.lastName} — {t.age} ans</div>
+                      <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem' }}>{t.email}</div>
+                      <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.5, margin: 0 }}>"{t.text.slice(0, 200)}{t.text.length > 200 ? '…' : ''}"</p>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flexShrink: 0 }}>
+                      <button className="adm-btn adm-btn--resolve" onClick={() => handleApproveTestimonial(t.id)}>Approuver</button>
+                      <button className="adm-btn adm-btn--danger" onClick={() => handleRejectTestimonial(t.id)}>Rejeter</button>
                     </div>
                   </div>
                 ))}

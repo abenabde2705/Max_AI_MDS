@@ -1,4 +1,4 @@
-import { getToken, removeToken } from '../utils/token';
+import { getToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -123,15 +123,6 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
       setActiveSection(href.replace('#', ''));
       setIsMenuOpen(false);
     }
-  };
-
-  const _logout = (): void => {
-    removeToken();
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userId');
-    setIsLoggedIn(false);
-    window.location.reload();
   };
 
   return (
