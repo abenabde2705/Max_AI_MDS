@@ -227,6 +227,7 @@ const Profile: React.FC = () => {
 
   const handleLogout = () => {
     removeToken();
+    localStorage.removeItem('name');
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
@@ -553,7 +554,7 @@ const Profile: React.FC = () => {
                 <p className="profile-account-action__title">Déconnexion</p>
                 <p className="profile-account-action__sub">Se déconnecter de votre compte</p>
               </div>
-              <button className="profile-btn profile-btn--outline" onClick={handleLogout}>
+              <button className="profile-btn profile-btn--danger" onClick={handleLogout}>
                 Deconnexion
               </button>
             </div>

@@ -6066,13 +6066,14 @@ color: #F2F5FF;
 }
 
 .profile-btn--danger {
-  background: transparent;
-  border: 1.5px solid #DAE63D;
-  color: #DAE63D;
+  background: #e74c3c;
+  border: 1.5px solid #e74c3c;
+  color: #ffffff;
 }
 
 .profile-btn--danger:hover {
-  background: rgba(231, 76, 60, 0.1);
+  background: #c0392b;
+  border-color: #c0392b;
 }
 
 .profile-btn--sm {
