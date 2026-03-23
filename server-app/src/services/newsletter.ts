@@ -36,7 +36,7 @@ export const getContactStatus = async (email: string): Promise<boolean> => {
   const res = await fetch(`${BREVO_API_URL}/contacts/${encodeURIComponent(email)}`, {
     headers: { 'api-key': apiKey() },
   });
-  if (!res.ok) return false;
+  if (!res.ok) { return false; }
   const data = await res.json() as { listIds?: number[] };
   return (data.listIds || []).includes(listId());
 };
