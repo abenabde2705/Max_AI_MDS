@@ -22,7 +22,12 @@ export default defineConfig(({ command, mode }) => {
         usePolling: true,
       },
       host: true,
-      allowedHosts: ['dev.maxai-mds.fr', 'localhost'],
+      allowedHosts: [
+        'dev.maxai-mds.fr',
+        'maxai-mds.fr',      
+        'www.maxai-mds.fr', 
+        'localhost'
+      ],
       port: 5173,
       strictPort: true,
     },
