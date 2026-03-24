@@ -15,9 +15,11 @@ export const setToken = (token: string, remember: boolean): void => {
     sessionStorage.setItem('token', token);
     localStorage.removeItem('token');
   }
+  window.dispatchEvent(new Event('storage'));
 };
 
 export const removeToken = (): void => {
   localStorage.removeItem('token');
   sessionStorage.removeItem('token');
+  window.dispatchEvent(new Event('storage'));
 };

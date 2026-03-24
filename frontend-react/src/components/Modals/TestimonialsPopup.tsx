@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db, uploadToStorage } from '../../firebaseConfig';
+import { fetchUserProfile } from '../../services/chat.api';
+import { getToken } from '../../utils/token';
 import { Check, X } from 'lucide-react';
 import '../FeedbackModal.css';
 
@@ -17,14 +19,49 @@ const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, 
   const [age, setAge] = useState('');
   const [email, setEmail] = useState('');
   const [testimonialText, setTestimonialText] = useState('');
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  useEffect(() => {
+    if (!isOpen || !getToken()) return;
+    fetchUserProfile()
+      .then(res => {
+        const u = res.data;
+        if (u.firstName) setFirstName(u.firstName);
+        if (u.lastName) setLastName(u.lastName);
+        if (u.email) setEmail(u.email);
+        if (u.dateOfBirth && !age) {
+          const calculated = new Date().getFullYear() - new Date(u.dateOfBirth).getFullYear();
+          if (calculated > 0 && calculated < 120) setAge(String(calculated));
+        }
+      })
+      .catch(() => {
+        const saved = localStorage.getItem('userEmail');
+        if (saved) setEmail(saved);
+      });
+  }, [isOpen]);
 
   const closePopup = () => {
     if (isSubmitting) return;
     setFirstName(''); setLastName(''); setAge(''); setEmail(''); setTestimonialText('');
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhoto(null); setPhotoPreview(null);
     setStatus(null);
     onClose();
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setStatus({ type: 'error', message: 'La photo ne doit pas dépasser 5 Mo' });
+      return;
+    }
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
   };
 
   const validateEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
@@ -40,12 +77,21 @@ const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, 
     try {
       setIsSubmitting(true);
       setStatus(null);
+
+      let photoUrl: string | null = null;
+      if (photo) {
+        const ext = photo.name.split('.').pop() ?? 'jpg';
+        photoUrl = await uploadToStorage(photo, `testimonials/${Date.now()}/photo.${ext}`);
+      }
+
       await addDoc(collection(db, 'testimonials'), {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         age: Number(age),
         email: email.trim(),
         text: testimonialText.trim(),
+        photoUrl,
+        approved: false,
         createdAt: serverTimestamp(),
       });
       setStatus({ type: 'success', message: 'Merci pour votre témoignage !' });
@@ -142,6 +188,21 @@ const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, 
               rows={4}
               disabled={isSubmitting}
             />
+          </div>
+
+          <div className="feedback-field">
+            <label className="feedback-label" htmlFor="tp-photo">Photo de profil <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>(optionnel)</span></label>
+            <input
+              id="tp-photo"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handlePhotoChange}
+              disabled={isSubmitting}
+              style={{ color: 'inherit' }}
+            />
+            {photoPreview && (
+              <img src={photoPreview} alt="Aperçu" style={{ marginTop: '0.5rem', width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '2px solid #DAE63D' }} />
+            )}
           </div>
 
           <div className="feedback-actions">

@@ -1,0 +1,26 @@
+name: max_ai_mds_prod
+
+services:
+  backend:
+    container_name: maxai-backend-prod
+
+  web:
+    container_name: maxai-frontend-react-prod
+
+  postgres:
+    container_name: maxai-postgres-prod
+
+  adminer:
+    container_name: maxai-adminer-prod
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  ollama:
+    container_name: maxai-ollama-prod
+    ports:
+      - "127.0.0.1:11434:11434"
+
+  chat_api:
+    container_name: maxai-chat-api-prod
+    ports:
+      - "127.0.0.1:8000:8000"

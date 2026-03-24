@@ -1469,9 +1469,16 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.2;
-  margin: 0;
+  margin: 0 0 0.6rem 0;
   color: #DAE63D;
   letter-spacing: 1px;
+}
+
+.newsletter-subtitle {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
 }
 
 .newsletter-description {
@@ -1492,22 +1499,30 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
   flex: 1;
   padding: 1rem 1.5rem;
   border-radius: 50px;
-  border: none;
-  background-color: white;
+  border: none !important;
+  background-color: #fff !important;
   font-size: 1rem;
-  color: #333;
+  color: #333 !important;
   outline: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .newsletter-input:focus {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
+  background-color: #fff !important;
+  border-color: transparent !important;
+  color: #333 !important;
 }
 
 .newsletter-input::placeholder {
   color: #999;
+}
+
+.newsletter-email-display {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  background-color: #fff;
+  color: #333;
+  font-size: 1rem;
 }
 
 .newsletter-button {
@@ -1541,13 +1556,13 @@ background: linear-gradient(180deg, #161A4D 0%, #470059 69.71%, #651E79 100%);
 .privacy-notice {
   font-size: 0.95rem;
   color: #ffffff;
-  margin: 0.5rem 0 0 0;
+  margin: -1rem 0 0 0;
   text-align: left;
 }
 
 .privacy-link {
   color: #ffffff;
-  text-decoration: none;
+  text-decoration: underline;
   transition: color 0.2s ease;
   font-weight: 600;
 }
@@ -2447,6 +2462,19 @@ color: #FFFFFF;
   font-family: 'Ubuntu', sans-serif;
   color: rgba(255, 255, 255, 0.75);
   font-size: 0.875rem;
+}
+
+.testimonial-avatar-initials {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #161a4d, #470059);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #DAE63D;
+  letter-spacing: 2px;
 }
 
 @media (max-width: 768px) {
@@ -6142,13 +6170,14 @@ color: #F2F5FF;
 }
 
 .profile-btn--danger {
-  background: transparent;
-  border: 1.5px solid #DAE63D;
-  color: #DAE63D;
+  background: #e74c3c;
+  border: 1.5px solid #e74c3c;
+  color: #ffffff;
 }
 
 .profile-btn--danger:hover {
-  background: rgba(231, 76, 60, 0.1);
+  background: #c0392b;
+  border-color: #c0392b;
 }
 
 .profile-btn--sm {

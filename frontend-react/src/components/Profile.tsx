@@ -12,8 +12,8 @@ const EyeOff = () => (
   </svg>
 );
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Camera } from 'lucide-react';
-import { fetchCurrentSubscription, cancelSubscription, createPortalSession } from '../services/chat.api';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus } from '../services/chat.api';
 
 interface UserProfile {
   firstName: string;
@@ -49,9 +49,9 @@ const Profile: React.FC = () => {
   const [formData, setFormData] = useState<UserProfile>(user);
   const [notifications, setNotifications] = useState({
     email: true,
-    sms: true,
     newsletter: false,
   });
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -110,6 +110,13 @@ const Profile: React.FC = () => {
           if (subData.success && subData.data) {
             setSubscription(subData.data);
           }
+        }
+
+        try {
+          const { data: nlData } = await fetchNewsletterStatus();
+          setNotifications(prev => ({ ...prev, newsletter: nlData.subscribed }));
+        } catch {
+          // silently ignore
         }
       } catch (error) {
         console.error('Erreur lors du chargement du profil:', error);
@@ -227,14 +234,32 @@ const Profile: React.FC = () => {
 
   const handleLogout = () => {
     removeToken();
+    localStorage.removeItem('name');
     localStorage.removeItem('userName');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
     navigate('/auth');
   };
 
-  const toggleNotification = (key: keyof typeof notifications) => {
-    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleNotification = async (key: keyof typeof notifications) => {
+    if (key === 'newsletter') {
+      setNewsletterLoading(true);
+      const newValue = !notifications.newsletter;
+      try {
+        if (newValue) {
+          await subscribeNewsletter(user.email);
+        } else {
+          await unsubscribeNewsletter();
+        }
+        setNotifications(prev => ({ ...prev, newsletter: newValue }));
+      } catch {
+        // silently ignore, keep current state
+      } finally {
+        setNewsletterLoading(false);
+      }
+    } else {
+      setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+    }
   };
 
   if (loading) {
@@ -263,9 +288,6 @@ const Profile: React.FC = () => {
         <div className="profile-avatar-card">
           <div className="profile-avatar-card__avatar">
             <span>{getInitials()}</span>
-            <button className="profile-avatar-card__edit-btn">
-              <Camera size={14} />
-            </button>
           </div>
           <div className="profile-avatar-card__info">
             <h2 className="profile-avatar-card__name">
@@ -457,11 +479,6 @@ const Profile: React.FC = () => {
                   <CheckCircle size={16} style={{ marginRight: 8 }} />Mot de passe mis à jour
                 </div>
               )}
-              <div className="profile-security__divider" />
-              <div className="profile-security__row profile-security__row--2fa">
-                <span className="profile-security__label">Authentification à deux facteurs</span>
-                <button className="profile-btn profile-btn--outline profile-btn--sm">Activer</button>
-              </div>
             </div>
 
             {/* Abonnement */}
@@ -530,7 +547,6 @@ const Profile: React.FC = () => {
             <div className="profile-notifications">
               {[
                 { key: 'email' as const, label: 'Notifications par email' },
-                { key: 'sms' as const, label: 'Notifications SMS' },
                 { key: 'newsletter' as const, label: 'Newsletter MAX' },
               ].map(({ key, label }) => (
                 <div key={key} className="profile-notifications__row">
@@ -538,6 +554,7 @@ const Profile: React.FC = () => {
                   <button
                     className={`profile-toggle ${notifications[key] ? 'profile-toggle--on' : ''}`}
                     onClick={() => toggleNotification(key)}
+                    disabled={key === 'newsletter' && newsletterLoading}
                   >
                     <span className="profile-toggle__thumb" />
                   </button>
@@ -553,7 +570,7 @@ const Profile: React.FC = () => {
                 <p className="profile-account-action__title">Déconnexion</p>
                 <p className="profile-account-action__sub">Se déconnecter de votre compte</p>
               </div>
-              <button className="profile-btn profile-btn--outline" onClick={handleLogout}>
+              <button className="profile-btn profile-btn--danger" onClick={handleLogout}>
                 Deconnexion
               </button>
             </div>
