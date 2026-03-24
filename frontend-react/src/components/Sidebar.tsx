@@ -4,9 +4,13 @@ import { Button } from '@/ui/components/Button';
 import { Icon } from '@/ui/icons';
 import LogoMax from '@/assets/img/logomax.png';
 import { usePremium } from '@/context/PremiumContext';
+import { useChatContext } from '@/context/ChatContext';
 
 interface SidebarProps {
   onCreateNewConversation: () => void
+  onOpenHistoric: () => void
+  isOpen: boolean
+  onClose: () => void
 }
 
 const navItems = [
@@ -16,10 +20,11 @@ const navItems = [
   { path: '/coaches',    label: 'Coachs',       premium: true  },
 ];
 
-export default function Sidebar({ onCreateNewConversation: _onCreateNewConversation }: SidebarProps) {
+export default function Sidebar({ onCreateNewConversation, onOpenHistoric, isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { isPremium, loading } = usePremium();
+  const { createNewConversation, setIsHistoricOpen } = useChatContext();
 
   const activeIndex = navItems.findIndex(item => item.path === location.pathname);
 
@@ -40,7 +45,9 @@ export default function Sidebar({ onCreateNewConversation: _onCreateNewConversat
   }, [activeIndex]);
 
   return (
-    <aside className="max-chat__sidebar">
+    <>
+      {isOpen && <div className="max-chat__sidebar-overlay" onClick={onClose} />}
+      <aside className={`max-chat__sidebar${isOpen ? ' max-chat__sidebar--open' : ''}`}>
       <div className="max-chat__logo">
         <button
           className="max-chat__logo-icon"
@@ -67,7 +74,14 @@ export default function Sidebar({ onCreateNewConversation: _onCreateNewConversat
               key={item.path}
               ref={(el) => { buttonRefs.current[i] = el; }}
               className={`max-chat__nav-button ${activeIndex === i ? 'max-chat__nav-button--active' : ''} ${isLocked ? 'max-chat__nav-button--locked' : ''}`}
-              onClick={() => isLocked ? navigate('/#title') : navigate(item.path)}
+              onClick={() => {
+                if (isLocked) {
+                  navigate('/#title');
+                } else {
+                  navigate(item.path);
+                }
+                onClose();
+              }}
               title={isLocked ? 'Fonctionnalité réservée aux membres Premium' : undefined}
             >
               {item.label}
@@ -77,7 +91,17 @@ export default function Sidebar({ onCreateNewConversation: _onCreateNewConversat
         })}
       </nav>
 
-      
+      <div className="max-chat__sidebar-actions">
+        <Button fullWidth className="max-chat__sidebar-action-button" variant="primary" onClick={() => { createNewConversation(); onClose(); }}>
+          <Icon name="add" size="sm" />
+          Nouvelle conversation
+        </Button>
+        <Button fullWidth className="max-chat__sidebar-action-button" variant="outline" onClick={() => { setIsHistoricOpen(true); onClose(); }}>
+          <Icon name="historic" size="sm" />
+          Historique
+        </Button>
+      </div>
+
       <div className="max-chat__premium">
         {!loading && !isPremium && (
           <Button fullWidth className="max-chat__premium-button" variant="primary" onClick={() => navigate('/#title')}>Passez Premium</Button>
@@ -85,6 +109,7 @@ export default function Sidebar({ onCreateNewConversation: _onCreateNewConversat
         <p className="max-chat__premium-note">Vos échanges restent confidentiels et sécurisés</p>
       </div>
      
-    </aside>
+      </aside>
+    </>
   );
 }

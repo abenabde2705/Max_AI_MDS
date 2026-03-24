@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/ui/components/Button';
+import { useOutletContext } from 'react-router-dom';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import './styles/Coaches.css';
 
@@ -66,10 +67,22 @@ const coaches: Coach[] = [
 ];
 
 export default function Coaches() {
+  const { toggleSidebar } = useOutletContext<{ toggleSidebar: () => void }>();
+
   return (
     <main className="max-chat__main">
       <header className="max-chat__header">
         <div className="max-chat__header-left">
+          <button
+            type="button"
+            className="max-chat__menu-burger"
+            aria-label="Ouvrir le menu"
+            onClick={toggleSidebar}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
           <div className="max-chat__header-avatar">
             <img src={LogoYellow} alt="MAX Logo" />
           </div>

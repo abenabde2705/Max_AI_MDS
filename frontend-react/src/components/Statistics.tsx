@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import { fetchConversationStats, fetchJournalEntries } from '@/services/chat.api';
 import './styles/Statistics.css';
@@ -30,6 +31,7 @@ const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dima
 const dayEmojis = ['😊', '😌', '😊', '😢', '😌', '😊', '😐'];
 
 export default function Statistics() {
+  const { toggleSidebar } = useOutletContext<{ toggleSidebar: () => void }>();
   const [stats, setStats] = useState<StatCard[]>([]);
   const [emotionStats, setEmotionStats] = useState<EmotionStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,6 +100,16 @@ export default function Statistics() {
     <main className="max-chat__main">
       <header className="max-chat__header">
         <div className="max-chat__header-left">
+          <button
+            type="button"
+            className="max-chat__menu-burger"
+            aria-label="Ouvrir le menu"
+            onClick={toggleSidebar}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
           <div className="max-chat__header-avatar">
             <img src={LogoYellow} alt="MAX Logo" />
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { Icon } from '@/ui/icons';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import { fetchJournalEntries, deleteJournalEntry } from '@/services/chat.api';
@@ -43,6 +44,7 @@ function toDisplayEntry(raw: { id: string; mood: string; description: string; ta
 }
 
 export default function EmotionalJournal() {
+  const { toggleSidebar } = useOutletContext<{ toggleSidebar: () => void }>();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,6 +76,16 @@ export default function EmotionalJournal() {
     <main className="max-chat__main">
       <header className="max-chat__header">
         <div className="max-chat__header-left">
+          <button
+            type="button"
+            className="max-chat__menu-burger"
+            aria-label="Ouvrir le menu"
+            onClick={toggleSidebar}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
           <div className="max-chat__header-avatar">
             <img src={LogoYellow} alt="MAX Logo" />
           </div>
