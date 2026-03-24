@@ -3,10 +3,10 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import TestimonialsPopup from './Modals/TestimonialsPopup';
 import { getToken } from '../utils/token';
-import testi1 from '../assets/img/valeurs/testi1.png';
-import testi3 from '../assets/img/valeurs/testi3.png';
-import jour1 from '../assets/img/valeurs/JOUR_1.webp';
-import jour2 from '../assets/img/valeurs/JOUR_2.webp';
+import sophie from '../assets/img/valeurs/sophie.png';
+import lucas from '../assets/img/valeurs/lucas.png';
+import emma from '../assets/img/valeurs/emma.png';
+import thomas from '../assets/img/valeurs/thomas.png';
 
 interface Testimonial {
   quote: string;
@@ -21,10 +21,10 @@ interface TestimonialsSectionProps {
 }
 
 const FALLBACK: Testimonial[] = [
-  { quote: 'Max a changé la manière dont je gère mon anxiété. Je me sens enfin écouté.', author: 'Sophie, 20 ans', photoUrl: testi1, initials: 'SL' },
-  { quote: 'Grâce à Max, je ne me sens plus seul dans les moments difficiles.', author: 'Lucas, 28 ans', photoUrl: jour1, initials: 'LB' },
-  { quote: 'Avec Max, j\'ai enfin trouvé une oreille attentive, sans jugement. Ça change tout.', author: 'Emma, 18 ans', photoUrl: testi3, initials: 'EM' },
-  { quote: 'Max est toujours là, même quand personne d\'autre ne peut l\'être. C\'est rassurant.', author: 'Thomas, 23 ans', photoUrl: jour2, initials: 'TM' },
+  { quote: 'Max a changé la manière dont je gère mon anxiété. Je me sens enfin écouté.', author: 'Sophie, 20 ans', photoUrl: sophie, initials: 'SL' },
+  { quote: 'Grâce à Max, je ne me sens plus seul dans les moments difficiles.', author: 'Lucas, 28 ans', photoUrl: lucas, initials: 'LB' },
+  { quote: 'Avec Max, j\'ai enfin trouvé une oreille attentive, sans jugement. Ça change tout.', author: 'Emma, 18 ans', photoUrl: emma, initials: 'EM' },
+  { quote: 'Max est toujours là, même quand personne d\'autre ne peut l\'être. C\'est rassurant.', author: 'Thomas, 23 ans', photoUrl: thomas, initials: 'TM' },
 ];
 
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className }) => {
