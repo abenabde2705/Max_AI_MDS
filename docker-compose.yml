@@ -1,3 +1,5 @@
+name: max_ai_mds_dev
+
 services:
   postgres:
     image: postgres:15

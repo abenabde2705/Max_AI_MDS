@@ -1,0 +1,14 @@
+name: max_ai_mds_prod
+
+services:
+  backend:
+    container_name: maxai-backend-prod
+
+  web:
+    container_name: maxai-frontend-react-prod
+
+  postgres:
+    container_name: maxai-postgres-prod
+
+  adminer:
+    container_name: maxai-adminer-prod
