@@ -15,8 +15,6 @@ export default function ChatLayout() {
     <ChatProvider>
       <div className="max-chat">
         <Sidebar
-          onCreateNewConversation={() => {}}
-          onOpenHistoric={() => {}}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />

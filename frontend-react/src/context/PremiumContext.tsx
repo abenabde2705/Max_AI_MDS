@@ -1,4 +1,4 @@
-import { getToken, removeToken } from '../utils/token';
+import { getToken } from '../utils/token';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { fetchCurrentSubscription } from '../services/chat.api';
 

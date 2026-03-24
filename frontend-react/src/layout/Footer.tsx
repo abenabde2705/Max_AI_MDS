@@ -1,4 +1,4 @@
-import { getToken, removeToken } from '../utils/token';
+import { getToken } from '../utils/token';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import FeedbackModal from '../components/FeedbackModal';
