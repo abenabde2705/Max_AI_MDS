@@ -167,11 +167,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Vercel (Frontend PROD)
-        uses: amondnet/vercel-action@51e96c0edc22e3591e392b3b29f5a3b4fb87a89f
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./frontend-react
-          vercel-args: '--prod'
+          ssh-private-key: ${{ secrets.DEV_VPS_SSH_KEY }}
+
+      - name: Deploy on VPS (PROD)
+        run: |
+          ssh -o StrictHostKeyChecking=no -p 22 ${{ secrets.DEV_VPS_USER }}@${{ secrets.DEV_VPS_HOST }} "
+            set -e
+            cd ${{ secrets.PROD_VPS_PATH }}
+            git fetch origin
+            git checkout main
+            git pull origin main
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d --force-recreate
+          "
