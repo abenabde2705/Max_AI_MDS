@@ -54,8 +54,6 @@ services:
     restart: always
     volumes:
       - ollama_data:/root/.ollama
-    ports:
-      - "127.0.0.1:11435:11434"   # Accessible uniquement via SSH tunnel, jamais public
     networks:
       - default
 
@@ -69,9 +67,6 @@ services:
       - OLLAMA_HOST=http://ollama:11434
     depends_on:
       - ollama
-     # Lié à 127.0.0.1 uniquement — accessible via SSH tunnel pour le dev local, jamais public
-    ports:
-      - "127.0.0.1:8001:8000"
     networks:
       - default
 
@@ -79,8 +74,6 @@ services:
     image: adminer
     container_name: maxai-adminer
     restart: always
-    ports:
-      - "127.0.0.1:8081:8080"   # Uniquement local, jamais public
     networks:
       - default
 
