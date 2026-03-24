@@ -1,3 +1,5 @@
+name: max_ai_mds_dev
+
 services:
   postgres:
     image: postgres:15
@@ -43,8 +45,6 @@ services:
     networks:
       - web
       - default
-    ports:
-      - "5173:5173"
     labels:
       - "traefik.enable=true"
 
@@ -55,7 +55,7 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     ports:
-      - "127.0.0.1:11434:11434"   # Accessible uniquement via SSH tunnel, jamais public
+      - "127.0.0.1:11435:11434"   # Accessible uniquement via SSH tunnel, jamais public
     networks:
       - default
 
@@ -71,7 +71,7 @@ services:
       - ollama
      # Lié à 127.0.0.1 uniquement — accessible via SSH tunnel pour le dev local, jamais public
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8001:8000"
     networks:
       - default
 
@@ -80,7 +80,7 @@ services:
     container_name: maxai-adminer
     restart: always
     ports:
-      - "127.0.0.1:8080:8080"   # Uniquement local, jamais public
+      - "127.0.0.1:8081:8080"   # Uniquement local, jamais public
     networks:
       - default
 
