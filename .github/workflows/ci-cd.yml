@@ -148,7 +148,7 @@ jobs:
             cd ${{ secrets.DEV_VPS_PATH }}
             git fetch origin
             git checkout dev
-            git pull origin dev
+            git reset --hard origin/dev
             docker compose down
             docker compose build --no-cache
             docker compose up -d --force-recreate
@@ -179,7 +179,7 @@ jobs:
             cd ${{ secrets.PROD_VPS_PATH }}
             git fetch origin
             git checkout main
-            git pull origin main
+            git reset --hard origin/main
             docker compose -f docker-compose.yml -f docker-compose.prod.yml down
             docker compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
             docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate
