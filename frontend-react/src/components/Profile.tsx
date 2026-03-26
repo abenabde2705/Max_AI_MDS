@@ -48,7 +48,6 @@ const Profile: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<UserProfile>(user);
   const [notifications, setNotifications] = useState({
-    email: true,
     newsletter: false,
   });
   const [newsletterLoading, setNewsletterLoading] = useState(false);
@@ -257,8 +256,6 @@ const Profile: React.FC = () => {
       } finally {
         setNewsletterLoading(false);
       }
-    } else {
-      setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
     }
   };
 
@@ -543,23 +540,18 @@ const Profile: React.FC = () => {
 
           {/* Notifications */}
           <div className="profile-card">
-            <h3 className="profile-card__title">Notifictaions</h3>
+            <h3 className="profile-card__title">Notifications</h3>
             <div className="profile-notifications">
-              {[
-                { key: 'email' as const, label: 'Notifications par email' },
-                { key: 'newsletter' as const, label: 'Newsletter MAX' },
-              ].map(({ key, label }) => (
-                <div key={key} className="profile-notifications__row">
-                  <span className="profile-notifications__label">{label}</span>
-                  <button
-                    className={`profile-toggle ${notifications[key] ? 'profile-toggle--on' : ''}`}
-                    onClick={() => toggleNotification(key)}
-                    disabled={key === 'newsletter' && newsletterLoading}
-                  >
-                    <span className="profile-toggle__thumb" />
-                  </button>
-                </div>
-              ))}
+              <div className="profile-notifications__row">
+                <span className="profile-notifications__label">Newsletter MAX</span>
+                <button
+                  className={`profile-toggle ${notifications.newsletter ? 'profile-toggle--on' : ''}`}
+                  onClick={() => toggleNotification('newsletter')}
+                  disabled={newsletterLoading}
+                >
+                  <span className="profile-toggle__thumb" />
+                </button>
+              </div>
             </div>
           </div>
 
