@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction, Application } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -188,6 +189,8 @@ connectDB().then(() => {
 });
 
 // Middlewares
+app.use(helmet());
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
 
 app.use(
@@ -227,6 +230,7 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
+        sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));

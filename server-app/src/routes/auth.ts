@@ -168,6 +168,11 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
       return;
     }
 
+    if (password.length < 8) {
+      res.status(400).json({ message: 'Le mot de passe doit contenir au moins 8 caractères' });
+      return;
+    }
+
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ 
       where: { email: email.toLowerCase() } 
@@ -680,19 +685,17 @@ router.post('/request-email-verification', authenticateToken, async (req: Authen
 
  
 
-    const verificationToken = jwt.sign(
+    const _verificationToken = jwt.sign(
       { userId: user.id, type: 'email_verification' },
       process.env.JWT_SECRET!,
       { expiresIn: '24h' }
     );
 
     // TODO: Envoyer email avec le token
-    // await sendVerificationEmail(user.email, verificationToken);
+    // await sendVerificationEmail(user.email, _verificationToken);
 
-    res.json({ 
-      message: 'Email de vérification envoyé',
-      // En développement, retourner le token pour tester
-      ...(process.env.NODE_ENV === 'development' && { verificationToken })
+    res.json({
+      message: 'Email de vérification envoyé'
     });
   } catch (error) {
     console.error('Erreur envoi vérification email:', error);
@@ -826,10 +829,8 @@ router.post('/request-password-reset', passwordResetRateLimit, async (req: Reque
       token: resetToken,
     }).catch(err => console.error('Erreur envoi email reset password:', err));
 
-    res.json({ 
-      message: successMessage,
-      // En développement, retourner le token pour tester
-      ...(process.env.NODE_ENV === 'development' && { resetToken })
+    res.json({
+      message: successMessage
     });
   } catch (error) {
     console.error('Erreur demande reset password:', error);
@@ -877,8 +878,8 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
       return;
     }
 
-    if (newPassword.length < 6) {
-      res.status(400).json({ message: 'Le mot de passe doit contenir au moins 6 caractères' });
+    if (newPassword.length < 8) {
+      res.status(400).json({ message: 'Le mot de passe doit contenir au moins 8 caractères' });
       return;
     }
 
@@ -950,7 +951,7 @@ router.post('/refresh-token', authenticateToken, async (req: AuthenticatedReques
         email: user.email
       },
       process.env.JWT_SECRET!,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     res.json({ 
