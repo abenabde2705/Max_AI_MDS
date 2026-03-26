@@ -14,6 +14,7 @@ const EyeOff = () => (
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus } from '../services/chat.api';
+import { useBirthDate } from '../context/BirthDateContext';
 
 interface UserProfile {
   firstName: string;
@@ -34,6 +35,7 @@ interface SubscriptionInfo {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { setBirthDate: setContextBirthDate } = useBirthDate();
   const [user, setUser] = useState<UserProfile>({
     firstName: '',
     lastName: '',
@@ -161,6 +163,7 @@ const Profile: React.FC = () => {
 
       if (response.ok) {
         setUser(formData);
+        if (formData.birthDate) setContextBirthDate(formData.birthDate);
         localStorage.setItem('name', `${formData.firstName} ${formData.lastName}`.trim());
         window.dispatchEvent(new Event('storage'));
         setEditMode(false);
@@ -339,27 +342,15 @@ const Profile: React.FC = () => {
                   type="email"
                 />
               </div>
-              <div className="profile-form__row">
-                <div className="profile-form__field">
-                  <label className="profile-form__label">Téléphone</label>
-                  <input
-                    className="profile-form__input"
-                    value={editMode ? formData.phone || '' : user.phone || ''}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    disabled={!editMode}
-                    placeholder="+33 6 00 00 00 00"
-                  />
-                </div>
-                <div className="profile-form__field">
-                  <label className="profile-form__label">Date de naissance</label>
-                  <input
-                    className="profile-form__input"
-                    value={editMode ? formData.birthDate || '' : user.birthDate || ''}
-                    onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                    disabled={!editMode}
-                    type="date"
-                  />
-                </div>
+              <div className="profile-form__field profile-form__field--full">
+                <label className="profile-form__label">Date de naissance</label>
+                <input
+                  className="profile-form__input"
+                  value={editMode ? formData.birthDate || '' : user.birthDate || ''}
+                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                  disabled={!editMode}
+                  type="date"
+                />
               </div>
               <div className="profile-form__actions">
                 {editMode ? (

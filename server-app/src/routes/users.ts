@@ -43,14 +43,19 @@ router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Resp
       return;
     }
 
-    // Retourner les informations de l'utilisateur (déjà dans req.user grâce au middleware)
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      res.status(404).json({ message: 'Utilisateur introuvable' });
+      return;
+    }
+
     res.json({
-      id: req.user.id,
-      email: req.user.email,
-      username: req.user.username,
-      firstname: req.user.firstname,
-      lastname: req.user.lastname,
-      is_premium: req.user.is_premium,
+      id: user.id,
+      email: user.email,
+      firstname: user.firstName,
+      lastname: user.lastName,
+      is_premium: user.isPremium,
+      birthDate: user.birthDate || null,
     });
   } catch (error: unknown) {
     console.error('Erreur lors de la récupération du profil:', error);
@@ -103,6 +108,44 @@ router.get('/me/message-count', authenticateToken, async (req: AuthenticatedRequ
     console.error('Erreur lors du comptage des messages:', error);
     const message = error instanceof Error ? error.message : 'Erreur inconnue';
     res.status(500).json({ message: 'Erreur interne du serveur', error: message });
+  }
+});
+
+/**
+ * PATCH /api/users/me/birth-date - Enregistrer la date de naissance
+ */
+router.patch('/me/birth-date', authenticateToken, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Utilisateur non authentifié' });
+      return;
+    }
+
+    const { birthDate } = req.body;
+    if (!birthDate) {
+      res.status(400).json({ message: 'Date de naissance requise' });
+      return;
+    }
+
+    const date = new Date(birthDate);
+    if (isNaN(date.getTime())) {
+      res.status(400).json({ message: 'Date invalide' });
+      return;
+    }
+
+    const ageMins = 13;
+    const minDate = new Date();
+    minDate.setFullYear(minDate.getFullYear() - ageMins);
+    if (date > minDate) {
+      res.status(400).json({ message: `Vous devez avoir au moins ${ageMins} ans` });
+      return;
+    }
+
+    await User.update({ birthDate }, { where: { id: req.user.id } });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erreur mise à jour birth_date:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 

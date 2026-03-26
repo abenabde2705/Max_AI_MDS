@@ -389,6 +389,7 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
         lastName: user.getDataValue('lastName'),
         email: user.getDataValue('email'),
         age: user.getDataValue('age'),
+        birthDate: user.getDataValue('birthDate') || null,
         isPremium: user.getDataValue('isPremium'),
         role: user.getDataValue('role') || 'user',
         createdAt: user.getDataValue('createdAt'),
@@ -414,13 +415,14 @@ router.put('/profile', authenticateToken, async (req: UpdateProfileRequest, res:
       return;
     }
 
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, email, birthDate } = req.body;
     const userId = req.user.id;
 
-    const updateData: Partial<{ firstName: string; lastName: string; email: string }> = {};
+    const updateData: Partial<{ firstName: string; lastName: string; email: string; birthDate: string }> = {};
     if (firstName) {updateData.firstName = firstName;}
     if (lastName) {updateData.lastName = lastName;}
     if (email) {updateData.email = email.toLowerCase();}
+    if (birthDate) {updateData.birthDate = birthDate;}
 
     const [updatedCount] = await User.update(updateData, {
       where: { id: userId }

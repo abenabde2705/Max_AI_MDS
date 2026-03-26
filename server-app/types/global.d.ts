@@ -33,6 +33,7 @@ export interface UserAttributes {
   firstName?: string;
   lastName?: string;
   age?: number;
+  birthDate?: string;
   lastLogin?: Date;
   googleId?: string;
   facebookId?: string;
