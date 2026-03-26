@@ -23,6 +23,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const location = useLocation();
   const { isPremium, loading } = usePremium();
   const { createNewConversation, setIsHistoricOpen } = useChatContext();
+  const isChatRoute = location.pathname === '/chatbot';
 
   const activeIndex = navItems.findIndex(item => item.path === location.pathname);
 
@@ -89,16 +90,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </nav>
 
-        <div className="max-chat__sidebar-actions">
-          <Button fullWidth className="max-chat__sidebar-action-button" variant="primary" onClick={() => { createNewConversation(); onClose(); }}>
-            <Icon name="add" size="sm" />
-          Nouvelle conversation
-          </Button>
-          <Button fullWidth className="max-chat__sidebar-action-button" variant="outline" onClick={() => { setIsHistoricOpen(true); onClose(); }}>
-            <Icon name="historic" size="sm" />
-          Historique
-          </Button>
-        </div>
+        {isChatRoute && (
+          <div className="max-chat__sidebar-actions">
+            <Button fullWidth className="max-chat__sidebar-action-button" variant="primary" onClick={() => { createNewConversation(); onClose(); }}>
+              <Icon name="add" size="sm" />
+              Nouvelle conversation
+            </Button>
+            <Button fullWidth className="max-chat__sidebar-action-button" variant="outline" onClick={() => { setIsHistoricOpen(true); onClose(); }}>
+              <Icon name="historic" size="sm" />
+              Historique
+            </Button>
+          </div>
+        )}
 
         <div className="max-chat__premium">
           {!loading && !isPremium && (
