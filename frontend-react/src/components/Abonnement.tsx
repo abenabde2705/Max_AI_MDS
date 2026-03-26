@@ -67,9 +67,9 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               description="Version D'essai"
               features={[
            
-                'Limite De 10 Échanges Par Jour',
+                'Limité à 10 échanges par jour ',
                 '',
-                'Écoute active et bienveillante',
+                'Écoute active et adaptée à vous',
                 '',
                 'Disponibilité 24h/24 & 7j/7',
                 '',
@@ -92,10 +92,10 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
                 '',
                 'Statistiques Bien-Être',
                 '',
-                'Recommandation De Professionnels (Coach)',
+                'Recommandation de professionnels adaptés à vos besoins',
               
                 '',
-                'Journal Émotionnel Simple',
+                'Journal Émotionnel',
                 '',
                 'Accès prioritaire aux nouvelles fonctions'
               ]}
@@ -114,7 +114,7 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               description="Tarif réduit spécial étudiants"
               features={[
 
-                'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
+                'Accès complet à la Formule Premium, au tarif étudiant',
               ]}
               buttonText={studentButtonText}
               buttonStyle="campus"
