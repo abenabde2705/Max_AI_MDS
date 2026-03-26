@@ -13,7 +13,7 @@ interface AbonnementProps {
 
 const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   const [loadingPlan, setLoadingPlan] = useState<'premium' | 'student' | null>(null);
-  const { isPremium } = usePremium();
+  const { plan } = usePremium();
   const [studentModalOpen, setStudentModalOpen] = useState(false);
   const [prices, setPrices] = useState<{ premium: string; student: string }>({
     premium: '14,99 €',
@@ -49,6 +49,8 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
 
   const premiumButtonText = loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium';
   const studentButtonText = loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant';
+  const isPremiumActive = plan === 'premium';
+  const isStudentActive = plan === 'student';
 
   return (
     <>
@@ -100,9 +102,9 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               buttonText={premiumButtonText}
               buttonStyle="primary"
               highlight={true}
-              onClick={handlePremiumCheckout}
-              disabled={loadingPlan !== null}
-              isActive={isPremium}
+              onClick={isPremiumActive ? undefined : handlePremiumCheckout}
+              disabled={loadingPlan !== null || isPremiumActive}
+              isActive={isPremiumActive}
             />
 
             <PlanCard
@@ -116,9 +118,9 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               ]}
               buttonText={studentButtonText}
               buttonStyle="campus"
-              onClick={handleStudentPlan}
-              disabled={loadingPlan !== null}
-              isActive={isPremium}
+              onClick={isStudentActive ? undefined : handleStudentPlan}
+              disabled={loadingPlan !== null || isStudentActive}
+              isActive={isStudentActive}
             />
           </div>
         </div>

@@ -6,16 +6,19 @@ type Plan = 'free' | 'premium' | 'student';
 
 interface PremiumContextValue {
   isPremium: boolean;
+  plan: Plan;
   loading: boolean;
 }
 
 const PremiumContext = createContext<PremiumContextValue>({
   isPremium: false,
+  plan: 'free',
   loading: true,
 });
 
 export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isPremium, setIsPremium] = useState(false);
+  const [plan, setPlan] = useState<Plan>('free');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,17 +29,16 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     fetchCurrentSubscription()
       .then(({ data }) => {
-        const plan: Plan = data?.data?.plan ?? 'free';
-        console.log('[PremiumContext] subscription data:', data);
-        console.log('[PremiumContext] plan:', plan, '| isPremium:', plan !== 'free');
-        setIsPremium(plan !== 'free');
+        const currentPlan: Plan = data?.data?.plan ?? 'free';
+        setPlan(currentPlan);
+        setIsPremium(currentPlan !== 'free');
       })
-      .catch(() => setIsPremium(false))
+      .catch(() => { setPlan('free'); setIsPremium(false); })
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <PremiumContext.Provider value={{ isPremium, loading }}>
+    <PremiumContext.Provider value={{ isPremium, plan, loading }}>
       {children}
     </PremiumContext.Provider>
   );
