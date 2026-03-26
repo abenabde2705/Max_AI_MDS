@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchCurrentSubscription } from '../services/chat.api';
+import { usePremium } from '../context/PremiumContext';
 
 const SuccessPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const { refresh } = usePremium();
 
   const [plan, setPlan] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,7 @@ const SuccessPage: React.FC = () => {
         if (data.success && data.data?.plan) {
           setPlan(data.data.plan);
           setLoading(false);
+          await refresh();
           return;
         }
       } catch {
