@@ -36,7 +36,6 @@ export interface UserAttributes {
   birthDate?: string;
   lastLogin?: Date;
   googleId?: string;
-  facebookId?: string;
   resetToken?: string;
   resetTokenExpiry?: Date;
   createdAt: Date;

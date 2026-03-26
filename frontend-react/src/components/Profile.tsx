@@ -20,7 +20,6 @@ interface UserProfile {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
   birthDate?: string;
   plan?: string;
   createdAt?: string;
@@ -40,7 +39,6 @@ const Profile: React.FC = () => {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
     birthDate: '',
     plan: 'Free',
     createdAt: '',
@@ -92,7 +90,6 @@ const Profile: React.FC = () => {
             firstName: userData.firstName || userData.firstname || '',
             lastName: userData.lastName || userData.lastname || '',
             email: userData.email || '',
-            phone: userData.phone || '',
             birthDate: userData.birthDate || userData.birth_date || '',
             plan: userData.plan || 'Free',
             createdAt: userData.createdAt || userData.created_at || '',
@@ -156,7 +153,6 @@ const Profile: React.FC = () => {
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
-          phone: formData.phone,
           birthDate: formData.birthDate,
         }),
       });

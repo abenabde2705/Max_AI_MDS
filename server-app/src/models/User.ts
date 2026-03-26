@@ -22,7 +22,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public age?: number;
   public birthDate?: string;
   public googleId?: string;
-  public facebookId?: string;
   public lastLogin?: Date;
   public resetToken?: string;
   public resetTokenExpiry?: Date;
@@ -141,12 +140,6 @@ User.init({
     type: DataTypes.STRING,
     allowNull: true,
     field: 'google_id',
-    unique: true
-  },
-  facebookId: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'facebook_id',
     unique: true
   },
   lastLogin: {

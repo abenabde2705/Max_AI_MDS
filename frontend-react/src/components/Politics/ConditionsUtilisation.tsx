@@ -50,7 +50,7 @@ const ConditionsUtilisation: React.FC = () => {
             <p>L&apos;utilisation de Max nécessite la création d&apos;un compte personnel. Pour s&apos;inscrire, l&apos;utilisateur doit :</p>
             <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
               <li>Être âgé d&apos;au moins 13 ans ;</li>
-              <li>Fournir une adresse email valide et un mot de passe sécurisé, ou s&apos;authentifier via Google ou Facebook ;</li>
+              <li>Fournir une adresse email valide et un mot de passe sécurisé, ou s&apos;authentifier via Google ;</li>
               <li>Accepter les présentes CGU et la Politique de confidentialité.</li>
             </ul>
             <p style={{ marginTop: '0.75rem' }}>
