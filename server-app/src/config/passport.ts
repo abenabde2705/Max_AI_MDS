@@ -36,12 +36,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           } else if (!user.googleId) {
             // Associer le compte Google à un compte existant
             user.googleId = profile.id;
-            user.lastLogin = new Date();
             await user.save();
             await user.reload();
-          } else {
-            // Utilisateur existant avec Google — mise à jour last_login
-            await user.update({ lastLogin: new Date() });
           }
 
           return done(null, user);

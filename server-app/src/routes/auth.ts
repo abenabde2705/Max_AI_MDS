@@ -41,7 +41,7 @@ interface RegisterRequest extends Request {
         lastName: string;
         email: string;
         password: string;
-        age: string | number;
+        birthDate?: string;
     };
 }
 
@@ -1013,6 +1013,9 @@ router.get('/google/callback',
         res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=no_user_id`);
         return;
       }
+
+      // Mettre à jour lastLogin (méthode statique, plus fiable que via l'instance passport)
+      await User.update({ lastLogin: new Date() }, { where: { id: userId } });
 
       // Générer un token JWT
       const token = generateToken(userId);
