@@ -394,7 +394,7 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
         role: user.getDataValue('role') || 'user',
         createdAt: user.getDataValue('createdAt'),
         lastLogin: user.getDataValue('lastLogin'),
-        isOAuthAccount: !!(user.getDataValue('googleId') || user.getDataValue('facebookId'))
+        isOAuthAccount: !!user.getDataValue('googleId')
       }
     });
   } catch (error: unknown) {
@@ -498,8 +498,8 @@ router.put('/change-password', authenticateToken, async (req: ChangePasswordRequ
       return;
     }
 
-    if (user.getDataValue('googleId') || user.getDataValue('facebookId')) {
-      res.status(403).json({ message: 'Les comptes connectés via Google ou Facebook ne peuvent pas modifier leur mot de passe ici.' });
+    if (user.getDataValue('googleId')) {
+      res.status(403).json({ message: 'Les comptes connectés via Google ne peuvent pas modifier leur mot de passe ici.' });
       return;
     }
 
@@ -1032,66 +1032,6 @@ router.get('/google/callback',
   }
 );
 
-/**
- * @swagger
- * /api/auth/facebook:
- *   get:
- *     summary: Authentification via Facebook OAuth
- *     tags: [Authentication]
- *     responses:
- *       302:
- *         description: Redirection vers Facebook pour l'authentification
- */
-router.get('/facebook',
-  passport.authenticate('facebook', { 
-    scope: ['email'] 
-  })
-);
-
-/**
- * @swagger
- * /api/auth/facebook/callback:
- *   get:
- *     summary: Callback Facebook OAuth
- *     tags: [Authentication]
- *     responses:
- *       302:
- *         description: Redirection vers le dashboard avec le token
- */
-router.get('/facebook/callback',
-  passport.authenticate('facebook', { 
-    failureRedirect: process.env.FRONTEND_URL || 'http://localhost:5173',
-    session: false 
-  }),
-  async (req: Request, res: Response) => {
-    try {
-      const user = req.user as any;
-      
-      if (!user) {
-        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=auth_failed`);
-        return;
-      }
-
-      // Récupérer l'ID de l'utilisateur (Sequelize peut retourner l'objet différemment)
-      const userId = user.id || user.dataValues?.id || user.get?.('id') || user.getDataValue?.('id');
-      
-      if (!userId) {
-        console.error('Impossible de récupérer l\'ID utilisateur Facebook');
-        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=no_user_id`);
-        return;
-      }
-
-      // Générer un token JWT
-      const token = generateToken(userId);
-
-      // Rediriger vers le frontend avec le token
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);
-    } catch (error) {
-      console.error('Erreur Facebook callback:', error);
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=server_error`);
-    }
-  }
-);
 
 /**
  * POST /auth/set-password
