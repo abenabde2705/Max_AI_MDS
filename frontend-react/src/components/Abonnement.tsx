@@ -47,8 +47,8 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
     setStudentModalOpen(true);
   };
 
-  const premiumButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium';
-  const studentButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant';
+  const premiumButtonText = loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium';
+  const studentButtonText = loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant';
 
   return (
     <>
@@ -100,8 +100,9 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               buttonText={premiumButtonText}
               buttonStyle="primary"
               highlight={true}
-              onClick={isPremium ? undefined : handlePremiumCheckout}
-              disabled={isPremium || loadingPlan !== null}
+              onClick={handlePremiumCheckout}
+              disabled={loadingPlan !== null}
+              isActive={isPremium}
             />
 
             <PlanCard
@@ -115,8 +116,9 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               ]}
               buttonText={studentButtonText}
               buttonStyle="campus"
-              onClick={isPremium ? undefined : handleStudentPlan}
-              disabled={isPremium || loadingPlan !== null}
+              onClick={handleStudentPlan}
+              disabled={loadingPlan !== null}
+              isActive={isPremium}
             />
           </div>
         </div>

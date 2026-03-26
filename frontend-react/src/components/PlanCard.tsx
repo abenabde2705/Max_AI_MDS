@@ -11,6 +11,7 @@ interface PlanCardProps {
   highlight?: boolean;
   onClick?: () => void;
   disabled?: boolean;
+  isActive?: boolean;
 }
 
 const PlanCard: React.FC<PlanCardProps> = ({
@@ -23,7 +24,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
   buttonStyle = 'primary',
   highlight = false,
   onClick,
-  disabled = false
+  disabled = false,
+  isActive = false
 }) => {
   return (
     <div className={`plan-card ${highlight ? 'highlight' : ''} ${buttonStyle}`}>
@@ -47,14 +49,18 @@ const PlanCard: React.FC<PlanCardProps> = ({
         ))}
       </ul>
 
-      {buttonText && (
-        <button
-          className={`plan-button ${buttonStyle}`}
-          onClick={onClick}
-          disabled={disabled}
-        >
-          {buttonText}
-        </button>
+      {isActive ? (
+        <div className="plan-active-badge">Plan actif</div>
+      ) : (
+        buttonText && (
+          <button
+            className={`plan-button ${buttonStyle}`}
+            onClick={onClick}
+            disabled={disabled}
+          >
+            {buttonText}
+          </button>
+        )
       )}
     </div>
   );

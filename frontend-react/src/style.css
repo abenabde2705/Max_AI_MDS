@@ -2119,6 +2119,21 @@ color: #FFFFFF;
   box-shadow: none !important;
 }
 
+.plan-active-badge {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  cursor: default;
+  letter-spacing: 0.03em;
+}
+
 @media (max-width: 1024px) {
   .plans-container {
     gap: 2rem;

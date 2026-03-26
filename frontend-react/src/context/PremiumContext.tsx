@@ -27,6 +27,8 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({ child
     fetchCurrentSubscription()
       .then(({ data }) => {
         const plan: Plan = data?.data?.plan ?? 'free';
+        console.log('[PremiumContext] subscription data:', data);
+        console.log('[PremiumContext] plan:', plan, '| isPremium:', plan !== 'free');
         setIsPremium(plan !== 'free');
       })
       .catch(() => setIsPremium(false))

@@ -54,9 +54,10 @@ const App: React.FC = () => {
         theme="dark"
       />
       <CookieBanner />
+      <PremiumProvider>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route element={<ProtectedRoute element={<PremiumProvider><ChatLayout /></PremiumProvider>} />}>
+        <Route element={<ProtectedRoute element={<ChatLayout />} />}>
           <Route path="/chatbot" element={<Chat />} />
           <Route path="/journal" element={<PremiumRoute element={<EmotionalJournal />} />} />
           <Route path="/statistics" element={<PremiumRoute element={<Statistics />} />} />
@@ -76,6 +77,7 @@ const App: React.FC = () => {
         <Route path="/politics/politique-confidentialites" element={<PolitiqueConfidentialites />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </PremiumProvider>
     </BrowserRouter>
   );
 };
