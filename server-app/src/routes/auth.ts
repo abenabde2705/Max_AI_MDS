@@ -158,10 +158,10 @@ interface AuthenticatedRequest extends Request {
  */
 router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Response): Promise<void> => {
   try {
-    const { firstName, lastName, email, password, age } = req.body;
+    const { firstName, lastName, email, password, birthDate } = req.body;
 
     // Validation des données
-    if (!firstName || !lastName || !email || !password || !age) {
+    if (!firstName || !lastName || !email || !password) {
       res.status(400).json({
         message: 'Tous les champs sont requis'
       });
@@ -191,8 +191,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
       lastName,
       email: email.toLowerCase(),
       password: password, // Le modèle hashera automatiquement via le beforeSave hook
-      age: Number.parseInt(age.toString(), 10),
-      isAnonymous: false,
+      birthDate: birthDate || null,
       isPremium: false
     });
 
@@ -212,8 +211,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
         id: user.getDataValue('id'),
         firstName: user.getDataValue('firstName'),
         lastName: user.getDataValue('lastName'),
-        email: user.getDataValue('email'),
-        age: user.getDataValue('age')
+        email: user.getDataValue('email')
       }
     });
 
@@ -316,7 +314,7 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
     // Trouver l'utilisateur
     const user = await User.findOne({ 
       where: { email: email.toLowerCase() },
-      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isAnonymous', 'isPremium', 'age', 'lastLogin', 'createdAt', 'updatedAt'] // Spécifier tous les champs
+      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isPremium', 'lastLogin', 'createdAt', 'updatedAt']
     });
     
     if (!user) {
@@ -350,7 +348,6 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
         firstName: user.getDataValue('firstName'),
         lastName: user.getDataValue('lastName'),
         email: user.getDataValue('email'),
-        age: user.getDataValue('age'),
         isPremium: user.getDataValue('isPremium')
       }
     });
@@ -388,7 +385,6 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
         firstName: user.getDataValue('firstName'),
         lastName: user.getDataValue('lastName'),
         email: user.getDataValue('email'),
-        age: user.getDataValue('age'),
         birthDate: user.getDataValue('birthDate') || null,
         isPremium: user.getDataValue('isPremium'),
         role: user.getDataValue('role') || 'user',
@@ -451,7 +447,6 @@ router.put('/profile', authenticateToken, async (req: UpdateProfileRequest, res:
         firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
         email: updatedUser.email,
-        age: updatedUser.age,
         isPremium: updatedUser.isPremium
       }
     });
@@ -636,7 +631,6 @@ router.post('/create-admin', authenticateToken, requireAdmin, async (req: Reques
       lastName,
       email: email.toLowerCase(),
       password,
-      isAnonymous: false,
       isPremium: true // Les admins sont automatiquement premium
     });
 

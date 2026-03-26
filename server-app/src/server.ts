@@ -31,6 +31,7 @@ import { up as migration008 } from './migrations/008-create-crisis-alerts.js';
 import { up as migration009 } from './migrations/009-add-reset-token.js';
 import { up as migration010 } from './migrations/010-create-stripe-webhook-events.js';
 import { up as migration011 } from './migrations/011-add-birth-date.js';
+import { up as migration012 } from './migrations/012-drop-unused-columns.js';
 import { startSubscriptionExpiryJob } from './jobs/subscriptionExpiry.js';
 
 // Monitoring imports
@@ -149,6 +150,7 @@ const runMigrations = async (): Promise<void> => {
         { name: '009', fn: () => migration009(qi, sequelize.constructor as any) },
         { name: '010', fn: () => migration010(qi, sequelize.constructor as any) },
         { name: '011', fn: () => migration011(qi, sequelize.constructor as any) },
+        { name: '012', fn: () => migration012(qi, sequelize.constructor as any) },
     ];
 
     for (const migration of migrations) {

@@ -129,12 +129,6 @@ const AuthUser: React.FC = () => {
 
         navigate('/profile');
       } else {
-        // Calculer l'âge à partir de la date de naissance
-        const birthDate = new Date(form.birthDate);
-        const ageDiffMs = Date.now() - birthDate.getTime();
-        const ageDate = new Date(ageDiffMs);
-        const age = Math.abs(ageDate.getUTCFullYear() - 1970);
-
         const response = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
           headers: {
@@ -143,7 +137,7 @@ const AuthUser: React.FC = () => {
           body: JSON.stringify({
             firstName: form.firstName,
             lastName: form.lastName,
-            age: age,
+            birthDate: form.birthDate,
             email: form.email,
             password: form.password
           })

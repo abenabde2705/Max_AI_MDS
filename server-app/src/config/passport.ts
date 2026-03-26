@@ -25,21 +25,25 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
               lastName: profile.name?.familyName || '',
               email: profile.emails?.[0]?.value || '',
               googleId: profile.id,
-              isAnonymous: false,
               isPremium: false,
+              lastLogin: new Date(),
             }, {
               validate: false // Désactiver les validations pour OAuth
             });
-            
+
             // Recharger l'utilisateur pour s'assurer que toutes les propriétés sont disponibles
             await user.reload();
           } else if (!user.googleId) {
             // Associer le compte Google à un compte existant
             user.googleId = profile.id;
+            user.lastLogin = new Date();
             await user.save();
             await user.reload();
+          } else {
+            // Utilisateur existant avec Google — mise à jour last_login
+            await user.update({ lastLogin: new Date() });
           }
-         
+
           return done(null, user);
         } catch (error) {
           console.error('Google strategy error:', error);

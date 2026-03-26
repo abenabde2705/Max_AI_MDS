@@ -99,7 +99,7 @@ const AdminPage: React.FC = () => {
   const [usersLoading, setUsersLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [showAddUser, setShowAddUser] = useState(false);
-  const [addUserForm, setAddUserForm] = useState({ firstName: '', lastName: '', email: '', dateOfBirth: '', phone: '', plan: 'free' });
+  const [addUserForm, setAddUserForm] = useState({ firstName: '', lastName: '', email: '', dateOfBirth: '', plan: 'free' });
   const [addUserLoading, setAddUserLoading] = useState(false);
 
   // Edit user
@@ -320,7 +320,7 @@ const AdminPage: React.FC = () => {
       });
       showToast('Utilisateur créé avec succès', 'ok');
       setShowAddUser(false);
-      setAddUserForm({ firstName: '', lastName: '', email: '', dateOfBirth: '', phone: '', plan: 'free' });
+      setAddUserForm({ firstName: '', lastName: '', email: '', dateOfBirth: '', plan: 'free' });
       loadUsers();
     } catch (err: any) {
       showToast(err?.response?.data?.message || 'Erreur création utilisateur', 'err');
@@ -508,16 +508,6 @@ const AdminPage: React.FC = () => {
                 type="date"
                 value={addUserForm.dateOfBirth}
                 onChange={e => setAddUserForm(f => ({ ...f, dateOfBirth: e.target.value }))}
-              />
-            </div>
-
-            <div className="adm-add-user-modal__field">
-              <label>Téléphone</label>
-              <input
-                type="tel"
-                placeholder="+33 6 00 00 00 00"
-                value={addUserForm.phone}
-                onChange={e => setAddUserForm(f => ({ ...f, phone: e.target.value }))}
               />
             </div>
 
