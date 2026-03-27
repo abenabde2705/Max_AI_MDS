@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { PremiumProvider, usePremium } from './context/PremiumContext';
+import { BirthDateProvider } from './context/BirthDateContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,6 +21,7 @@ import Statistics from './components/Statistics';
 import Coaches from './components/Coaches';
 import ChatLayout from './components/ChatLayout';
 import AdminPage from './components/AdminPage';
+import Onboarding from './components/Onboarding';
 import SetPassword from './components/SetPassword';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
@@ -54,28 +56,33 @@ const App: React.FC = () => {
         theme="dark"
       />
       <CookieBanner />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route element={<ProtectedRoute element={<PremiumProvider><ChatLayout /></PremiumProvider>} />}>
-          <Route path="/chatbot" element={<Chat />} />
-          <Route path="/journal" element={<PremiumRoute element={<EmotionalJournal />} />} />
-          <Route path="/statistics" element={<PremiumRoute element={<Statistics />} />} />
-          <Route path="/coaches" element={<PremiumRoute element={<Coaches />} />} />
-        </Route>
-        <Route path="/auth" element={<AuthUser />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-        <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
-        <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
-        <Route path="/admin" element={<ProtectedRoute element={<AdminPage />} />} />
+      <BirthDateProvider>
+        <PremiumProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route element={<ProtectedRoute element={<ChatLayout />} />}>
+              <Route path="/chatbot" element={<Chat />} />
+              <Route path="/journal" element={<PremiumRoute element={<EmotionalJournal />} />} />
+              <Route path="/statistics" element={<PremiumRoute element={<Statistics />} />} />
+              <Route path="/coaches" element={<PremiumRoute element={<Coaches />} />} />
+            </Route>
+            <Route path="/auth" element={<AuthUser />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+            <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+            <Route path="/admin" element={<ProtectedRoute element={<AdminPage />} />} />
 
-        <Route path="/set-password" element={<SetPassword />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/success" element={<SuccessPage />} />
-        <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
-        <Route path="/politics/politique-confidentialites" element={<PolitiqueConfidentialites />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+            <Route path="/onboarding" element={<ProtectedRoute element={<Onboarding />} />} />
+            <Route path="/set-password" element={<SetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/success" element={<SuccessPage />} />
+            <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
+            <Route path="/politics/politique-confidentialites" element={<PolitiqueConfidentialites />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </PremiumProvider>
+      </BirthDateProvider>
     </BrowserRouter>
   );
 };

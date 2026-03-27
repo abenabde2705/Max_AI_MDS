@@ -60,7 +60,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         req.user = {
             id: user.getDataValue('id'),
             email: user.getDataValue('email'),
-            username: user.getDataValue('pseudonym') || '',
+            username: '',
             firstname: user.getDataValue('firstName'),
             lastname: user.getDataValue('lastName'),
             is_premium: user.getDataValue('isPremium'),
@@ -118,7 +118,7 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
             req.user = {
                 id: user.getDataValue('id'),
                 email: user.getDataValue('email'),
-                username: user.getDataValue('pseudonym') || '',
+                username: '',
                 firstname: user.getDataValue('firstName'),
                 lastname: user.getDataValue('lastName'),
                 is_premium: user.getDataValue('isPremium'),

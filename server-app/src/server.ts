@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction, Application } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -29,6 +30,8 @@ import { up as migration007 } from './migrations/007-add-user-role-and-stripe.js
 import { up as migration008 } from './migrations/008-create-crisis-alerts.js';
 import { up as migration009 } from './migrations/009-add-reset-token.js';
 import { up as migration010 } from './migrations/010-create-stripe-webhook-events.js';
+import { up as migration011 } from './migrations/011-add-birth-date.js';
+import { up as migration012 } from './migrations/012-drop-unused-columns.js';
 import { startSubscriptionExpiryJob } from './jobs/subscriptionExpiry.js';
 
 // Monitoring imports
@@ -146,6 +149,8 @@ const runMigrations = async (): Promise<void> => {
         { name: '008', fn: () => migration008(qi, sequelize.constructor as any) },
         { name: '009', fn: () => migration009(qi, sequelize.constructor as any) },
         { name: '010', fn: () => migration010(qi, sequelize.constructor as any) },
+        { name: '011', fn: () => migration011(qi, sequelize.constructor as any) },
+        { name: '012', fn: () => migration012(qi, sequelize.constructor as any) },
     ];
 
     for (const migration of migrations) {
@@ -188,6 +193,8 @@ connectDB().then(() => {
 });
 
 // Middlewares
+app.use(helmet());
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
 
 app.use(
@@ -227,6 +234,7 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
+        sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));

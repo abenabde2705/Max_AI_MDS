@@ -17,6 +17,9 @@ export const fetchConversations = () =>
 export const fetchUserProfile = () =>
   axios.get(`${API_BASE}/users/me`, { headers: getAuthHeaders() });
 
+export const fetchAuthProfile = () =>
+  axios.get(`${API_BASE}/auth/profile`, { headers: getAuthHeaders() });
+
 export const fetchMessages = (conversationId: string) =>
   axios.get(`${API_BASE}/messages?conversation_id=${conversationId}`, {
     headers: getAuthHeaders(),
@@ -121,3 +124,6 @@ export const unsubscribeNewsletter = () =>
 
 export const fetchNewsletterStatus = () =>
   axios.get(`${API_BASE}/newsletter/status`, { headers: getAuthHeaders() });
+
+export const saveBirthDate = (birthDate: string) =>
+  axios.patch(`${API_BASE}/users/me/birth-date`, { birthDate }, { headers: getAuthHeaders() });

@@ -129,13 +129,6 @@ router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request
       return;
     }
 
-    let age: number | null = null;
-    if (dateOfBirth) {
-      const birth = new Date(dateOfBirth);
-      const diff = Date.now() - birth.getTime();
-      age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-    }
-
     const resetToken = uuidv4();
     const resetTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
@@ -143,8 +136,7 @@ router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request
       firstName,
       lastName,
       email: email.toLowerCase(),
-      age: age ?? 18,
-      isAnonymous: false,
+      birthDate: dateOfBirth || null,
       isPremium: false,
       resetToken,
       resetTokenExpiry,

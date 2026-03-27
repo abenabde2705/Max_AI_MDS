@@ -2119,6 +2119,21 @@ color: #FFFFFF;
   box-shadow: none !important;
 }
 
+.plan-active-badge {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  cursor: default;
+  letter-spacing: 0.03em;
+}
+
 @media (max-width: 1024px) {
   .plans-container {
     gap: 2rem;
@@ -7431,3 +7446,104 @@ color: #F2F5FF;
 
 .set-pwd__eye:hover,
 .auth-eye:hover { color: #9c59ff; }
+
+
+/* ===========================
+   Onboarding Page
+   =========================== */
+.onboarding {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a0035 100%);
+  padding: 2rem;
+}
+
+.onboarding__card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+
+.onboarding__logo {
+  width: 64px;
+  margin: 0 auto 1.5rem;
+}
+
+.onboarding__title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.onboarding__subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.onboarding__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+.onboarding__label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.onboarding__input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.onboarding__input:focus {
+  border-color: #dae63d;
+}
+
+.onboarding__input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.onboarding__error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+}
+
+.onboarding__btn {
+  margin-top: 0.5rem;
+  padding: 0.85rem;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #dae63d 0%, #b8c832 100%);
+  color: #1a0025;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.onboarding__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

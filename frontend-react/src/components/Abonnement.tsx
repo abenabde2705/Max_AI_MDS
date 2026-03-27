@@ -13,7 +13,7 @@ interface AbonnementProps {
 
 const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
   const [loadingPlan, setLoadingPlan] = useState<'premium' | 'student' | null>(null);
-  const { isPremium } = usePremium();
+  const { plan } = usePremium();
   const [studentModalOpen, setStudentModalOpen] = useState(false);
   const [prices, setPrices] = useState<{ premium: string; student: string }>({
     premium: '14,99 €',
@@ -47,8 +47,10 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
     setStudentModalOpen(true);
   };
 
-  const premiumButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium';
-  const studentButtonText = isPremium ? 'Abonnement actif' : loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant';
+  const premiumButtonText = loadingPlan === 'premium' ? 'Chargement...' : 'S\'abonner Premium';
+  const studentButtonText = loadingPlan === 'student' ? 'Chargement...' : 'S\'abonner en tant qu\'étudiant';
+  const isPremiumActive = plan === 'premium';
+  const isStudentActive = plan === 'student';
 
   return (
     <>
@@ -65,9 +67,9 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               description="Version D'essai"
               features={[
            
-                'Limite De 10 Échanges Par Jour',
+                'Limité à 10 échanges par jour ',
                 '',
-                'Écoute active et bienveillante',
+                'Écoute active et adaptée à vous',
                 '',
                 'Disponibilité 24h/24 & 7j/7',
                 '',
@@ -90,18 +92,19 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
                 '',
                 'Statistiques Bien-Être',
                 '',
-                'Recommandation De Professionnels (Coach)',
+                'Recommandation de professionnels adaptés à vos besoins',
               
                 '',
-                'Journal Émotionnel Simple',
+                'Journal Émotionnel',
                 '',
                 'Accès prioritaire aux nouvelles fonctions'
               ]}
               buttonText={premiumButtonText}
               buttonStyle="primary"
               highlight={true}
-              onClick={isPremium ? undefined : handlePremiumCheckout}
-              disabled={isPremium || loadingPlan !== null}
+              onClick={isPremiumActive ? undefined : handlePremiumCheckout}
+              disabled={loadingPlan !== null || isPremiumActive}
+              isActive={isPremiumActive}
             />
 
             <PlanCard
@@ -111,12 +114,13 @@ const Abonnement: React.FC<AbonnementProps> = ({ className: _className }) => {
               description="Tarif réduit spécial étudiants"
               features={[
 
-                'Accès Complet À l\'offre Premium Pour Tous Les Étudiants Concernés',
+                'Accès complet à la Formule Premium, au tarif étudiant',
               ]}
               buttonText={studentButtonText}
               buttonStyle="campus"
-              onClick={isPremium ? undefined : handleStudentPlan}
-              disabled={isPremium || loadingPlan !== null}
+              onClick={isStudentActive ? undefined : handleStudentPlan}
+              disabled={loadingPlan !== null || isStudentActive}
+              isActive={isStudentActive}
             />
           </div>
         </div>

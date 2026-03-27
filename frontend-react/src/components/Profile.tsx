@@ -14,12 +14,12 @@ const EyeOff = () => (
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus } from '../services/chat.api';
+import { useBirthDate } from '../context/BirthDateContext';
 
 interface UserProfile {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
   birthDate?: string;
   plan?: string;
   createdAt?: string;
@@ -34,11 +34,11 @@ interface SubscriptionInfo {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { setBirthDate: setContextBirthDate } = useBirthDate();
   const [user, setUser] = useState<UserProfile>({
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
     birthDate: '',
     plan: 'Free',
     createdAt: '',
@@ -48,7 +48,6 @@ const Profile: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<UserProfile>(user);
   const [notifications, setNotifications] = useState({
-    email: true,
     newsletter: false,
   });
   const [newsletterLoading, setNewsletterLoading] = useState(false);
@@ -91,7 +90,6 @@ const Profile: React.FC = () => {
             firstName: userData.firstName || userData.firstname || '',
             lastName: userData.lastName || userData.lastname || '',
             email: userData.email || '',
-            phone: userData.phone || '',
             birthDate: userData.birthDate || userData.birth_date || '',
             plan: userData.plan || 'Free',
             createdAt: userData.createdAt || userData.created_at || '',
@@ -155,13 +153,13 @@ const Profile: React.FC = () => {
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
-          phone: formData.phone,
           birthDate: formData.birthDate,
         }),
       });
 
       if (response.ok) {
         setUser(formData);
+        if (formData.birthDate) setContextBirthDate(formData.birthDate);
         localStorage.setItem('name', `${formData.firstName} ${formData.lastName}`.trim());
         window.dispatchEvent(new Event('storage'));
         setEditMode(false);
@@ -257,8 +255,6 @@ const Profile: React.FC = () => {
       } finally {
         setNewsletterLoading(false);
       }
-    } else {
-      setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
     }
   };
 
@@ -342,27 +338,15 @@ const Profile: React.FC = () => {
                   type="email"
                 />
               </div>
-              <div className="profile-form__row">
-                <div className="profile-form__field">
-                  <label className="profile-form__label">Téléphone</label>
-                  <input
-                    className="profile-form__input"
-                    value={editMode ? formData.phone || '' : user.phone || ''}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    disabled={!editMode}
-                    placeholder="+33 6 00 00 00 00"
-                  />
-                </div>
-                <div className="profile-form__field">
-                  <label className="profile-form__label">Date de naissance</label>
-                  <input
-                    className="profile-form__input"
-                    value={editMode ? formData.birthDate || '' : user.birthDate || ''}
-                    onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                    disabled={!editMode}
-                    type="date"
-                  />
-                </div>
+              <div className="profile-form__field profile-form__field--full">
+                <label className="profile-form__label">Date de naissance</label>
+                <input
+                  className="profile-form__input"
+                  value={editMode ? formData.birthDate || '' : user.birthDate || ''}
+                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                  disabled={!editMode}
+                  type="date"
+                />
               </div>
               <div className="profile-form__actions">
                 {editMode ? (
@@ -543,23 +527,18 @@ const Profile: React.FC = () => {
 
           {/* Notifications */}
           <div className="profile-card">
-            <h3 className="profile-card__title">Notifictaions</h3>
+            <h3 className="profile-card__title">Notifications</h3>
             <div className="profile-notifications">
-              {[
-                { key: 'email' as const, label: 'Notifications par email' },
-                { key: 'newsletter' as const, label: 'Newsletter MAX' },
-              ].map(({ key, label }) => (
-                <div key={key} className="profile-notifications__row">
-                  <span className="profile-notifications__label">{label}</span>
-                  <button
-                    className={`profile-toggle ${notifications[key] ? 'profile-toggle--on' : ''}`}
-                    onClick={() => toggleNotification(key)}
-                    disabled={key === 'newsletter' && newsletterLoading}
-                  >
-                    <span className="profile-toggle__thumb" />
-                  </button>
-                </div>
-              ))}
+              <div className="profile-notifications__row">
+                <span className="profile-notifications__label">Newsletter MAX</span>
+                <button
+                  className={`profile-toggle ${notifications.newsletter ? 'profile-toggle--on' : ''}`}
+                  onClick={() => toggleNotification('newsletter')}
+                  disabled={newsletterLoading}
+                >
+                  <span className="profile-toggle__thumb" />
+                </button>
+              </div>
             </div>
           </div>
 

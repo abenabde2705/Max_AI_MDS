@@ -41,7 +41,7 @@ interface RegisterRequest extends Request {
         lastName: string;
         email: string;
         password: string;
-        age: string | number;
+        birthDate?: string;
     };
 }
 
@@ -158,13 +158,18 @@ interface AuthenticatedRequest extends Request {
  */
 router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Response): Promise<void> => {
   try {
-    const { firstName, lastName, email, password, age } = req.body;
+    const { firstName, lastName, email, password, birthDate } = req.body;
 
     // Validation des données
-    if (!firstName || !lastName || !email || !password || !age) {
+    if (!firstName || !lastName || !email || !password) {
       res.status(400).json({
         message: 'Tous les champs sont requis'
       });
+      return;
+    }
+
+    if (password.length < 8) {
+      res.status(400).json({ message: 'Le mot de passe doit contenir au moins 8 caractères' });
       return;
     }
 
@@ -186,8 +191,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
       lastName,
       email: email.toLowerCase(),
       password: password, // Le modèle hashera automatiquement via le beforeSave hook
-      age: Number.parseInt(age.toString(), 10),
-      isAnonymous: false,
+      birthDate: birthDate || null,
       isPremium: false
     });
 
@@ -207,8 +211,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
         id: user.getDataValue('id'),
         firstName: user.getDataValue('firstName'),
         lastName: user.getDataValue('lastName'),
-        email: user.getDataValue('email'),
-        age: user.getDataValue('age')
+        email: user.getDataValue('email')
       }
     });
 
@@ -311,7 +314,7 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
     // Trouver l'utilisateur
     const user = await User.findOne({ 
       where: { email: email.toLowerCase() },
-      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isAnonymous', 'isPremium', 'age', 'lastLogin', 'createdAt', 'updatedAt'] // Spécifier tous les champs
+      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isPremium', 'lastLogin', 'createdAt', 'updatedAt']
     });
     
     if (!user) {
@@ -345,7 +348,6 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
         firstName: user.getDataValue('firstName'),
         lastName: user.getDataValue('lastName'),
         email: user.getDataValue('email'),
-        age: user.getDataValue('age'),
         isPremium: user.getDataValue('isPremium')
       }
     });
@@ -383,12 +385,12 @@ router.get('/profile', authenticateToken, async (req: Request, res: Response): P
         firstName: user.getDataValue('firstName'),
         lastName: user.getDataValue('lastName'),
         email: user.getDataValue('email'),
-        age: user.getDataValue('age'),
+        birthDate: user.getDataValue('birthDate') || null,
         isPremium: user.getDataValue('isPremium'),
         role: user.getDataValue('role') || 'user',
         createdAt: user.getDataValue('createdAt'),
         lastLogin: user.getDataValue('lastLogin'),
-        isOAuthAccount: !!(user.getDataValue('googleId') || user.getDataValue('facebookId'))
+        isOAuthAccount: !!user.getDataValue('googleId')
       }
     });
   } catch (error: unknown) {
@@ -409,13 +411,14 @@ router.put('/profile', authenticateToken, async (req: UpdateProfileRequest, res:
       return;
     }
 
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, email, birthDate } = req.body;
     const userId = req.user.id;
 
-    const updateData: Partial<{ firstName: string; lastName: string; email: string }> = {};
+    const updateData: Partial<{ firstName: string; lastName: string; email: string; birthDate: string }> = {};
     if (firstName) {updateData.firstName = firstName;}
     if (lastName) {updateData.lastName = lastName;}
     if (email) {updateData.email = email.toLowerCase();}
+    if (birthDate) {updateData.birthDate = birthDate;}
 
     const [updatedCount] = await User.update(updateData, {
       where: { id: userId }
@@ -444,7 +447,6 @@ router.put('/profile', authenticateToken, async (req: UpdateProfileRequest, res:
         firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
         email: updatedUser.email,
-        age: updatedUser.age,
         isPremium: updatedUser.isPremium
       }
     });
@@ -491,8 +493,8 @@ router.put('/change-password', authenticateToken, async (req: ChangePasswordRequ
       return;
     }
 
-    if (user.getDataValue('googleId') || user.getDataValue('facebookId')) {
-      res.status(403).json({ message: 'Les comptes connectés via Google ou Facebook ne peuvent pas modifier leur mot de passe ici.' });
+    if (user.getDataValue('googleId')) {
+      res.status(403).json({ message: 'Les comptes connectés via Google ne peuvent pas modifier leur mot de passe ici.' });
       return;
     }
 
@@ -629,7 +631,6 @@ router.post('/create-admin', authenticateToken, requireAdmin, async (req: Reques
       lastName,
       email: email.toLowerCase(),
       password,
-      isAnonymous: false,
       isPremium: true // Les admins sont automatiquement premium
     });
 
@@ -680,19 +681,17 @@ router.post('/request-email-verification', authenticateToken, async (req: Authen
 
  
 
-    const verificationToken = jwt.sign(
+    const _verificationToken = jwt.sign(
       { userId: user.id, type: 'email_verification' },
       process.env.JWT_SECRET!,
       { expiresIn: '24h' }
     );
 
     // TODO: Envoyer email avec le token
-    // await sendVerificationEmail(user.email, verificationToken);
+    // await sendVerificationEmail(user.email, _verificationToken);
 
-    res.json({ 
-      message: 'Email de vérification envoyé',
-      // En développement, retourner le token pour tester
-      ...(process.env.NODE_ENV === 'development' && { verificationToken })
+    res.json({
+      message: 'Email de vérification envoyé'
     });
   } catch (error) {
     console.error('Erreur envoi vérification email:', error);
@@ -826,10 +825,8 @@ router.post('/request-password-reset', passwordResetRateLimit, async (req: Reque
       token: resetToken,
     }).catch(err => console.error('Erreur envoi email reset password:', err));
 
-    res.json({ 
-      message: successMessage,
-      // En développement, retourner le token pour tester
-      ...(process.env.NODE_ENV === 'development' && { resetToken })
+    res.json({
+      message: successMessage
     });
   } catch (error) {
     console.error('Erreur demande reset password:', error);
@@ -877,8 +874,8 @@ router.post('/reset-password', async (req: Request, res: Response): Promise<void
       return;
     }
 
-    if (newPassword.length < 6) {
-      res.status(400).json({ message: 'Le mot de passe doit contenir au moins 6 caractères' });
+    if (newPassword.length < 8) {
+      res.status(400).json({ message: 'Le mot de passe doit contenir au moins 8 caractères' });
       return;
     }
 
@@ -950,7 +947,7 @@ router.post('/refresh-token', authenticateToken, async (req: AuthenticatedReques
         email: user.email
       },
       process.env.JWT_SECRET!,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     res.json({ 
@@ -1017,6 +1014,9 @@ router.get('/google/callback',
         return;
       }
 
+      // Mettre à jour lastLogin (méthode statique, plus fiable que via l'instance passport)
+      await User.update({ lastLogin: new Date() }, { where: { id: userId } });
+
       // Générer un token JWT
       const token = generateToken(userId);
 
@@ -1029,66 +1029,6 @@ router.get('/google/callback',
   }
 );
 
-/**
- * @swagger
- * /api/auth/facebook:
- *   get:
- *     summary: Authentification via Facebook OAuth
- *     tags: [Authentication]
- *     responses:
- *       302:
- *         description: Redirection vers Facebook pour l'authentification
- */
-router.get('/facebook',
-  passport.authenticate('facebook', { 
-    scope: ['email'] 
-  })
-);
-
-/**
- * @swagger
- * /api/auth/facebook/callback:
- *   get:
- *     summary: Callback Facebook OAuth
- *     tags: [Authentication]
- *     responses:
- *       302:
- *         description: Redirection vers le dashboard avec le token
- */
-router.get('/facebook/callback',
-  passport.authenticate('facebook', { 
-    failureRedirect: process.env.FRONTEND_URL || 'http://localhost:5173',
-    session: false 
-  }),
-  async (req: Request, res: Response) => {
-    try {
-      const user = req.user as any;
-      
-      if (!user) {
-        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=auth_failed`);
-        return;
-      }
-
-      // Récupérer l'ID de l'utilisateur (Sequelize peut retourner l'objet différemment)
-      const userId = user.id || user.dataValues?.id || user.get?.('id') || user.getDataValue?.('id');
-      
-      if (!userId) {
-        console.error('Impossible de récupérer l\'ID utilisateur Facebook');
-        res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=no_user_id`);
-        return;
-      }
-
-      // Générer un token JWT
-      const token = generateToken(userId);
-
-      // Rediriger vers le frontend avec le token
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);
-    } catch (error) {
-      console.error('Erreur Facebook callback:', error);
-      res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?error=server_error`);
-    }
-  }
-);
 
 /**
  * POST /auth/set-password
