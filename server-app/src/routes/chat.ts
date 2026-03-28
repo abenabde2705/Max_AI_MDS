@@ -160,7 +160,7 @@ router.post('/', chatRateLimit, authenticateToken, checkMessageLimit, async (req
     const chatApiUrl = process.env.CHAT_API_URL || 'http://chat_api:8000';
     const chatResponse = await fetch(`${chatApiUrl}/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.API_KEY || '' },
       body: JSON.stringify({
         message: trimmedMessage,
         session_id: conversation_id,
