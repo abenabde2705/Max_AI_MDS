@@ -56,6 +56,27 @@ services:
       - ollama_data:/root/.ollama
     networks:
       - default
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  ollama-init:
+    image: ollama/ollama
+    container_name: maxai-ollama-init
+    restart: "no"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - default
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: ["ollama", "pull", "qwen2.5:3b"]
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
 
   chat_api:
     build:
@@ -66,7 +87,8 @@ services:
     environment:
       - OLLAMA_HOST=http://ollama:11434
     depends_on:
-      - ollama
+      ollama-init:
+        condition: service_completed_successfully
     networks:
       - default
 
