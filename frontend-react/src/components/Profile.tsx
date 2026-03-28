@@ -272,7 +272,7 @@ const Profile: React.FC = () => {
     <div className="profile-page">
       {/* Header */}
       <div className="profile-header">
-        <button className="profile-header__back" onClick={() => navigate(-1)}>
+        <button className="profile-header__back" onClick={() => navigate('/')}>
           <ArrowLeft size={20} />
         </button>
         <div>

@@ -132,7 +132,7 @@ const AuthUser: React.FC = () => {
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
 
-        navigate('/profile');
+        navigate('/chatbot');
       } else {
         const response = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
@@ -159,7 +159,7 @@ const AuthUser: React.FC = () => {
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
 
-        navigate('/profile');
+        navigate('/chatbot');
       }
     } catch (error) {
       setError('Une erreur est survenue. Veuillez réessayer.');
