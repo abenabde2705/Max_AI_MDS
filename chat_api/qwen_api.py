@@ -50,7 +50,27 @@ def _ollama_call(messages: list, temperature: float = 0.7, max_tokens: int = 120
 # Chat logic (stateless)
 # =============================
 
+_OFF_TOPIC_KEYWORDS = [
+    "python", "javascript", "java", "c++", "c#", "php", "ruby", "swift", "kotlin",
+    "code", "fonction", "function", "algorithm", "algorithme", "programme", "program",
+    "import", "def ", "class ", "```", "calcul", "équation", "recette", "cuisine",
+    "somme", "addition", "soustraction", "multiplication", "division",
+]
+
+def _is_off_topic(text: str) -> bool:
+    lowered = text.lower()
+    return any(kw in lowered for kw in _OFF_TOPIC_KEYWORDS)
+
+_OFF_TOPIC_REPLY = (
+    "Je suis là pour t'accompagner sur le plan émotionnel, pas pour répondre à ce type de question. "
+    "Comment te sens-tu en ce moment ?"
+)
+
 def generate_response(user_input: str, history: list | None = None, cross_context: str | None = None) -> str:
+    # Guardrail: block off-topic requests before calling the model
+    if _is_off_topic(user_input):
+        return _OFF_TOPIC_REPLY
+
     system = (
         "Tu es Max, un compagnon empathique, bienveillant et naturel, spécialisé dans le soutien émotionnel et le bien-être mental. "
         "Tu réponds de manière courte (2 à 3 phrases maximum), chaleureuse et humaine. "
@@ -70,7 +90,13 @@ def generate_response(user_input: str, history: list | None = None, cross_contex
         messages.extend(history)
     messages.append({"role": "user", "content": user_input})
 
-    return _ollama_call(messages, max_tokens=256)
+    response = _ollama_call(messages, max_tokens=256)
+
+    # Guardrail: if the model responded with off-topic content anyway, override it
+    if "```" in response or _is_off_topic(response):
+        return _OFF_TOPIC_REPLY
+
+    return response
 
 # =============================
 # FastAPI App
