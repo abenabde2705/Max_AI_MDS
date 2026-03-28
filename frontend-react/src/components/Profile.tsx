@@ -55,6 +55,8 @@ const Profile: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
   const [passwordError, setPasswordError] = useState('');
@@ -487,7 +489,12 @@ const Profile: React.FC = () => {
                 </span>
               </div>
               <div className="profile-subscription__actions">
-                <button className="profile-btn profile-btn--outline profile-btn--sm" onClick={() => navigate('/#title')}>
+                <button className="profile-btn profile-btn--outline profile-btn--sm" onClick={() => {
+                  navigate('/');
+                  setTimeout(() => {
+                    document.getElementById('title')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}>
                   Changer de plan
                 </button>
                 {subscription.plan !== 'free' && (
@@ -499,7 +506,7 @@ const Profile: React.FC = () => {
                           const { data } = await createPortalSession();
                           if (data.url) window.location.href = data.url;
                         } catch {
-                          console.error('Erreur portail facturation');
+                          alert('Impossible d\'ouvrir le portail de facturation. Veuillez réessayer.');
                         }
                       }}
                     >
@@ -507,15 +514,7 @@ const Profile: React.FC = () => {
                     </button>
                     <button
                       className="profile-btn profile-btn--danger profile-btn--sm"
-                      onClick={async () => {
-                        if (!window.confirm('Confirmer l\'annulation de votre abonnement ?')) return;
-                        try {
-                          await cancelSubscription();
-                          alert('Abonnement annulé à la fin de la période en cours.');
-                        } catch {
-                          console.error('Erreur annulation abonnement');
-                        }
-                      }}
+                      onClick={() => setShowCancelModal(true)}
                     >
                       Annuler l'abonnement
                     </button>
@@ -566,6 +565,45 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Modale annulation abonnement */}
+      {showCancelModal && (
+        <div className="profile-modal-overlay" onClick={() => !cancelLoading && setShowCancelModal(false)}>
+          <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="profile-modal__title">Annuler l'abonnement</h2>
+            <p className="profile-modal__text">
+              Votre abonnement restera actif jusqu'à la <strong>fin de la période en cours</strong>, puis ne sera pas renouvelé.
+            </p>
+            <div className="profile-modal__actions">
+              <button
+                className="profile-btn profile-btn--outline"
+                onClick={() => setShowCancelModal(false)}
+                disabled={cancelLoading}
+              >
+                Annuler 
+              </button>
+              <button
+                className="profile-btn profile-btn--danger"
+                disabled={cancelLoading}
+                onClick={async () => {
+                  setCancelLoading(true);
+                  try {
+                    await cancelSubscription();
+                    setSubscription(prev => ({ ...prev, status: 'canceled' }));
+                    setShowCancelModal(false);
+                  } catch {
+                    alert('Impossible d\'annuler l\'abonnement. Veuillez réessayer.');
+                  } finally {
+                    setCancelLoading(false);
+                  }
+                }}
+              >
+                {cancelLoading ? 'Annulation...' : 'Confirmer l\'annulation'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modale suppression de compte */}
       {showDeleteModal && (
         <div className="profile-modal-overlay" onClick={() => !deleteLoading && setShowDeleteModal(false)}>
