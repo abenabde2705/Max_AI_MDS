@@ -23,6 +23,7 @@ const AuthCallback = () => {
       // Récupérer les informations de l'utilisateur
       const API_URL = import.meta.env.VITE_API_URL;
       fetch(`${API_URL}/api/auth/profile`, {
+        credentials: 'include',
         headers: {
           'Authorization': `Bearer ${token}`
         }

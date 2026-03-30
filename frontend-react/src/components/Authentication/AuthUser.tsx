@@ -112,6 +112,7 @@ const AuthUser: React.FC = () => {
       if (mode === 'login') {
         const response = await fetch(`${API_URL}/api/auth/login`, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           },
@@ -136,6 +137,7 @@ const AuthUser: React.FC = () => {
       } else {
         const response = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           },
