@@ -26,7 +26,7 @@ const MAGIC_SIGNATURES: { ext: string; mime: string; bytes: number[]; offset: nu
 function detectMimeFromBytes(buffer: Buffer): { ext: string; mime: string } | null {
   for (const sig of MAGIC_SIGNATURES) {
     const slice = [...buffer.slice(sig.offset, sig.offset + sig.bytes.length)];
-    if (sig.bytes.every((b, i) => b === slice[i])) return { ext: sig.ext, mime: sig.mime };
+    if (sig.bytes.every((b, i) => b === slice[i])) { return { ext: sig.ext, mime: sig.mime }; }
   }
   return null;
 }

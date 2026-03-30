@@ -379,7 +379,7 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
       });
       res.status(401).json({
         message: shouldLock
-          ? `Trop de tentatives. Compte verrouillé 15 minutes.`
+          ? 'Trop de tentatives. Compte verrouillé 15 minutes.'
           : 'Email ou mot de passe incorrect'
       });
       return;

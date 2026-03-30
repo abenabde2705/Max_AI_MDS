@@ -298,7 +298,7 @@ app.get('/api/health', (req: Request, res: Response): void => {
 app.use((err: CustomError, req: Request, res: Response, _next: NextFunction): void => {
     logger.error({ error: err }, 'Unhandled error');
     const body: Record<string, string> = { message: 'Une erreur interne est survenue' };
-    if (process.env.NODE_ENV !== 'production') body.error = err.message;
+    if (process.env.NODE_ENV !== 'production') { body.error = err.message; }
     res.status(err.status || 500).json(body);
 });
 
