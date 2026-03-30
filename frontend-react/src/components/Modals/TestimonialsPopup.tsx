@@ -151,17 +151,31 @@ const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, 
           <div className="feedback-form-row">
             <div className="feedback-field">
               <label className="feedback-label" htmlFor="tp-age">Âge <span>*</span></label>
-              <input
-                className="feedback-input"
-                id="tp-age"
-                type="number"
-                min="1"
-                max="120"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="Votre âge"
-                disabled={isSubmitting}
-              />
+              <div className="feedback-age-stepper">
+                <button
+                  type="button"
+                  className="feedback-age-btn"
+                  onClick={() => setAge(v => String(Math.max(1, Number(v || 0) - 1)))}
+                  disabled={isSubmitting || Number(age) <= 1}
+                >−</button>
+                <input
+                  className="feedback-age-input"
+                  id="tp-age"
+                  type="number"
+                  min="1"
+                  max="120"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  placeholder="—"
+                  disabled={isSubmitting}
+                />
+                <button
+                  type="button"
+                  className="feedback-age-btn"
+                  onClick={() => setAge(v => String(Math.min(120, Number(v || 0) + 1)))}
+                  disabled={isSubmitting || Number(age) >= 120}
+                >+</button>
+              </div>
             </div>
             <div className="feedback-field">
               <label className="feedback-label" htmlFor="tp-email">Email <span>*</span></label>
@@ -191,18 +205,33 @@ const TestimonialsPopup: React.FC<TestimonialsPopupProps> = ({ isOpen, onClose, 
           </div>
 
           <div className="feedback-field">
-            <label className="feedback-label" htmlFor="tp-photo">Photo de profil <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>(optionnel)</span></label>
-            <input
-              id="tp-photo"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handlePhotoChange}
-              disabled={isSubmitting}
-              style={{ color: 'inherit' }}
-            />
-            {photoPreview && (
-              <img src={photoPreview} alt="Aperçu" style={{ marginTop: '0.5rem', width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '2px solid #DAE63D' }} />
-            )}
+            <label className="feedback-label">Photo de profil <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.5)' }}>(optionnel)</span></label>
+            <label htmlFor="tp-photo" className={`feedback-upload-zone ${isSubmitting ? 'feedback-upload-zone--disabled' : ''}`}>
+              {photoPreview ? (
+                <div className="feedback-upload-preview">
+                  <img src={photoPreview} alt="Aperçu" className="feedback-upload-avatar" />
+                  <div className="feedback-upload-change">
+                    <span>Changer la photo</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="feedback-upload-placeholder">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  <span className="feedback-upload-text">Cliquer pour ajouter une photo</span>
+                  <span className="feedback-upload-hint">JPG, PNG, WebP · max 5 Mo</span>
+                </div>
+              )}
+              <input
+                id="tp-photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handlePhotoChange}
+                disabled={isSubmitting}
+                style={{ display: 'none' }}
+              />
+            </label>
           </div>
 
           <div className="feedback-actions">

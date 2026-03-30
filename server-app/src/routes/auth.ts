@@ -173,6 +173,14 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
       return;
     }
 
+    if (birthDate) {
+      const age = Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      if (age < 15) {
+        res.status(400).json({ message: 'Vous devez avoir au moins 15 ans pour créer un compte' });
+        return;
+      }
+    }
+
     // Vérifier si l'utilisateur existe déjà
     const existingUser = await User.findOne({ 
       where: { email: email.toLowerCase() } 

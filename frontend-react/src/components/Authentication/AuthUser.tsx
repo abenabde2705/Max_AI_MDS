@@ -75,6 +75,11 @@ const AuthUser: React.FC = () => {
         setError('La date de naissance est requise');
         return false;
       }
+      const age = Math.floor((Date.now() - new Date(form.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      if (age < 15) {
+        setError('Vous devez avoir au moins 15 ans pour créer un compte');
+        return false;
+      }
       if (form.password !== form.confirmPassword) {
         setError('Les mots de passe ne correspondent pas');
         return false;
