@@ -44,6 +44,22 @@ const passwordResetRateLimit = rateLimit({
   message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de demandes de réinitialisation. Réessayez dans 15 minutes.' }
 });
 
+const verifyEmailRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de tentatives de vérification. Réessayez dans 15 minutes.' }
+});
+
+const resetPasswordRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de tentatives de réinitialisation. Réessayez dans 15 minutes.' }
+});
+
 interface RegisterRequest extends Request {
     body: {
         firstName: string;
@@ -744,7 +760,7 @@ router.post('/request-email-verification', authenticateToken, async (req: Authen
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.post('/verify-email', async (req: Request, res: Response): Promise<void> => {
+router.post('/verify-email', verifyEmailRateLimit, async (req: Request, res: Response): Promise<void> => {
   try {
     const { token } = req.body;
 
@@ -884,7 +900,7 @@ router.post('/request-password-reset', passwordResetRateLimit, async (req: Reque
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
+router.post('/reset-password', resetPasswordRateLimit, async (req: Request, res: Response): Promise<void> => {
   try {
     const { token, newPassword } = req.body;
 

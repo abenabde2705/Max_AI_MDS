@@ -23,3 +23,12 @@ export const removeToken = (): void => {
   sessionStorage.removeItem('token');
   window.dispatchEvent(new Event('storage'));
 };
+
+export const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return typeof payload.exp === 'number' && payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
