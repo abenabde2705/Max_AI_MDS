@@ -2162,6 +2162,9 @@ color: #FFFFFF;
   .plan-card::before {
     border-radius: 36px;
   }
+  .footer::before {
+    border-radius: 30px;
+  }
   .plan-card.highlight {
     border-radius: 40px;
   }
@@ -2195,10 +2198,13 @@ color: #FFFFFF;
   }
 
   .plan-card {
+    max-height: 800px;
     padding: 2rem 1.5rem;
     min-height: 500px;
   }
-
+.footer::before {
+    border-radius: 22px;
+  }
   .plan-title {
     font-size: 1.5rem;
   }
