@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { getToken } from '../utils/token';
 
 const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 
@@ -8,13 +7,10 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export const getAuthHeaders = () => {
-  const token = getToken();
-  return {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json',
-  };
-};
+// Le token JWT vit dans un cookie httpOnly — withCredentials l'envoie automatiquement.
+export const getAuthHeaders = () => ({
+  'Content-Type': 'application/json',
+});
 
 export const fetchConversations = () =>
   api.get('/conversations', { headers: getAuthHeaders() });

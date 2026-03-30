@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserAttributes } from '../../types/global.js';
 
 // Type pour les attributs optionnels lors de la création
-type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'birthDate' | 'lastLogin' | 'role' | 'stripeCustomerId' | 'resetToken' | 'resetTokenExpiry'>;
+type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'birthDate' | 'lastLogin' | 'role' | 'stripeCustomerId' | 'resetToken' | 'resetTokenExpiry' | 'failedLoginAttempts' | 'lockedUntil'>;
 
 // Classe du modèle User avec tous les types
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -22,6 +22,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public lastLogin?: Date;
   public resetToken?: string;
   public resetTokenExpiry?: Date;
+  public failedLoginAttempts!: number;
+  public lockedUntil?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -126,6 +128,17 @@ User.init({
     type: DataTypes.DATE,
     allowNull: true,
     field: 'reset_token_expiry',
+  },
+  failedLoginAttempts: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'failed_login_attempts',
+  },
+  lockedUntil: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'locked_until',
   },
   createdAt: {
     type: DataTypes.DATE,

@@ -33,6 +33,7 @@ import { up as migration009 } from './migrations/009-add-reset-token.js';
 import { up as migration010 } from './migrations/010-create-stripe-webhook-events.js';
 import { up as migration011 } from './migrations/011-add-birth-date.js';
 import { up as migration012 } from './migrations/012-drop-unused-columns.js';
+import { up as migration013 } from './migrations/013-add-login-lockout.js';
 import { startSubscriptionExpiryJob } from './jobs/subscriptionExpiry.js';
 
 // Monitoring imports
@@ -152,6 +153,7 @@ const runMigrations = async (): Promise<void> => {
         { name: '010', fn: () => migration010(qi, sequelize.constructor as any) },
         { name: '011', fn: () => migration011(qi, sequelize.constructor as any) },
         { name: '012', fn: () => migration012(qi, sequelize.constructor as any) },
+        { name: '013', fn: () => migration013(qi, sequelize.constructor as any) },
     ];
 
     for (const migration of migrations) {
@@ -295,10 +297,9 @@ app.get('/api/health', (req: Request, res: Response): void => {
 // Gestion des erreurs globales
 app.use((err: CustomError, req: Request, res: Response, _next: NextFunction): void => {
     logger.error({ error: err }, 'Unhandled error');
-    res.status(err.status || 500).json({ 
-        message: 'Une erreur interne est survenue',
-        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
-    });
+    const body: Record<string, string> = { message: 'Une erreur interne est survenue' };
+    if (process.env.NODE_ENV !== 'production') body.error = err.message;
+    res.status(err.status || 500).json(body);
 });
 
 // Route 404

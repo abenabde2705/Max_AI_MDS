@@ -78,10 +78,7 @@ const Profile: React.FC = () => {
         const [profileResponse, subResponse] = await Promise.allSettled([
           fetch(`${API_URL}/api/auth/profile`, {
             credentials: 'include',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
           }),
           fetchCurrentSubscription()
         ]);
@@ -150,10 +147,7 @@ const Profile: React.FC = () => {
       const response = await fetch(`${API_URL}/api/auth/profile`, {
         method: 'PUT',
         credentials: 'include',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -192,7 +186,7 @@ const Profile: React.FC = () => {
       const response = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'PUT',
         credentials: 'include',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword: passwordForm.current, newPassword: passwordForm.next }),
       });
       const data = await response.json();
@@ -219,7 +213,6 @@ const Profile: React.FC = () => {
       const response = await fetch(`${API_URL}/api/users/me`, {
         method: 'DELETE',
         credentials: 'include',
-        headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
         const data = await response.json();
@@ -485,7 +478,7 @@ const Profile: React.FC = () => {
                     Plan {subscription.plan === 'premium' ? 'Premium' : subscription.plan === 'student' ? 'Campus' : 'Free'}
                   </p>
                   <p className="profile-subscription__plan-price">
-                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '8€ / Mois' : 'Gratuit'}
+                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '7,99€ / Mois' : 'Gratuit'}
                   </p>
                   {subscription.stripePeriodEnd && (
                     <p className="profile-subscription__plan-renew">

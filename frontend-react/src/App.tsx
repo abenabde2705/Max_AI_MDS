@@ -25,16 +25,11 @@ import SetPassword from './components/SetPassword';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import CookieBanner from './components/CookieBanner';
-import { getToken, isTokenExpired, removeToken } from './utils/token';
+import { getToken } from './utils/token';
 
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
-  const token = getToken();
-  if (!token || isTokenExpired(token)) {
-    if (token) removeToken();
-    return <Navigate to="/auth" replace />;
-  }
-  return element;
+  return getToken() ? element : <Navigate to="/auth" replace />;
 };
 
 const PremiumRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {

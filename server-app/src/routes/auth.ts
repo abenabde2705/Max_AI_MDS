@@ -253,10 +253,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
     console.error('Erreur lors de l\'inscription:', error);
     
     if (error instanceof Error && error.name === 'SequelizeValidationError') {
-      res.status(400).json({
-        message: 'Données invalides',
-        error: error.message
-      });
+      res.status(400).json({ message: 'Données invalides' });
       return;
     }
 
@@ -345,31 +342,51 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
       return;
     }
 
+    const LOCKOUT_MAX_ATTEMPTS = 5;
+    const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
     // Trouver l'utilisateur
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       where: { email: email.toLowerCase() },
-      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isPremium', 'lastLogin', 'createdAt', 'updatedAt']
+      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isPremium', 'lastLogin', 'failedLoginAttempts', 'lockedUntil', 'createdAt', 'updatedAt']
     });
-    
+
     if (!user) {
-      res.status(401).json({
-        message: 'Email ou mot de passe incorrect'
+      res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      return;
+    }
+
+    // Vérifier si le compte est verrouillé
+    const lockedUntil = user.getDataValue('lockedUntil');
+    if (lockedUntil && new Date(lockedUntil) > new Date()) {
+      const remainingMs = new Date(lockedUntil).getTime() - Date.now();
+      const remainingMin = Math.ceil(remainingMs / 60000);
+      res.status(429).json({
+        message: `Compte temporairement verrouillé. Réessayez dans ${remainingMin} minute${remainingMin > 1 ? 's' : ''}.`
       });
       return;
     }
 
     // Vérifier le mot de passe
     const isPasswordValid = await user.comparePassword(password);
-    
+
     if (!isPasswordValid) {
+      const attempts = (user.getDataValue('failedLoginAttempts') || 0) + 1;
+      const shouldLock = attempts >= LOCKOUT_MAX_ATTEMPTS;
+      await user.update({
+        failedLoginAttempts: attempts,
+        lockedUntil: shouldLock ? new Date(Date.now() + LOCKOUT_DURATION_MS) : null,
+      });
       res.status(401).json({
-        message: 'Email ou mot de passe incorrect'
+        message: shouldLock
+          ? `Trop de tentatives. Compte verrouillé 15 minutes.`
+          : 'Email ou mot de passe incorrect'
       });
       return;
     }
 
-    // Mettre à jour la date de dernière connexion
-    await user.update({ lastLogin: new Date() });
+    // Connexion réussie — réinitialiser le compteur
+    await user.update({ lastLogin: new Date(), failedLoginAttempts: 0, lockedUntil: null });
 
     // Générer un token JWT
     const token = generateToken(user.getDataValue('id'));
@@ -1054,6 +1071,9 @@ router.get('/google/callback',
 
       // Générer un token JWT
       const token = generateToken(userId);
+
+      // Poser le cookie httpOnly avant la redirection
+      setAuthCookie(res, token);
 
       // Rediriger vers le frontend avec le token
       res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);

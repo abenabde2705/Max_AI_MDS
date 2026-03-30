@@ -153,7 +153,7 @@ const AdminPage: React.FC = () => {
   useEffect(() => {
     const token = getToken();
     if (!token) { navigate('/auth'); return; }
-    fetch(`${API_URL}/api/auth/profile`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${API_URL}/api/auth/profile`, { credentials: 'include' })
       .then(r => r.json())
       .then(data => { if (data.user?.role !== 'admin') setAuthError(true); })
       .catch(() => setAuthError(true));
@@ -361,7 +361,7 @@ const AdminPage: React.FC = () => {
 
   const getPlanAmount = (plan: string) => {
     if (plan === 'premium') return '14,99€/mois';
-    if (plan === 'student') return '8€/mois';
+    if (plan === 'student') return '7,99€/mois';
     return 'Gratuit';
   };
 
@@ -756,7 +756,7 @@ const AdminPage: React.FC = () => {
               <div className="adm-stat-card">
                 <span className="adm-stat-card__label">Plan Campus</span>
                 <span className="adm-stat-card__value">{subStats.studentCount}</span>
-                <span className="adm-stat-card__sub">× 8€/mois</span>
+                <span className="adm-stat-card__sub">× 7,99€/mois</span>
               </div>
               <div className="adm-stat-card">
                 <span className="adm-stat-card__label">Vérif. étudiant</span>
@@ -859,7 +859,7 @@ const AdminPage: React.FC = () => {
                           </div>
                         </td>
                         <td><span className="adm-plan-badge adm-plan-badge--student">Campus</span></td>
-                        <td>8€/mois</td>
+                        <td>7.99€/mois</td>
                         <td><span className="adm-status-badge adm-status-badge--pending">En attente</span></td>
                         <td>
                           {isPdf(v.cardImagePath) ? (
