@@ -118,7 +118,7 @@ const StudentVerifyModal: React.FC<StudentVerifyModalProps> = ({ isOpen, onClose
           <div className="sv-header__icon"><GraduationCap size={28} /></div>
           <div>
             <h2 className="sv-title">Vérification Étudiante</h2>
-            <p className="sv-subtitle">Tarif Campus à 8€/mois</p>
+            <p className="sv-subtitle">Tarif Campus à 7,99€/mois</p>
           </div>
           <button className="sv-close" onClick={onClose} aria-label="Fermer"><X size={18} /></button>
         </div>
@@ -205,7 +205,7 @@ const StudentVerifyModal: React.FC<StudentVerifyModalProps> = ({ isOpen, onClose
               onClick={handleFinalizeCheckout}
               disabled={checkoutLoading}
             >
-              {checkoutLoading ? 'Redirection…' : 'Finaliser mon abonnement — 8€/mois'}
+              {checkoutLoading ? 'Redirection…' : 'Finaliser mon abonnement — 7,99€/mois'}
             </button>
           )}
         </div>

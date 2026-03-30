@@ -14,7 +14,6 @@ import SuccessPage from './components/SuccessPage';
 import ConditionsUtilisation from './components/Politics/ConditionsUtilisation';
 import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite';
 import NotFound from './components/NotFound';
-import Dashboard from './components/DashboardSimple';
 import Profile from './components/Profile';
 import EmotionalJournal from './components/EmotionalJournal';
 import Statistics from './components/Statistics';
@@ -30,8 +29,7 @@ import { getToken } from './utils/token';
 
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
-  const token = getToken();
-  return token ? element : <Navigate to="/auth" replace />;
+  return getToken() ? element : <Navigate to="/auth" replace />;
 };
 
 const PremiumRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
@@ -68,7 +66,6 @@ const App: React.FC = () => {
             </Route>
             <Route path="/auth" element={<AuthUser />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
             <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
             <Route path="/admin" element={<ProtectedRoute element={<AdminPage />} />} />
 

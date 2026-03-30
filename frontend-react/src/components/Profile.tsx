@@ -13,7 +13,7 @@ const EyeOff = () => (
 );
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
-import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus } from '../services/chat.api';
+import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus, logoutApi } from '../services/chat.api';
 import { useBirthDate } from '../context/BirthDateContext';
 
 interface UserProfile {
@@ -77,10 +77,8 @@ const Profile: React.FC = () => {
         const API_URL = import.meta.env.VITE_API_URL;
         const [profileResponse, subResponse] = await Promise.allSettled([
           fetch(`${API_URL}/api/auth/profile`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
           }),
           fetchCurrentSubscription()
         ]);
@@ -148,10 +146,8 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/auth/profile`, {
         method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -189,7 +185,8 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword: passwordForm.current, newPassword: passwordForm.next }),
       });
       const data = await response.json();
@@ -215,7 +212,7 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/users/me`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include',
       });
       if (!response.ok) {
         const data = await response.json();
@@ -232,7 +229,12 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+    } catch {
+      // cookie cleared client-side regardless
+    }
     removeToken();
     localStorage.removeItem('name');
     localStorage.removeItem('userName');
@@ -272,7 +274,7 @@ const Profile: React.FC = () => {
     <div className="profile-page">
       {/* Header */}
       <div className="profile-header">
-        <button className="profile-header__back" onClick={() => navigate(-1)}>
+        <button className="profile-header__back" onClick={() => navigate('/')}>
           <ArrowLeft size={20} />
         </button>
         <div>
@@ -476,7 +478,7 @@ const Profile: React.FC = () => {
                     Plan {subscription.plan === 'premium' ? 'Premium' : subscription.plan === 'student' ? 'Campus' : 'Free'}
                   </p>
                   <p className="profile-subscription__plan-price">
-                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '8€ / Mois' : 'Gratuit'}
+                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '7,99€ / Mois' : 'Gratuit'}
                   </p>
                   {subscription.stripePeriodEnd && (
                     <p className="profile-subscription__plan-renew">

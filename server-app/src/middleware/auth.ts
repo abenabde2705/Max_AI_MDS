@@ -28,9 +28,8 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     try {
         const authHeader = req.headers['authorization'];
 
-        const token = authHeader?.startsWith('Bearer ')
-            ? authHeader.substring(7)
-            : null;
+        const token = req.cookies?.jwt_token
+            ?? (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
 
         if (!token) {
             res.status(401).json({ 
@@ -97,9 +96,8 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 export const optionalAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const authHeader = req.headers['authorization'];
-        const token = authHeader?.startsWith('Bearer ') 
-            ? authHeader.substring(7) 
-            : null;
+        const token = req.cookies?.jwt_token
+            ?? (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
 
         if (!token) {
             // Pas de token, on continue sans authentification

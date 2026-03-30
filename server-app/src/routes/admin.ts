@@ -181,11 +181,19 @@ router.patch('/admin/users/:id', authenticateToken, requireAdmin, async (req: Re
       return;
     }
 
+    const ALLOWED_ROLES = ['user', 'admin'];
+
     const updates: any = {};
     if (firstName !== undefined) { updates.firstName = firstName; }
     if (lastName !== undefined) { updates.lastName = lastName; }
     if (email !== undefined) { updates.email = email.toLowerCase(); }
-    if (role !== undefined) { updates.role = role; }
+    if (role !== undefined) {
+      if (!ALLOWED_ROLES.includes(role)) {
+        res.status(400).json({ success: false, message: `Rôle invalide. Valeurs acceptées : ${ALLOWED_ROLES.join(', ')}` });
+        return;
+      }
+      updates.role = role;
+    }
     if (plan !== undefined) { updates.isPremium = plan !== 'free'; }
     await user.update(updates);
 

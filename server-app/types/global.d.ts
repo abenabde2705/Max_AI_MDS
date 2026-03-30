@@ -35,6 +35,8 @@ export interface UserAttributes {
   googleId?: string;
   resetToken?: string;
   resetTokenExpiry?: Date;
+  failedLoginAttempts: number;
+  lockedUntil?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

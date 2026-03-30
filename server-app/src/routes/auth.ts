@@ -11,6 +11,15 @@ import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email.js';
 
 const router = express.Router();
 
+const setAuthCookie = (res: Response, token: string): void => {
+  res.cookie('jwt_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+  });
+};
+
 const loginRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -33,6 +42,22 @@ const passwordResetRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de demandes de réinitialisation. Réessayez dans 15 minutes.' }
+});
+
+const verifyEmailRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de tentatives de vérification. Réessayez dans 15 minutes.' }
+});
+
+const resetPasswordRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'TOO_MANY_REQUESTS', message: 'Trop de tentatives de réinitialisation. Réessayez dans 15 minutes.' }
 });
 
 interface RegisterRequest extends Request {
@@ -212,6 +237,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
     const userId = user.getDataValue('id');
     const token = generateToken(userId);
 
+    setAuthCookie(res, token);
     res.status(201).json({
       message: 'Inscription réussie',
       token,
@@ -227,10 +253,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
     console.error('Erreur lors de l\'inscription:', error);
     
     if (error instanceof Error && error.name === 'SequelizeValidationError') {
-      res.status(400).json({
-        message: 'Données invalides',
-        error: error.message
-      });
+      res.status(400).json({ message: 'Données invalides' });
       return;
     }
 
@@ -319,35 +342,56 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
       return;
     }
 
+    const LOCKOUT_MAX_ATTEMPTS = 5;
+    const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
     // Trouver l'utilisateur
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       where: { email: email.toLowerCase() },
-      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isPremium', 'lastLogin', 'createdAt', 'updatedAt']
+      attributes: ['id', 'email', 'password', 'firstName', 'lastName', 'isPremium', 'lastLogin', 'failedLoginAttempts', 'lockedUntil', 'createdAt', 'updatedAt']
     });
-    
+
     if (!user) {
-      res.status(401).json({
-        message: 'Email ou mot de passe incorrect'
+      res.status(401).json({ message: 'Email ou mot de passe incorrect' });
+      return;
+    }
+
+    // Vérifier si le compte est verrouillé
+    const lockedUntil = user.getDataValue('lockedUntil');
+    if (lockedUntil && new Date(lockedUntil) > new Date()) {
+      const remainingMs = new Date(lockedUntil).getTime() - Date.now();
+      const remainingMin = Math.ceil(remainingMs / 60000);
+      res.status(429).json({
+        message: `Compte temporairement verrouillé. Réessayez dans ${remainingMin} minute${remainingMin > 1 ? 's' : ''}.`
       });
       return;
     }
 
     // Vérifier le mot de passe
     const isPasswordValid = await user.comparePassword(password);
-    
+
     if (!isPasswordValid) {
+      const attempts = (user.getDataValue('failedLoginAttempts') || 0) + 1;
+      const shouldLock = attempts >= LOCKOUT_MAX_ATTEMPTS;
+      await user.update({
+        failedLoginAttempts: attempts,
+        lockedUntil: shouldLock ? new Date(Date.now() + LOCKOUT_DURATION_MS) : null,
+      });
       res.status(401).json({
-        message: 'Email ou mot de passe incorrect'
+        message: shouldLock
+          ? 'Trop de tentatives. Compte verrouillé 15 minutes.'
+          : 'Email ou mot de passe incorrect'
       });
       return;
     }
 
-    // Mettre à jour la date de dernière connexion
-    await user.update({ lastLogin: new Date() });
+    // Connexion réussie — réinitialiser le compteur
+    await user.update({ lastLogin: new Date(), failedLoginAttempts: 0, lockedUntil: null });
 
     // Générer un token JWT
     const token = generateToken(user.getDataValue('id'));
 
+    setAuthCookie(res, token);
     res.json({
       message: 'Connexion réussie',
       token,
@@ -733,7 +777,7 @@ router.post('/request-email-verification', authenticateToken, async (req: Authen
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.post('/verify-email', async (req: Request, res: Response): Promise<void> => {
+router.post('/verify-email', verifyEmailRateLimit, async (req: Request, res: Response): Promise<void> => {
   try {
     const { token } = req.body;
 
@@ -873,7 +917,7 @@ router.post('/request-password-reset', passwordResetRateLimit, async (req: Reque
  *       404:
  *         description: Utilisateur non trouvé
  */
-router.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
+router.post('/reset-password', resetPasswordRateLimit, async (req: Request, res: Response): Promise<void> => {
   try {
     const { token, newPassword } = req.body;
 
@@ -1028,6 +1072,9 @@ router.get('/google/callback',
       // Générer un token JWT
       const token = generateToken(userId);
 
+      // Poser le cookie httpOnly avant la redirection
+      setAuthCookie(res, token);
+
       // Rediriger vers le frontend avec le token
       res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/callback?token=${token}`);
     } catch (error) {
@@ -1079,6 +1126,15 @@ router.post('/set-password', async (req: Request, res: Response): Promise<void> 
     console.error('POST /auth/set-password error:', error);
     res.status(500).json({ success: false, message: 'Erreur serveur' });
   }
+});
+
+router.post('/logout', (req: Request, res: Response): void => {
+  res.clearCookie('jwt_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  });
+  res.json({ success: true, message: 'Déconnecté' });
 });
 
 export default router;

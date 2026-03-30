@@ -15,18 +15,34 @@ const router = Router();
 const UPLOADS_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../uploads/student-cards');
 fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
-// Configuration multer pour l'upload des cartes étudiantes
+// Magic bytes des formats autorisés (signatures réelles du fichier, indépendantes du Content-Type)
+const MAGIC_SIGNATURES: { ext: string; mime: string; bytes: number[]; offset: number }[] = [
+  { ext: '.jpg',  mime: 'image/jpeg',       bytes: [0xFF, 0xD8, 0xFF],                         offset: 0 },
+  { ext: '.png',  mime: 'image/png',        bytes: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A], offset: 0 },
+  { ext: '.webp', mime: 'image/webp',       bytes: [0x57, 0x45, 0x42, 0x50],                   offset: 8 },
+  { ext: '.pdf',  mime: 'application/pdf',  bytes: [0x25, 0x50, 0x44, 0x46],                   offset: 0 },
+];
+
+function detectMimeFromBytes(buffer: Buffer): { ext: string; mime: string } | null {
+  for (const sig of MAGIC_SIGNATURES) {
+    const slice = [...buffer.slice(sig.offset, sig.offset + sig.bytes.length)];
+    if (sig.bytes.every((b, i) => b === slice[i])) { return { ext: sig.ext, mime: sig.mime }; }
+  }
+  return null;
+}
+
+// Configuration multer — stockage temporaire avec nom aléatoire sans extension
 const storage = multer.diskStorage({
   destination: UPLOADS_DIR,
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
+  filename: (_req, _file, cb) => {
+    cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}.tmp`);
   }
 });
 
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  // Pré-filtre sur le mimetype déclaré (première barrière, pas suffisante seule)
   fileFilter: (_req, file, cb) => {
     const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
     if (allowed.includes(file.mimetype)) {
@@ -36,6 +52,15 @@ const upload = multer({
     }
   }
 });
+
+// Validation des magic bytes après sauvegarde multer
+function validateAndRenamefile(filePath: string): { ext: string; mime: string } | null {
+  const fd = fs.openSync(filePath, 'r');
+  const buf = Buffer.alloc(12);
+  fs.readSync(fd, buf, 0, 12, 0);
+  fs.closeSync(fd);
+  return detectMimeFromBytes(buf);
+}
 
 /**
  * POST /api/student-verification/submit
@@ -48,6 +73,19 @@ router.post('/student-verification/submit', authenticateToken, upload.single('ca
       return;
     }
 
+    // Validation des magic bytes — vérifie le contenu réel du fichier
+    const detected = validateAndRenamefile(req.file.path);
+    if (!detected) {
+      fs.unlinkSync(req.file.path);
+      res.status(400).json({ success: false, message: 'Format non supporté. Utilisez JPEG, PNG, WebP ou PDF.' });
+      return;
+    }
+
+    // Renommer le fichier .tmp avec la vraie extension détectée
+    const finalName = req.file.filename.replace('.tmp', detected.ext);
+    const finalPath = path.join(UPLOADS_DIR, finalName);
+    fs.renameSync(req.file.path, finalPath);
+
     const userId = (req.user as any).id;
 
     // Vérifier s'il existe déjà une vérification en cours
@@ -56,6 +94,7 @@ router.post('/student-verification/submit', authenticateToken, upload.single('ca
     });
 
     if (existing) {
+      fs.unlinkSync(finalPath);
       res.status(409).json({
         success: false,
         message: 'Une demande de vérification est déjà en attente',
@@ -65,7 +104,7 @@ router.post('/student-verification/submit', authenticateToken, upload.single('ca
     }
 
     // Stocker le chemin relatif pour construire l'URL côté client
-    const relPath = `uploads/student-cards/${req.file.filename}`;
+    const relPath = `uploads/student-cards/${finalName}`;
 
     const verification = await StudentVerification.create({
       userId,
