@@ -11,6 +11,15 @@ import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/email.js';
 
 const router = express.Router();
 
+const setAuthCookie = (res: Response, token: string): void => {
+  res.cookie('jwt_token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 jours
+  });
+};
+
 const loginRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -212,6 +221,7 @@ router.post('/register', registerRateLimit, async (req: RegisterRequest, res: Re
     const userId = user.getDataValue('id');
     const token = generateToken(userId);
 
+    setAuthCookie(res, token);
     res.status(201).json({
       message: 'Inscription réussie',
       token,
@@ -348,6 +358,7 @@ router.post('/login', loginRateLimit, async (req: LoginRequest, res: Response): 
     // Générer un token JWT
     const token = generateToken(user.getDataValue('id'));
 
+    setAuthCookie(res, token);
     res.json({
       message: 'Connexion réussie',
       token,
@@ -1079,6 +1090,15 @@ router.post('/set-password', async (req: Request, res: Response): Promise<void> 
     console.error('POST /auth/set-password error:', error);
     res.status(500).json({ success: false, message: 'Erreur serveur' });
   }
+});
+
+router.post('/logout', (req: Request, res: Response): void => {
+  res.clearCookie('jwt_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  });
+  res.json({ success: true, message: 'Déconnecté' });
 });
 
 export default router;

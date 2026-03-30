@@ -13,7 +13,7 @@ const EyeOff = () => (
 );
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
-import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus } from '../services/chat.api';
+import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus, logoutApi } from '../services/chat.api';
 import { useBirthDate } from '../context/BirthDateContext';
 
 interface UserProfile {
@@ -77,6 +77,7 @@ const Profile: React.FC = () => {
         const API_URL = import.meta.env.VITE_API_URL;
         const [profileResponse, subResponse] = await Promise.allSettled([
           fetch(`${API_URL}/api/auth/profile`, {
+            credentials: 'include',
             headers: {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -148,6 +149,7 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/auth/profile`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -189,6 +191,7 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'PUT',
+        credentials: 'include',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword: passwordForm.current, newPassword: passwordForm.next }),
       });
@@ -215,6 +218,7 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/users/me`, {
         method: 'DELETE',
+        credentials: 'include',
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -232,7 +236,12 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+    } catch {
+      // cookie cleared client-side regardless
+    }
     removeToken();
     localStorage.removeItem('name');
     localStorage.removeItem('userName');
