@@ -200,12 +200,13 @@ app.use(helmet());
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
 
-const corsOptions: cors.CorsOptions = {
+const buildCorsOptions = (req: Request): cors.CorsOptions => ({
   origin: (origin, callback) => {
-    // Requête sans header Origin (curl, Postman, server-to-server)
-    // Autorisé en dev uniquement — en prod les browsers envoient toujours Origin
+    // Les navigations browser (OAuth, redirects) n'envoient pas d'Origin sur les GET.
+    // On bloque le no-Origin uniquement sur les méthodes qui modifient l'état.
     if (!origin) {
-      if (process.env.NODE_ENV === 'production') {
+      const isMutating = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+      if (process.env.NODE_ENV === 'production' && isMutating) {
         return callback(new Error('Not allowed by CORS'));
       }
       return callback(null, true);
@@ -222,11 +223,11 @@ const corsOptions: cors.CorsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
-};
+});
 
 // CORS appliqué uniquement sur /api — /metrics reste accessible à Prometheus (server-to-server)
-app.use('/api', cors(corsOptions));
-app.options('/api/*', cors(corsOptions));
+app.use('/api', (req: Request, res: Response, next: NextFunction) => cors(buildCorsOptions(req))(req, res, next));
+app.options('/api/*', (req: Request, res: Response, next: NextFunction) => cors(buildCorsOptions(req))(req, res, next));
 
 app.use(cookieParser());
 app.use(morgan('combined'));
