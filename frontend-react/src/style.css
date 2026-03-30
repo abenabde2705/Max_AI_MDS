@@ -148,6 +148,8 @@ button {
   height: 79px;
   position: relative;
   z-index: 10;
+  width: 88%;
+  max-width: 1600px;
 }
 
 .nav-left {
