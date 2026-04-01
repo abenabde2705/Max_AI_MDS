@@ -10,7 +10,6 @@ import LandingPage from './components/LandingPage';
 import Chat from './components/Chat';
 import AuthUser from './components/Authentication/AuthUser';
 import AuthCallback from './components/Authentication/AuthCallback';
-import SuccessPage from './components/SuccessPage';
 import ConditionsUtilisation from './components/Politics/ConditionsUtilisation';
 import PolitiqueConfidentialites from './components/Politics/PolitiqueConfidentialite';
 import NotFound from './components/NotFound';
@@ -73,7 +72,6 @@ const App: React.FC = () => {
             <Route path="/set-password" element={<SetPassword />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/success" element={<SuccessPage />} />
             <Route path="/politics/conditions-utilisation" element={<ConditionsUtilisation />} />
             <Route path="/politics/politique-confidentialites" element={<PolitiqueConfidentialites />} />
             <Route path="*" element={<NotFound />} />

@@ -13,10 +13,8 @@ RUN npm install
 # Copier le code source
 COPY . .
 
-RUN useradd --no-create-home --shell /bin/false appuser && \
-    chown -R appuser:appuser /app
-
-USER appuser
+RUN chown -R node:node /app
+USER node
 
 # Exposer le port 5173
 EXPOSE 5173

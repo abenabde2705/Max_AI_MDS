@@ -5723,17 +5723,15 @@ border-radius: 70px 0px 0px 70px;
   .max-chat__badge-logo { width: 18px; height: 18px; }
   .max-chat__user-avatar { width: 30px; height: 30px; font-size: 12px; }
   .max-chat__input-area { flex: 0 0 auto; padding: 12px; gap: 10px; }
-  .max-chat__emotions { gap: 6px; flex-direction: column; }
-  .max-chat__emotion-button { width: 100%; justify-content: center; padding: 10px 12px; font-size: 13px; }
-  .max-chat__emotion-button span { display: none; }
-  .max-chat__emotion-button span:first-child { display: inline; }
+  .max-chat__emotions { gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .max-chat__emotion-button { padding: 8px 12px; font-size: 13px; }
   .max-chat__input-wrapper { display: flex; align-items: center; gap: 8px; position: relative; }
-  .max-chat__input { padding-right: 44px; }
-  .max-chat__send { width: 40px; height: 40px; position: static; transform: none; }
+  .max-chat__input { flex: 1; min-width: 0; }
+  .max-chat__send { width: 40px; height: 40px; position: static; transform: none; flex-shrink: 0; }
 }
 
 @media (max-width: 640px) {
-  .max-chat { padding: 12px; height: 100vh; display: flex; flex-direction: column; }
+  .max-chat { padding: 12px; height: 100dvh; display: flex; flex-direction: column; }
   .max-chat__sidebar {
     width: min(90vw, 280px);
     padding: 16px 14px;
@@ -5792,8 +5790,8 @@ border-radius: 70px 0px 0px 70px;
   .max-chat__emotion-button { width: calc(50% - 2px); padding: 8px 6px; font-size: 11px; gap: 4px; }
   .max-chat__emotion-button span:last-child { display: none; }
   .max-chat__input-wrapper { display: flex; align-items: center; gap: 6px; position: relative; }
-  .max-chat__input { padding-right: 40px; padding: 10px 8px; }
-  .max-chat__send { width: 38px; height: 38px; position: absolute; right: 2px; top: 50%; transform: translateY(-50%); }
+  .max-chat__input { flex: 1; min-width: 0; padding: 10px 50px 10px 14px; }
+  .max-chat__send { width: 38px; height: 38px; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); flex-shrink: 0; }
 }
 
 .login-welcome{
