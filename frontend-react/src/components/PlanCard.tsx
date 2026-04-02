@@ -43,7 +43,11 @@ const PlanCard: React.FC<PlanCardProps> = ({
       <ul className="plan-features">
         {features.map((feature, index) => (
           <li key={index} className={feature === '' ? 'empty-line' : feature.includes('Fonctionnalités') ? 'feature-header' : ''}>
-            {feature && !feature.includes('Fonctionnalités') && <span className="tick-icon">✓</span>}
+            {feature && !feature.includes('Fonctionnalités') && (
+              <svg className="tick-icon" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="8.5" cy="8.5" r="8.5" fill="#DAE63D"/>
+              </svg>
+            )}
             {feature && <span>{feature}</span>}
           </li>
         ))}

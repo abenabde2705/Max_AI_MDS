@@ -13,13 +13,6 @@ import ChatHistoric from './ChatHistoric';
 import LogoPrincipal from '@/assets/img/Logo_principal.png';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import { AlertTriangle, Lock, Sparkles } from 'lucide-react';
-const emotions = [
-  { key: 'super', label: 'Super', icon: '😊' },
-  { key: 'bien', label: 'Bien', icon: '😌' },
-  { key: 'triste', label: 'Triste', icon: '😢' },
-  { key: 'colere', label: 'En colère', icon: '😠' },
-  { key: 'fatigue', label: 'Fatigué', icon: '😴' },
-];
 
 export default function MaxAIChat() {
   const { toggleSidebar } = useOutletContext<{ toggleSidebar: () => void }>();
@@ -89,9 +82,6 @@ export default function MaxAIChat() {
     }
   };
 
-  const handleEmotionClick = (emotion: string) => {
-    sendMessage(`Je me sens ${emotion.toLowerCase()}`);
-  };
 
   return (
     <>
@@ -210,18 +200,7 @@ export default function MaxAIChat() {
             </div>
           ) : (
             <>
-              <div className="max-chat__emotions">
-                {emotions.map((emotion) => (
-                  <button
-                    key={emotion.key}
-                    onClick={() => handleEmotionClick(emotion.label)}
-                    className={`max-chat__emotion-button max-chat__emotion-button--${emotion.key}`}
-                  >
-                    <span>{emotion.icon}</span>
-                    <span>{emotion.label}</span>
-                  </button>
-                ))}
-              </div>
+          
 
               <div className="max-chat__input-wrapper">
                 <Input
