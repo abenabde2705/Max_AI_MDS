@@ -3,11 +3,13 @@ FROM node:20
 
 WORKDIR /app
 
-COPY --chown=node:node package*.json ./
+COPY package*.json ./
 
 RUN npm install
 
-COPY --chown=node:node . .
+COPY . .
+
+RUN chown -R node:node /app
 
 USER node
 
