@@ -375,7 +375,7 @@ export const sendStudentVerificationStatusEmail = async (opts: {
                   Bonne nouvelle ! Votre carte étudiante a été <strong style="color:#161a4d;">vérifiée et approuvée</strong>.
                 </p>
                 <p style="color:#555555;font-size:1rem;line-height:1.6;margin:0 0 32px;">
-                  Vous pouvez maintenant finaliser votre abonnement Campus à 8€/mois.
+                  Vous pouvez maintenant finaliser votre abonnement Campus à 7,99€/mois.
                 </p>
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr><td align="center" style="padding:0 0 32px;">
@@ -475,7 +475,7 @@ export const sendSubscriptionEmail = async (opts: {
   firstName: string;
   plan: 'premium' | 'student';
 }) => {
-  const planLabel = opts.plan === 'premium' ? 'Premium (14,99€/mois)' : 'Campus (8€/mois)';
+  const planLabel = opts.plan === 'premium' ? 'Premium (14,99€/mois)' : 'Campus (7,99€/mois)';
   const planPerks = opts.plan === 'premium'
     ? 'Messages illimités, journal émotionnel, statistiques avancées et accès aux coachs.'
     : 'Messages illimités et accès aux fonctionnalités premium au tarif étudiant.';

@@ -131,7 +131,7 @@ const NavBar: React.FC<NavBarProps> = ({ className: _className }) => {
         <div className="nav-left">
           <div className="logo">
             <Link style={{ textDecoration: 'none' }} to="/">
-              <img src="/src/assets/img/hero/logomax.png" alt="MAX" className="navbar-logo" />
+              <img src="/src/assets/img/heart_logo.png" alt="MAX" className="navbar-logo" />
             </Link>
           </div>
           {/* Bouton hamburger pour mobile */}

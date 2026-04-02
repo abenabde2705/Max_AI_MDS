@@ -35,6 +35,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
   const animFrameRef = useRef<number | null>(null);
   const posRef = useRef(0);
   const speedRef = useRef(0.5);
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartPosRef = useRef(0);
 
   useEffect(() => {
     getDocs(query(collection(db, 'testimonials'), where('approved', '==', true)))
@@ -79,8 +82,35 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
     };
   }, [loopedTestimonials.length]);
 
-  const handleMouseEnter = () => { speedRef.current = 0; };
-  const handleMouseLeave = () => { speedRef.current = 0.5; };
+  const handleMouseEnter = () => { speedRef.current = 0.15; };
+  const handleMouseLeave = () => {
+    isDraggingRef.current = false;
+    speedRef.current = 0.5;
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    dragStartPosRef.current = posRef.current;
+    speedRef.current = 0;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingRef.current) return;
+    const track = trackRef.current;
+    if (!track) return;
+    const halfWidth = track.scrollWidth / 2;
+    let newPos = dragStartPosRef.current - (e.clientX - dragStartXRef.current);
+    if (newPos < 0) newPos += halfWidth;
+    if (newPos >= halfWidth) newPos -= halfWidth;
+    posRef.current = newPos;
+  };
+
+  const handleMouseUp = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    speedRef.current = 0.15;
+  };
 
   return (
     <section id={id} className={`testimonials-section ${className}`}>
@@ -91,6 +121,10 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ id, className
           className="testimonials-carousel-viewport"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          style={{ cursor: isDraggingRef.current ? 'grabbing' : 'grab' }}
         >
           <div className="testimonials-carousel-track" ref={trackRef}>
             {loopedTestimonials.map((t, i) => (

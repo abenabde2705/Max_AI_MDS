@@ -3,9 +3,9 @@ services:
     image: postgres:15
     container_name: maxai-postgres
     environment:
-     POSTGRES_USER: postgres
-     POSTGRES_PASSWORD: password
-     POSTGRES_DB: maxai
+     POSTGRES_USER: ${DB_USER}
+     POSTGRES_PASSWORD: ${DB_PASSWORD}
+     POSTGRES_DB: ${DB_NAME}
     volumes:
      - postgres_data:/var/lib/postgresql/data
     healthcheck:

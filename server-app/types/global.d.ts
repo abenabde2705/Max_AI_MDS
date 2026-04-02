@@ -25,19 +25,18 @@ export interface UserAttributes {
   id: string;
   email: string;
   password?: string;
-  isAnonymous: boolean;
-  pseudonym?: string;
   isPremium: boolean;
   role: 'user' | 'admin';
   stripeCustomerId?: string;
   firstName?: string;
   lastName?: string;
-  age?: number;
+  birthDate?: string;
   lastLogin?: Date;
   googleId?: string;
-  facebookId?: string;
   resetToken?: string;
   resetTokenExpiry?: Date;
+  failedLoginAttempts: number;
+  lockedUntil?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

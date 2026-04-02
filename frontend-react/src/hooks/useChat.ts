@@ -1,4 +1,4 @@
-import { getToken, removeToken } from '../utils/token';
+import { getToken } from '../utils/token';
 import { useState, useEffect, useRef } from 'react';
 import {
   fetchConversations,

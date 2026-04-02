@@ -75,6 +75,11 @@ const AuthUser: React.FC = () => {
         setError('La date de naissance est requise');
         return false;
       }
+      const age = Math.floor((Date.now() - new Date(form.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+      if (age < 15) {
+        setError('Vous devez avoir au moins 15 ans pour créer un compte');
+        return false;
+      }
       if (form.password !== form.confirmPassword) {
         setError('Les mots de passe ne correspondent pas');
         return false;
@@ -107,6 +112,7 @@ const AuthUser: React.FC = () => {
       if (mode === 'login') {
         const response = await fetch(`${API_URL}/api/auth/login`, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           },
@@ -127,23 +133,18 @@ const AuthUser: React.FC = () => {
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
 
-        navigate('/profile');
+        navigate('/chatbot');
       } else {
-        // Calculer l'âge à partir de la date de naissance
-        const birthDate = new Date(form.birthDate);
-        const ageDiffMs = Date.now() - birthDate.getTime();
-        const ageDate = new Date(ageDiffMs);
-        const age = Math.abs(ageDate.getUTCFullYear() - 1970);
-
         const response = await fetch(`${API_URL}/api/auth/register`, {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             firstName: form.firstName,
             lastName: form.lastName,
-            age: age,
+            birthDate: form.birthDate,
             email: form.email,
             password: form.password
           })
@@ -160,7 +161,7 @@ const AuthUser: React.FC = () => {
         localStorage.setItem('name', data.user.firstName + ' ' + data.user.lastName);
         localStorage.setItem('userId', data.user.id);
 
-        navigate('/profile');
+        navigate('/chatbot');
       }
     } catch (error) {
       setError('Une erreur est survenue. Veuillez réessayer.');
@@ -175,10 +176,6 @@ const AuthUser: React.FC = () => {
     window.location.href = `${API_URL}/api/auth/google`;
   };
 
-  const handleFacebookLogin = () => {
-    // Redirection vers l'endpoint OAuth Facebook du backend
-    window.location.href = `${API_URL}/api/auth/facebook`;
-  };
 
   return (
     <div className="login-container">
@@ -383,12 +380,6 @@ const AuthUser: React.FC = () => {
               Connexion avec Google
             </button>
 
-            <button type="button" className="social-btn facebook-btn" onClick={handleFacebookLogin}>
-              <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" fill="#1877F2"/>
-              </svg>
-              Connexion avec Facebook
-            </button>
           </div>
         </form>
       </div>

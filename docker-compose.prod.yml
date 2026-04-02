@@ -20,6 +20,9 @@ services:
     ports:
       - "127.0.0.1:11434:11434"
 
+  ollama-init:
+    container_name: maxai-ollama-init-prod
+
   chat_api:
     container_name: maxai-chat-api-prod
     ports:

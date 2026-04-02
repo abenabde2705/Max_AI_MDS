@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import { fetchConversationStats, fetchJournalEntries } from '@/services/chat.api';
 import './styles/Statistics.css';
@@ -27,11 +28,12 @@ const moodMeta: Record<string, { label: string; emoji: string }> = {
 };
 
 const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-const dayEmojis = ['😊', '😌', '😊', '😢', '😌', '😊', '😐'];
 
 export default function Statistics() {
+  const { toggleSidebar } = useOutletContext<{ toggleSidebar: () => void }>();
   const [stats, setStats] = useState<StatCard[]>([]);
   const [emotionStats, setEmotionStats] = useState<EmotionStats[]>([]);
+  const [weeklyMoods, setWeeklyMoods] = useState<(string | null)[]>(Array(7).fill(null));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,8 +68,24 @@ export default function Statistics() {
           },
         ]);
 
+        // Humeur de la semaine (lundi → dimanche de la semaine en cours)
+        const entries: { mood: string; dateLogged: string }[] = journalRes.data;
+        const now = new Date();
+        const monday = new Date(now);
+        const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // 0=lundi
+        monday.setDate(now.getDate() - dayOfWeek);
+        monday.setHours(0, 0, 0, 0);
+
+        const weekly: (string | null)[] = Array(7).fill(null);
+        entries.forEach(e => {
+          if (!e.dateLogged || !e.mood) return;
+          const d = new Date(e.dateLogged);
+          const diff = Math.floor((d.getTime() - monday.getTime()) / 86400000);
+          if (diff >= 0 && diff < 7) weekly[diff] = moodMeta[e.mood]?.emoji ?? '❓';
+        });
+        setWeeklyMoods(weekly);
+
         // Distribution des émotions à partir des entrées journal
-        const entries: { mood: string }[] = journalRes.data;
         if (entries.length > 0) {
           const moodCounts = entries.reduce<Record<string, number>>((acc, e) => {
             if (e.mood) acc[e.mood] = (acc[e.mood] || 0) + 1;
@@ -98,6 +116,16 @@ export default function Statistics() {
     <main className="max-chat__main">
       <header className="max-chat__header">
         <div className="max-chat__header-left">
+          <button
+            type="button"
+            className="max-chat__menu-burger"
+            aria-label="Ouvrir le menu"
+            onClick={toggleSidebar}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
           <div className="max-chat__header-avatar">
             <img src={LogoYellow} alt="MAX Logo" />
           </div>
@@ -140,7 +168,9 @@ export default function Statistics() {
           <div className="statistics__weekly-moods">
             {days.map((day, index) => (
               <div key={index} className="statistics__day">
-                <span className="statistics__day-emoji">{dayEmojis[index]}</span>
+                <span className="statistics__day-emoji">
+                  {weeklyMoods[index] ?? '—'}
+                </span>
                 <span className="statistics__day-name">{day}</span>
               </div>
             ))}

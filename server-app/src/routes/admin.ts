@@ -129,13 +129,6 @@ router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request
       return;
     }
 
-    let age: number | null = null;
-    if (dateOfBirth) {
-      const birth = new Date(dateOfBirth);
-      const diff = Date.now() - birth.getTime();
-      age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-    }
-
     const resetToken = uuidv4();
     const resetTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
@@ -143,8 +136,7 @@ router.post('/admin/users', authenticateToken, requireAdmin, async (req: Request
       firstName,
       lastName,
       email: email.toLowerCase(),
-      age: age ?? 18,
-      isAnonymous: false,
+      birthDate: dateOfBirth || null,
       isPremium: false,
       resetToken,
       resetTokenExpiry,
@@ -189,11 +181,19 @@ router.patch('/admin/users/:id', authenticateToken, requireAdmin, async (req: Re
       return;
     }
 
+    const ALLOWED_ROLES = ['user', 'admin'];
+
     const updates: any = {};
     if (firstName !== undefined) { updates.firstName = firstName; }
     if (lastName !== undefined) { updates.lastName = lastName; }
     if (email !== undefined) { updates.email = email.toLowerCase(); }
-    if (role !== undefined) { updates.role = role; }
+    if (role !== undefined) {
+      if (!ALLOWED_ROLES.includes(role)) {
+        res.status(400).json({ success: false, message: `Rôle invalide. Valeurs acceptées : ${ALLOWED_ROLES.join(', ')}` });
+        return;
+      }
+      updates.role = role;
+    }
     if (plan !== undefined) { updates.isPremium = plan !== 'free'; }
     await user.update(updates);
 

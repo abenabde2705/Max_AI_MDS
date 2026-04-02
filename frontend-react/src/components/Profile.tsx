@@ -13,13 +13,13 @@ const EyeOff = () => (
 );
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
-import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus } from '../services/chat.api';
+import { fetchCurrentSubscription, cancelSubscription, createPortalSession, subscribeNewsletter, unsubscribeNewsletter, fetchNewsletterStatus, logoutApi } from '../services/chat.api';
+import { useBirthDate } from '../context/BirthDateContext';
 
 interface UserProfile {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string;
   birthDate?: string;
   plan?: string;
   createdAt?: string;
@@ -34,11 +34,11 @@ interface SubscriptionInfo {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { setBirthDate: setContextBirthDate } = useBirthDate();
   const [user, setUser] = useState<UserProfile>({
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
     birthDate: '',
     plan: 'Free',
     createdAt: '',
@@ -48,7 +48,6 @@ const Profile: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState<UserProfile>(user);
   const [notifications, setNotifications] = useState({
-    email: true,
     newsletter: false,
   });
   const [newsletterLoading, setNewsletterLoading] = useState(false);
@@ -56,6 +55,8 @@ const Profile: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
   const [passwordError, setPasswordError] = useState('');
@@ -76,10 +77,8 @@ const Profile: React.FC = () => {
         const API_URL = import.meta.env.VITE_API_URL;
         const [profileResponse, subResponse] = await Promise.allSettled([
           fetch(`${API_URL}/api/auth/profile`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
           }),
           fetchCurrentSubscription()
         ]);
@@ -91,7 +90,6 @@ const Profile: React.FC = () => {
             firstName: userData.firstName || userData.firstname || '',
             lastName: userData.lastName || userData.lastname || '',
             email: userData.email || '',
-            phone: userData.phone || '',
             birthDate: userData.birthDate || userData.birth_date || '',
             plan: userData.plan || 'Free',
             createdAt: userData.createdAt || userData.created_at || '',
@@ -148,20 +146,18 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/auth/profile`, {
         method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
-          phone: formData.phone,
           birthDate: formData.birthDate,
         }),
       });
 
       if (response.ok) {
         setUser(formData);
+        if (formData.birthDate) setContextBirthDate(formData.birthDate);
         localStorage.setItem('name', `${formData.firstName} ${formData.lastName}`.trim());
         window.dispatchEvent(new Event('storage'));
         setEditMode(false);
@@ -189,7 +185,8 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/auth/change-password`, {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword: passwordForm.current, newPassword: passwordForm.next }),
       });
       const data = await response.json();
@@ -215,7 +212,7 @@ const Profile: React.FC = () => {
       const API_URL = import.meta.env.VITE_API_URL;
       const response = await fetch(`${API_URL}/api/users/me`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include',
       });
       if (!response.ok) {
         const data = await response.json();
@@ -232,7 +229,12 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+    } catch {
+      // cookie cleared client-side regardless
+    }
     removeToken();
     localStorage.removeItem('name');
     localStorage.removeItem('userName');
@@ -257,8 +259,6 @@ const Profile: React.FC = () => {
       } finally {
         setNewsletterLoading(false);
       }
-    } else {
-      setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
     }
   };
 
@@ -274,7 +274,7 @@ const Profile: React.FC = () => {
     <div className="profile-page">
       {/* Header */}
       <div className="profile-header">
-        <button className="profile-header__back" onClick={() => navigate(-1)}>
+        <button className="profile-header__back" onClick={() => navigate('/')}>
           <ArrowLeft size={20} />
         </button>
         <div>
@@ -342,27 +342,15 @@ const Profile: React.FC = () => {
                   type="email"
                 />
               </div>
-              <div className="profile-form__row">
-                <div className="profile-form__field">
-                  <label className="profile-form__label">Téléphone</label>
-                  <input
-                    className="profile-form__input"
-                    value={editMode ? formData.phone || '' : user.phone || ''}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    disabled={!editMode}
-                    placeholder="+33 6 00 00 00 00"
-                  />
-                </div>
-                <div className="profile-form__field">
-                  <label className="profile-form__label">Date de naissance</label>
-                  <input
-                    className="profile-form__input"
-                    value={editMode ? formData.birthDate || '' : user.birthDate || ''}
-                    onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                    disabled={!editMode}
-                    type="date"
-                  />
-                </div>
+              <div className="profile-form__field profile-form__field--full">
+                <label className="profile-form__label">Date de naissance</label>
+                <input
+                  className="profile-form__input"
+                  value={editMode ? formData.birthDate || '' : user.birthDate || ''}
+                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                  disabled={!editMode}
+                  type="date"
+                />
               </div>
               <div className="profile-form__actions">
                 {editMode ? (
@@ -490,7 +478,7 @@ const Profile: React.FC = () => {
                     Plan {subscription.plan === 'premium' ? 'Premium' : subscription.plan === 'student' ? 'Campus' : 'Free'}
                   </p>
                   <p className="profile-subscription__plan-price">
-                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '8€ / Mois' : 'Gratuit'}
+                    {subscription.plan === 'premium' ? '14,99€ / Mois' : subscription.plan === 'student' ? '7,99€ / Mois' : 'Gratuit'}
                   </p>
                   {subscription.stripePeriodEnd && (
                     <p className="profile-subscription__plan-renew">
@@ -503,7 +491,12 @@ const Profile: React.FC = () => {
                 </span>
               </div>
               <div className="profile-subscription__actions">
-                <button className="profile-btn profile-btn--outline profile-btn--sm" onClick={() => navigate('/#title')}>
+                <button className="profile-btn profile-btn--outline profile-btn--sm" onClick={() => {
+                  navigate('/');
+                  setTimeout(() => {
+                    document.getElementById('title')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 100);
+                }}>
                   Changer de plan
                 </button>
                 {subscription.plan !== 'free' && (
@@ -515,7 +508,7 @@ const Profile: React.FC = () => {
                           const { data } = await createPortalSession();
                           if (data.url) window.location.href = data.url;
                         } catch {
-                          console.error('Erreur portail facturation');
+                          alert('Impossible d\'ouvrir le portail de facturation. Veuillez réessayer.');
                         }
                       }}
                     >
@@ -523,15 +516,7 @@ const Profile: React.FC = () => {
                     </button>
                     <button
                       className="profile-btn profile-btn--danger profile-btn--sm"
-                      onClick={async () => {
-                        if (!window.confirm('Confirmer l\'annulation de votre abonnement ?')) return;
-                        try {
-                          await cancelSubscription();
-                          alert('Abonnement annulé à la fin de la période en cours.');
-                        } catch {
-                          console.error('Erreur annulation abonnement');
-                        }
-                      }}
+                      onClick={() => setShowCancelModal(true)}
                     >
                       Annuler l'abonnement
                     </button>
@@ -543,23 +528,18 @@ const Profile: React.FC = () => {
 
           {/* Notifications */}
           <div className="profile-card">
-            <h3 className="profile-card__title">Notifictaions</h3>
+            <h3 className="profile-card__title">Notifications</h3>
             <div className="profile-notifications">
-              {[
-                { key: 'email' as const, label: 'Notifications par email' },
-                { key: 'newsletter' as const, label: 'Newsletter MAX' },
-              ].map(({ key, label }) => (
-                <div key={key} className="profile-notifications__row">
-                  <span className="profile-notifications__label">{label}</span>
-                  <button
-                    className={`profile-toggle ${notifications[key] ? 'profile-toggle--on' : ''}`}
-                    onClick={() => toggleNotification(key)}
-                    disabled={key === 'newsletter' && newsletterLoading}
-                  >
-                    <span className="profile-toggle__thumb" />
-                  </button>
-                </div>
-              ))}
+              <div className="profile-notifications__row">
+                <span className="profile-notifications__label">Newsletter MAX</span>
+                <button
+                  className={`profile-toggle ${notifications.newsletter ? 'profile-toggle--on' : ''}`}
+                  onClick={() => toggleNotification('newsletter')}
+                  disabled={newsletterLoading}
+                >
+                  <span className="profile-toggle__thumb" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -587,6 +567,45 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Modale annulation abonnement */}
+      {showCancelModal && (
+        <div className="profile-modal-overlay" onClick={() => !cancelLoading && setShowCancelModal(false)}>
+          <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="profile-modal__title">Annuler l'abonnement</h2>
+            <p className="profile-modal__text">
+              Votre abonnement restera actif jusqu'à la <strong>fin de la période en cours</strong>, puis ne sera pas renouvelé.
+            </p>
+            <div className="profile-modal__actions">
+              <button
+                className="profile-btn profile-btn--outline"
+                onClick={() => setShowCancelModal(false)}
+                disabled={cancelLoading}
+              >
+                Annuler 
+              </button>
+              <button
+                className="profile-btn profile-btn--danger"
+                disabled={cancelLoading}
+                onClick={async () => {
+                  setCancelLoading(true);
+                  try {
+                    await cancelSubscription();
+                    setSubscription(prev => ({ ...prev, status: 'canceled' }));
+                    setShowCancelModal(false);
+                  } catch {
+                    alert('Impossible d\'annuler l\'abonnement. Veuillez réessayer.');
+                  } finally {
+                    setCancelLoading(false);
+                  }
+                }}
+              >
+                {cancelLoading ? 'Annulation...' : 'Confirmer l\'annulation'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modale suppression de compte */}
       {showDeleteModal && (
         <div className="profile-modal-overlay" onClick={() => !deleteLoading && setShowDeleteModal(false)}>

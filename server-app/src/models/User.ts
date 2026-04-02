@@ -5,26 +5,25 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserAttributes } from '../../types/global.js';
 
 // Type pour les attributs optionnels lors de la création
-type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'age' | 'lastLogin' | 'pseudonym' | 'role' | 'stripeCustomerId' | 'resetToken' | 'resetTokenExpiry'>;
+type UserCreationAttributes = Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'birthDate' | 'lastLogin' | 'role' | 'stripeCustomerId' | 'resetToken' | 'resetTokenExpiry' | 'failedLoginAttempts' | 'lockedUntil'>;
 
 // Classe du modèle User avec tous les types
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: string;
   public email!: string;
   public password?: string;
-  public isAnonymous!: boolean;
-  public pseudonym?: string;
   public isPremium!: boolean;
   public role!: 'user' | 'admin';
   public stripeCustomerId?: string;
   public firstName?: string;
   public lastName?: string;
-  public age?: number;
+  public birthDate?: string;
   public googleId?: string;
-  public facebookId?: string;
   public lastLogin?: Date;
   public resetToken?: string;
   public resetTokenExpiry?: Date;
+  public failedLoginAttempts!: number;
+  public lockedUntil?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -76,15 +75,6 @@ User.init({
     field: 'password_hash',
 
   },
-  isAnonymous: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-    field: 'is_anonymous'
-  },
-  pseudonym: {
-    type: DataTypes.STRING(100),
-    allowNull: true
-  },
   isPremium: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
@@ -114,33 +104,15 @@ User.init({
     type: DataTypes.STRING(100),
     allowNull: true
   },
-  age: {
-    type: DataTypes.INTEGER,
+  birthDate: {
+    type: DataTypes.DATEONLY,
     allowNull: true,
-    validate: {
-      isValidAge(value: number | null | undefined) {
-        // Valider seulement si une valeur est fournie
-        if (value !== null && value !== undefined) {
-          if (value < 13) {
-            throw new Error('Vous devez avoir au moins 13 ans');
-          }
-          if (value > 120) {
-            throw new Error('Âge invalide');
-          }
-        }
-      }
-    }
+    field: 'birth_date',
   },
   googleId: {
     type: DataTypes.STRING,
     allowNull: true,
     field: 'google_id',
-    unique: true
-  },
-  facebookId: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: 'facebook_id',
     unique: true
   },
   lastLogin: {
@@ -156,6 +128,17 @@ User.init({
     type: DataTypes.DATE,
     allowNull: true,
     field: 'reset_token_expiry',
+  },
+  failedLoginAttempts: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'failed_login_attempts',
+  },
+  lockedUntil: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'locked_until',
   },
   createdAt: {
     type: DataTypes.DATE,

@@ -23,6 +23,7 @@ const AuthCallback = () => {
       // Récupérer les informations de l'utilisateur
       const API_URL = import.meta.env.VITE_API_URL;
       fetch(`${API_URL}/api/auth/profile`, {
+        credentials: 'include',
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -32,16 +33,18 @@ const AuthCallback = () => {
           return res.json();
         })
         .then(data => {
-          console.log('User data received:', data);
           if (data.user) {
-            // Stocker les informations utilisateur
             const fullName = `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim();
-            console.log('Storing user data:', { fullName, email: data.user.email });
             localStorage.setItem('userEmail', data.user.email);
             localStorage.setItem('userName', fullName || data.user.email);
             localStorage.setItem('userId', data.user.id);
+
+            // Rediriger vers l'onboarding si pas de date de naissance
+            if (!data.user.birthDate) {
+              setTimeout(() => navigate('/onboarding'), 100);
+              return;
+            }
           }
-          // Rediriger vers le chat après avoir stocké les données
           setTimeout(() => navigate('/chatbot'), 100);
         })
         .catch(error => {

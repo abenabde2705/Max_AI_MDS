@@ -28,7 +28,7 @@ export async function summarizeAndSave(conversationId: string, userId: string): 
   const chatApiUrl = process.env.CHAT_API_URL || 'http://chat_api:8000';
   const response = await fetch(`${chatApiUrl}/summarize`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.API_KEY || '' },
     body: JSON.stringify({ messages: formattedMessages }),
   });
 

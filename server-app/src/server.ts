@@ -1,5 +1,7 @@
 import express, { Request, Response, NextFunction, Application } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -29,6 +31,9 @@ import { up as migration007 } from './migrations/007-add-user-role-and-stripe.js
 import { up as migration008 } from './migrations/008-create-crisis-alerts.js';
 import { up as migration009 } from './migrations/009-add-reset-token.js';
 import { up as migration010 } from './migrations/010-create-stripe-webhook-events.js';
+import { up as migration011 } from './migrations/011-add-birth-date.js';
+import { up as migration012 } from './migrations/012-drop-unused-columns.js';
+import { up as migration013 } from './migrations/013-add-login-lockout.js';
 import { startSubscriptionExpiryJob } from './jobs/subscriptionExpiry.js';
 
 // Monitoring imports
@@ -146,6 +151,9 @@ const runMigrations = async (): Promise<void> => {
         { name: '008', fn: () => migration008(qi, sequelize.constructor as any) },
         { name: '009', fn: () => migration009(qi, sequelize.constructor as any) },
         { name: '010', fn: () => migration010(qi, sequelize.constructor as any) },
+        { name: '011', fn: () => migration011(qi, sequelize.constructor as any) },
+        { name: '012', fn: () => migration012(qi, sequelize.constructor as any) },
+        { name: '013', fn: () => migration013(qi, sequelize.constructor as any) },
     ];
 
     for (const migration of migrations) {
@@ -188,30 +196,40 @@ connectDB().then(() => {
 });
 
 // Middlewares
+app.use(helmet());
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Autoriser les requêtes sans origin (Postman, curl, Prometheus)
-      if (!origin) {
-        return callback(null, true);
+const buildCorsOptions = (req: Request): cors.CorsOptions => ({
+  origin: (origin, callback) => {
+    // Les navigations browser (OAuth, redirects) n'envoient pas d'Origin sur les GET.
+    // On bloque le no-Origin uniquement sur les méthodes qui modifient l'état.
+    if (!origin) {
+      const isMutating = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
+      if (process.env.NODE_ENV === 'production' && isMutating) {
+        return callback(new Error('Not allowed by CORS'));
+      }
+      return callback(null, true);
     }
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      logger.warn(`CORS blocked origin: ${origin}`);
-      return callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    optionsSuccessStatus: 200
-  })
-);
+    logger.warn(`CORS blocked origin: ${origin}`);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
+});
 
+// CORS appliqué uniquement sur /api — /metrics reste accessible à Prometheus (server-to-server)
+app.use('/api', (req: Request, res: Response, next: NextFunction) => cors(buildCorsOptions(req))(req, res, next));
+app.options('/api/*', (req: Request, res: Response, next: NextFunction) => cors(buildCorsOptions(req))(req, res, next));
+
+app.use(cookieParser());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -227,6 +245,7 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
+        sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
@@ -279,10 +298,9 @@ app.get('/api/health', (req: Request, res: Response): void => {
 // Gestion des erreurs globales
 app.use((err: CustomError, req: Request, res: Response, _next: NextFunction): void => {
     logger.error({ error: err }, 'Unhandled error');
-    res.status(err.status || 500).json({ 
-        message: 'Une erreur interne est survenue',
-        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
-    });
+    const body: Record<string, string> = { message: 'Une erreur interne est survenue' };
+    if (process.env.NODE_ENV !== 'production') { body.error = err.message; }
+    res.status(err.status || 500).json(body);
 });
 
 // Route 404

@@ -1,30 +1,26 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { Button } from '@/ui/components/Button';
 import { Input } from '@/ui/components/Input';
 import { Icon } from '@/ui/icons';
 import { colors } from '@/ui/tokens/colors';
 import { useChat } from '@/hooks/useChat';
+import { useChatContext } from '@/context/ChatContext';
 import { fetchUserProfile } from '@/services/chat.api';
 import ChatHistoric from './ChatHistoric';
 import LogoPrincipal from '@/assets/img/Logo_principal.png';
 import LogoYellow from '@/assets/img/logo_yellow.png';
 import { AlertTriangle, Lock, Sparkles } from 'lucide-react';
-const emotions = [
-  { key: 'super', label: 'Super', icon: '😊' },
-  { key: 'bien', label: 'Bien', icon: '😌' },
-  { key: 'triste', label: 'Triste', icon: '😢' },
-  { key: 'colere', label: 'En colère', icon: '😠' },
-  { key: 'fatigue', label: 'Fatigué', icon: '😴' },
-];
 
 export default function MaxAIChat() {
+  const { toggleSidebar } = useOutletContext<{ toggleSidebar: () => void }>();
   const [message, setMessage] = useState('');
-  const [isHistoricOpen, setIsHistoricOpen] = useState(false);
   const [userInitials, setUserInitials] = useState('U');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { messages, conversations, isWaiting, sendMessage, switchConversation, cancelResponse, activeConversation, createNewConversation, removeConversation, messageLimitReached, messageCount } = useChat();
+  const { isHistoricOpen, setIsHistoricOpen, setCreateNewConversation } = useChatContext();
 
   const isApproachingLimit = !messageCount?.is_premium && messageCount?.limit !== null && messageCount !== null && messageCount.used >= 7 && !messageLimitReached;
   const planLabel = messageCount?.is_premium ? 'Plan Premium' : 'Plan Free';
@@ -38,6 +34,11 @@ export default function MaxAIChat() {
     : isApproachingLimit
       ? 'max-chat__plan--warning'
       : '';
+
+  // Enregistrer les callbacks dans le contexte
+  useEffect(() => {
+    setCreateNewConversation(() => createNewConversation);
+  }, [createNewConversation, setCreateNewConversation]);
 
   // Récupérer les initiales de l'utilisateur au chargement
   useEffect(() => {
@@ -81,15 +82,22 @@ export default function MaxAIChat() {
     }
   };
 
-  const handleEmotionClick = (emotion: string) => {
-    sendMessage(`Je me sens ${emotion.toLowerCase()}`);
-  };
 
   return (
     <>
       <main className="max-chat__main">
         <header className="max-chat__header">
           <div className="max-chat__header-left">
+            <button
+              type="button"
+              className="max-chat__menu-burger"
+              aria-label="Ouvrir le menu"
+              onClick={toggleSidebar}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
             <div className="max-chat__header-avatar">
               <img src={LogoYellow} alt="MAX Logo" />
             </div>
@@ -112,7 +120,7 @@ export default function MaxAIChat() {
             </div>
           </div>
 
-          <div className="max-chat__header-actions">
+          <div className="max-chat__header-actions max-chat__header-actions--desktop">
             <Button className="max-chat__action-button" variant="primary" onClick={createNewConversation}>
               <Icon name="add" size="sm" />
       Nouvelle conversation
@@ -192,18 +200,7 @@ export default function MaxAIChat() {
             </div>
           ) : (
             <>
-              <div className="max-chat__emotions">
-                {emotions.map((emotion) => (
-                  <button
-                    key={emotion.key}
-                    onClick={() => handleEmotionClick(emotion.label)}
-                    className={`max-chat__emotion-button max-chat__emotion-button--${emotion.key}`}
-                  >
-                    <span>{emotion.icon}</span>
-                    <span>{emotion.label}</span>
-                  </button>
-                ))}
-              </div>
+          
 
               <div className="max-chat__input-wrapper">
                 <Input

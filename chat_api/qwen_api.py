@@ -1,5 +1,9 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi.security.api_key import APIKeyHeader
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from pydantic import BaseModel, Field
 import os
 import json
 import httpx
@@ -11,6 +15,15 @@ import httpx
 OLLAMA_BASE = os.getenv("OLLAMA_HOST", "http://ollama:11434")
 OLLAMA_URL = f"{OLLAMA_BASE}/api/chat"
 MODEL_NAME = "qwen2.5:3b"
+API_KEY = os.getenv("API_KEY", "")
+
+api_key_header = APIKeyHeader(name="x-api-key", auto_error=False)
+
+def verify_api_key(key: str = Depends(api_key_header)):
+    if not API_KEY or key != API_KEY:
+        raise HTTPException(status_code=401, detail="Clé API invalide ou manquante")
+
+limiter = Limiter(key_func=get_remote_address)
 
 # =============================
 # Ollama call helper
@@ -37,7 +50,27 @@ def _ollama_call(messages: list, temperature: float = 0.7, max_tokens: int = 120
 # Chat logic (stateless)
 # =============================
 
+_OFF_TOPIC_KEYWORDS = [
+    "python", "javascript", "java", "c++", "c#", "php", "ruby", "swift", "kotlin",
+    "code", "fonction", "function", "algorithm", "algorithme", "programme", "program",
+    "import", "def ", "class ", "```", "calcul", "équation", "recette", "cuisine",
+    "somme", "addition", "soustraction", "multiplication", "division",
+]
+
+def _is_off_topic(text: str) -> bool:
+    lowered = text.lower()
+    return any(kw in lowered for kw in _OFF_TOPIC_KEYWORDS)
+
+_OFF_TOPIC_REPLY = (
+    "Je suis là pour t'accompagner sur le plan émotionnel, pas pour répondre à ce type de question. "
+    "Comment te sens-tu en ce moment ?"
+)
+
 def generate_response(user_input: str, history: list | None = None, cross_context: str | None = None) -> str:
+    # Guardrail: block off-topic requests before calling the model
+    if _is_off_topic(user_input):
+        return _OFF_TOPIC_REPLY
+
     system = (
         "Tu es Max, un compagnon empathique, bienveillant et naturel, spécialisé dans le soutien émotionnel et le bien-être mental. "
         "Tu réponds de manière courte (2 à 3 phrases maximum), chaleureuse et humaine. "
@@ -57,7 +90,13 @@ def generate_response(user_input: str, history: list | None = None, cross_contex
         messages.extend(history)
     messages.append({"role": "user", "content": user_input})
 
-    return _ollama_call(messages, max_tokens=256)
+    response = _ollama_call(messages, max_tokens=256)
+
+    # Guardrail: if the model responded with off-topic content anyway, override it
+    if "```" in response or _is_off_topic(response):
+        return _OFF_TOPIC_REPLY
+
+    return response
 
 # =============================
 # FastAPI App
@@ -67,19 +106,21 @@ def generate_response(user_input: str, history: list | None = None, cross_contex
 # Il n'est pas exposé publiquement via Traefik.
 # L'authentification est gérée par le backend Express (JWT).
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 class ChatRequest(BaseModel):
-    message: str
-    session_id: str | None = None
-    history: list[dict] | None = None
-    cross_conversation_context: str | None = None
+    message: str = Field(..., max_length=2000)
+    session_id: str | None = Field(None, max_length=100)
+    history: list[dict] | None = Field(None, max_length=50)
+    cross_conversation_context: str | None = Field(None, max_length=5000)
 
 class SummarizeMessage(BaseModel):
-    sender: str
-    content: str
+    sender: str = Field(..., max_length=10)
+    content: str = Field(..., max_length=2000)
 
 class SummarizeRequest(BaseModel):
-    messages: list[SummarizeMessage]
+    messages: list[SummarizeMessage] = Field(..., max_length=100)
 
 # =============================
 # Routes
@@ -107,7 +148,8 @@ async def health():
         raise HTTPException(status_code=503, detail=f"Ollama non disponible : {e}")
 
 @app.post("/chat")
-async def chat_with_max(data: ChatRequest):
+@limiter.limit("20/minute")
+async def chat_with_max(request: Request, data: ChatRequest, _: None = Depends(verify_api_key)):
     try:
         response = generate_response(data.message, data.history, data.cross_conversation_context)
         return {"response": response}
@@ -115,7 +157,8 @@ async def chat_with_max(data: ChatRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/summarize")
-async def summarize_conversation(data: SummarizeRequest):
+@limiter.limit("10/minute")
+async def summarize_conversation(request: Request, data: SummarizeRequest, _: None = Depends(verify_api_key)):
     try:
         if not data.messages:
             raise HTTPException(status_code=400, detail="Aucun message à résumer")
