@@ -2280,10 +2280,10 @@ color: #FFFFFF;
 
 .testimonials-button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
   margin-top: 1rem;
-  padding-right: 2rem;
+  padding-right: 0;
 }
 
 .testimonial .author {
@@ -2431,6 +2431,7 @@ color: #FFFFFF;
 .testimonials-carousel-viewport {
   overflow: hidden;
   width: 100%;
+  user-select: none;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
 }
