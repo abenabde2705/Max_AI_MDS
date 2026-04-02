@@ -1,22 +1,15 @@
 # Image de base Node.js
 FROM node:20
 
-# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier package.json et package-lock.json
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 
-# Installer les dépendances
 RUN npm install
 
-# Copier le code source
-COPY . .
+COPY --chown=node:node . .
 
-RUN useradd --no-create-home --shell /bin/false appuser && \
-    chown -R appuser:appuser /app
-
-USER appuser
+USER node
 
 # Exposer le port 5173
 EXPOSE 5173

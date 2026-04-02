@@ -116,7 +116,7 @@ router.post('/checkout', authenticateToken, async (req: Request, res: Response):
       customer: stripeCustomerId,
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.FRONTEND_URL}/chatbot`,
       cancel_url: `${process.env.FRONTEND_URL}/#title`,
       metadata: { userId, plan }
     });
